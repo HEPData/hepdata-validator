@@ -53,6 +53,7 @@ setup(
     author_email='eamonn.maguire@cern.ch',
     include_package_data=True,
     description=__doc__,
+    package_data={'hepdata_validator': ["schemas/*.json"]},
     long_description=open('README.md', 'rt').read(),
     packages=["hepdata_validator"],
     zip_safe=False,
