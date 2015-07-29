@@ -1,0 +1,15 @@
+language: python
+
+before_install:
+  - "sudo apt-get update"
+  - "sudo apt-get install python-dev"
+  - "travis_retry pip install --upgrade pip"
+
+install:
+  - "travis_retry pip install requirements.txt"
+
+script:
+  - "python setup.py test"
+
+after_success:
+  - coveralls
