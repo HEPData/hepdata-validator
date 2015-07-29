@@ -84,6 +84,13 @@ class Validator(object):
 
         self.messages[message.file].append(message)
 
+    def print_errors(self, file_name):
+        """
+        Prints the errors observed for a file
+        """
+        for error in self.get_messages(file_name):
+            print '\t', error.__unicode__()
+
 
 class ValidationMessage(object):
     """

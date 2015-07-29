@@ -1,6 +1,7 @@
 HEPData Validator
 
 [![Build Status](https://api.travis-ci.org/HEPData/hepdata-validator.svg)](https://travis-ci.org/HEPData/hepdata-validator)
+
 [![Coverage Status](https://coveralls.io/repos/HEPData/hepdata-validator/badge.svg?branch=master&service=github)](https://coveralls.io/github/HEPData/hepdata-validator?branch=master)
 
 

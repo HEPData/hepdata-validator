@@ -24,9 +24,7 @@ class SubmissionFileValidationTest(unittest.TestCase):
         valid_sub_yaml = os.path.join(self.base_dir, self.valid_file)
 
         self.assertEqual(self.validator.validate(valid_sub_yaml), True)
-
-        for error in self.validator.get_messages(valid_sub_yaml):
-            print '\t', error.__unicode__()
+        self.validator.print_errors(valid_sub_yaml)
 
         print 'Valid\n'
 
@@ -41,8 +39,7 @@ class SubmissionFileValidationTest(unittest.TestCase):
 
         self.assertEqual(self.validator.validate(valid_sub_yaml), True)
 
-        for error in self.validator.get_messages(valid_sub_yaml):
-            print '\t', error.__unicode__()
+        self.validator.print_errors(valid_sub_yaml)
 
         print 'Valid\n'
 
@@ -57,8 +54,7 @@ class SubmissionFileValidationTest(unittest.TestCase):
             invalid_sub_yaml), False
         )
 
-        for error in self.validator.get_messages(invalid_sub_yaml):
-            print '\t', error.__unicode__()
+        self.validator.print_errors(invalid_sub_yaml)
 
         print 'Invalid\n'
 
@@ -89,37 +85,47 @@ class DataValidationTest(unittest.TestCase):
             self.base_dir,
             'test_data/invalid_file.json')
 
+        self.valid_file_error_percent_yaml = os.path.join(
+            self.base_dir,
+            'test_data/valid_data_with_error.yaml'
+        )
+
     def test_valid_yaml_file(self):
         print '___DATA_VALIDATION: Testing valid yaml submission___'
         self.assertEqual(self.validator.validate(self.valid_file_yaml),
                          True)
-        for error in self.validator.get_messages(self.valid_file_yaml):
-            print '\t', error.__unicode__()
+        self.validator.print_errors(self.valid_file_yaml)
         print 'Valid\n'
 
     def test_invalid_yaml_file(self):
         print '___DATA_VALIDATION: Testing invalid yaml submission___'
         self.assertEqual(self.validator.validate(self.invalid_file_yaml),
                          False)
-        for error in self.validator.get_messages(self.invalid_file_yaml):
-            print '\t', error.__unicode__()
+
+        self.validator.print_errors(self.invalid_file_yaml)
+        print 'Invalid\n'
+
+
+    def test_valid_file_with_percent_errors(self):
+        print '___DATA_VALIDATION: Testing valid yaml percent error ___'
+        self.assertEqual(self.validator.validate(self.valid_file_error_percent_yaml),
+                         False)
+        self.validator.print_errors(self.valid_file_error_percent_yaml)
         print 'Invalid\n'
 
     def test_valid_json_file(self):
         print '___DATA_VALIDATION: Testing valid json submission___'
         self.assertEqual(self.validator.validate(self.valid_file_json),
                          True)
-        for error in self.validator.get_messages(self.valid_file_json):
-            print '\t', error.__unicode__()
+
+        self.validator.print_errors(self.valid_file_json)
         print 'VALID\n'
 
     def test_invalid_json_file(self):
         print '___DATA_VALIDATION: Testing invalid json submission___'
         self.assertEqual(self.validator.validate(self.invalid_file_json),
                          False)
-        for error in self.validator.get_messages(self.invalid_file_json):
-            print '\t', error.__unicode__()
-
+        self.validator.print_errors(self.invalid_file_json)
         print 'Invalid\n'
 
 

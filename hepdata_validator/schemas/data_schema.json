@@ -138,7 +138,7 @@
                     "properties": {
                       "symerror": {
                         "id": "http://hepdata.org/submission/schema/data/dependent_variables/axis/values/point/value/errors/error/symerror",
-                        "type": "number"
+                        "type": ["number", "string"]
                       },
                       "asymerror": {
                         "id": "http://hepdata.org/submission/schema/data/dependent_variables/axis/values/point/value/errors/error/asymerror",
@@ -146,11 +146,11 @@
                         "properties": {
                           "minus": {
                             "id": "http://hepdata.org/submission/schema/data/dependent_variables/axis/values/point/value/errors/error/asymerror/minus",
-                            "type": "number"
+                            "type": ["number", "string"]
                           },
                           "plus": {
                             "id": "http://hepdata.org/submission/schema/data/dependent_variables/axis/values/point/value/errors/error/asymerror/plus",
-                            "type": "number"
+                            "type": ["number", "string"]
                           }
                         }
                       },
