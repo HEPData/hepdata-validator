@@ -1,0 +1,127 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://jsonschema.net",
+  "type": "object",
+  "properties": {
+    "name": {
+      "id": "http://jsonschema.net/name",
+      "type": "string"
+    },
+    "location": {
+      "id": "http://jsonschema.net/location",
+      "type": "string"
+    },
+    "description": {
+      "id": "http://jsonschema.net/description",
+      "type": "string"
+    },
+    "keywords": {
+      "id": "http://jsonschema.net/keywords",
+      "type": "array",
+      "items": [
+        {
+          "id": "http://jsonschema.net/additional_resources/keywords/keyword",
+          "type": "object",
+          "properties": {
+            "name": {
+              "id": "http://jsonschema.net/keywords/name",
+              "type": "string"
+            },
+            "values": {
+              "id": "http://jsonschema.net/keywords/values",
+              "type": "array",
+              "items": {
+                "id": "http://jsonschema.net/keywords/values/value",
+                "type": [
+                  "string",
+                  "number"
+                ]
+              }
+            }
+          },
+          "required": [
+            "name",
+            "values"
+          ]
+        }
+      ]
+    },
+    "data_file": {
+      "id": "http://jsonschema.net/data_file",
+      "type": "string"
+    },
+    "license": {
+      "id": "http://jsonschema.net/data_file/license",
+      "type": "object",
+      "properties": {
+        "name": {
+          "id": "http://jsonschema.net/data_file/license/name",
+          "type": "string"
+        },
+        "url": {
+          "id": "http://jsonschema.net/data_file/license/url",
+          "type": "string"
+        },
+        "description": {
+          "id": "http://jsonschema.net/data_file/license/description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "url"
+      ]
+    },
+    "additional_resources": {
+      "id": "http://jsonschema.net/additional_resources",
+      "type": "array",
+      "items": [
+        {
+          "id": "http://jsonschema.net/additional_resources/resource",
+          "type": "object",
+          "properties": {
+            "location": {
+              "id": "http://jsonschema.net/additional_resources/resource/location",
+              "type": "string"
+            },
+            "description": {
+              "id": "http://jsonschema.net/additional_resources/resource/description",
+              "type": "string"
+            },
+            "license": {
+              "id": "http://jsonschema.net/additional_resources/resource/license",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "id": "http://jsonschema.net/additional_resources/resource/license/name",
+                  "type": "string"
+                },
+                "url": {
+                  "id": "http://jsonschema.net/additional_resources/resource/license/url",
+                  "type": "string"
+                },
+                "description": {
+                  "id": "http://jsonschema.net/additional_resources/resource/license/description",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "url"
+              ]
+            }
+          },
+          "required": [
+            "location"
+          ]
+        }
+      ]
+    }
+  },
+    "required": [
+      "name",
+      "description",
+      "keywords",
+      "data_file"
+    ]
+}

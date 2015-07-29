@@ -1,0 +1,434 @@
+{
+              "x": {
+                  "values": [
+                      "0.0 TO 0.1",
+                      "0.1 TO 0.2",
+                      "0.2 TO 0.3",
+                      "0.3 TO 0.4",
+                      "0.4 TO 0.5",
+                      "0.5 TO 0.6",
+                      "0.6 TO 0.7",
+                      "0.7 TO 0.8"
+                  ],
+                  "name": "ABS(COS(THETA(RF=CM)))"
+              },
+              "groups": [
+                  {
+                      "qualifiers": [
+                          {
+                              "type": "reaction",
+                              "value": "GAMMA GAMMA --> K0S K0S"
+                          },
+                          {
+                              "type": "W",
+                              "value": "1.16-1.17 GeV"
+                          }
+                      ],
+                      "measurements": [
+                          {
+                              "name": "D(SIG)/DABS(COS(THETA(RF=CM))) IN NB",
+                              "values": [
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.273,
+                                              "err_minus": 0.273,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.157,
+                                              "err_minus": 0.157,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 1.119
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.218,
+                                              "err_minus": 0.218,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.114,
+                                              "err_minus": 0.114,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.669
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.229,
+                                              "err_minus": 0.229,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.114,
+                                              "err_minus": 0.114,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.725
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.227,
+                                              "err_minus": 0.227,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.102,
+                                              "err_minus": 0.102,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.617
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.223,
+                                              "err_minus": 0.223,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.091,
+                                              "err_minus": 0.091,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.431
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.348,
+                                              "err_minus": 0.348,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.129,
+                                              "err_minus": 0.129,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.931
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.452,
+                                              "err_minus": 0.452,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.138,
+                                              "err_minus": 0.138,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.945
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.355,
+                                              "err_minus": 0.355,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.107,
+                                              "err_minus": 0.107,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.113
+                                  }
+                              ]
+                          }
+                      ]
+                  },
+                  {
+                      "qualifiers": [
+                          {
+                              "type": "reaction",
+                              "value": "GAMMA GAMMA --> K0S K0S"
+                          },
+                          {
+                              "type": "W",
+                              "value": "1.17-1.18 GeV"
+                          }
+                      ],
+                      "measurements": [
+                          {
+                              "name": "D(SIG)/DABS(COS(THETA(RF=CM))) IN NB",
+                              "values": [
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.280,
+                                              "err_minus": 0.280,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.169,
+                                              "err_minus": 0.169,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 1.293
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.217,
+                                              "err_minus": 0.217,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.116,
+                                              "err_minus": 0.116,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.722
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.312,
+                                              "err_minus": 0.312,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.182,
+                                              "err_minus": 0.182,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 1.532
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.263,
+                                              "err_minus": 0.263,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.126,
+                                              "err_minus": 0.126,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.942
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.312,
+                                              "err_minus": 0.312,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.141,
+                                              "err_minus": 0.141,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 1.111
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.247,
+                                              "err_minus": 0.247,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.092,
+                                              "err_minus": 0.092,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.400
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.325,
+                                              "err_minus": 0.325,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.106,
+                                              "err_minus": 0.106,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.498
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.523,
+                                              "err_minus": 0.523,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.131,
+                                              "err_minus": 0.131,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.792
+                                  }
+                              ]
+                          }
+                      ]
+                  },
+                  {
+                      "qualifiers": [
+                          {
+                              "type": "reaction",
+                              "value": "GAMMA GAMMA --> K0S K0S"
+                          },
+                          {
+                              "type": "W",
+                              "value": "1.18-1.19 GeV"
+                          }
+                      ],
+                      "measurements": [
+                          {
+                              "name": "D(SIG)/DABS(COS(THETA(RF=CM))) IN NB",
+                              "values": [
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.318,
+                                              "err_minus": 0.318,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.221,
+                                              "err_minus": 0.221,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 1.887
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.297,
+                                              "err_minus": 0.297,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.194,
+                                              "err_minus": 0.194,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 1.644
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.297,
+                                              "err_minus": 0.297,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.174,
+                                              "err_minus": 0.174,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 1.454
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.300,
+                                              "err_minus": 0.300,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.162,
+                                              "err_minus": 0.162,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 1.347
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.245,
+                                              "err_minus": 0.245,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.101,
+                                              "err_minus": 0.101,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.615
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.362,
+                                              "err_minus": 0.362,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.141,
+                                              "err_minus": 0.141,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 1.087
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.436,
+                                              "err_minus": 0.436,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.138,
+                                              "err_minus": 0.138,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 0.998
+                                  },
+                                  {
+                                      "errors": [
+                                          {
+                                              "err_plus": 0.625,
+                                              "err_minus": 0.625,
+                                              "label": "stat"
+                                          },
+                                          {
+                                              "err_plus": 0.165,
+                                              "err_minus": 0.165,
+                                              "label": "sys"
+                                          }
+                                      ],
+                                      "value": 1.268
+                                  }
+                              ]
+                          }
+                      ]
+                  }
+              ]
+          }
