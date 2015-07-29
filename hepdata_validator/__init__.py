@@ -9,7 +9,8 @@ __author__ = 'eamonnmaguire'
 class Validator(object):
     """
     Provides a general 'interface' for Validator in HEPdata
-    which validates schema files created with the JSONschema syntax - http://json-schema.org/
+    which validates schema files created with the
+    JSONschema syntax http://json-schema.org/
     """
     messages = {}
     schema_file = ''
@@ -19,16 +20,19 @@ class Validator(object):
 
     def validate(self, file_path):
         schema = json.load(open(self.schema_file, 'r'))
-        # even though we are using the yaml package to load, it support JSON and YAML
 
         try:
             data = yaml.load(open(file_path, 'r'))
             validate(data, schema)
         except ValidationError as ve:
-            self.add_validation_message(ValidationMessage(file=file_path, message=ve.message + ' in ' + str(ve.instance)))
+            self.add_validation_message(
+                ValidationMessage(file=file_path,
+                                  message="{} in {}".format(ve.message, ve.instance)))
             return False
         except ParserError as pe:
-            self.add_validation_message(ValidationMessage(file=file_path, message=pe.__str__()))
+            self.add_validation_message(
+                ValidationMessage(file=file_path,
+                                  message=pe.__str__()))
             return False
 
         return True
