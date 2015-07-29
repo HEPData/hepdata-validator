@@ -16,12 +16,11 @@ before_install:
   - "travis_retry pip install --upgrade pip"
 
 install:
-  - python setup.py install
-  - py.test testsuite
   - "travis_retry pip install -r requirements.txt"
 
 script:
-  - "coverage report --source=hepdata_validator setup.py test"
+  - python setup.py install
+  - py.test testsuite
 
 after_success:
   - coveralls
