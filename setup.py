@@ -39,14 +39,17 @@ class PyTest(TestCommand):
         # import here, cause outside the eggs aren't loaded
         import pytest
         import _pytest.config
+
         pm = _pytest.config.get_plugin_manager()
         pm.consider_setuptools_entrypoints()
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
+
+
 setup(
     name='hepdata_validator',
     version='0.1.3',
-    summary = '0.1.3 release',
+    summary='0.1.3 release',
     url='https://github.com/hepdata/hepdata-validator',
     license='GPLv2',
     author='Eamonn Maguire',
@@ -67,4 +70,3 @@ setup(
     tests_require=test_requirements,
     cmdclass={'test': PyTest}
 )
-
