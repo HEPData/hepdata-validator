@@ -19,6 +19,11 @@ class Validator(object):
         self.messages = {}
 
     def validate(self, file_path):
+        """
+        Validates a file.
+        :param file_path: path to file to be loaded.
+        :return: true if valid, false otherwise
+        """
         schema = json.load(open(self.schema_file, 'r'))
 
         try:
@@ -38,9 +43,21 @@ class Validator(object):
         return True
 
     def has_errors(self, file_name):
+        """
+        Returns true if the provided file name has error messages
+        associated with it, false otherwise.
+        :param file_name:
+        :return: boolean
+        """
         return file_name in self.messages
 
     def get_messages(self, file_name=None):
+        """
+        Return messages for a file (if file_name provided).
+        If file_name is none, returns all messages as a dict.
+        :param file_name:
+        :return: array if file_name is provided, dict otherwise.
+        """
         if file_name is None:
             return self.messages
 
@@ -51,9 +68,17 @@ class Validator(object):
             return []
 
     def clear_messages(self):
+        """
+        Removes all error messages
+        :return:
+        """
         self.messages = {}
 
     def add_validation_message(self, message):
+        """
+        Adds a message to the messages dict
+        :param message:
+        """
         if message.file not in self.messages:
             self.messages[message.file] = []
 
@@ -61,6 +86,11 @@ class Validator(object):
 
 
 class ValidationMessage(object):
+    """
+    An object to encapsulate information about an error including
+    the file the error originated in, the error level, and the
+    message itself.
+    """
     file = ''
     level = ''
     message = ''
