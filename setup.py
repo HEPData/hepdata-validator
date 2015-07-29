@@ -43,26 +43,28 @@ class PyTest(TestCommand):
         pm.consider_setuptools_entrypoints()
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
-
 setup(
     name='hepdata_validator',
-    version='0.1',
+    version='0.1.3',
+    summary = '0.1.3 release',
     url='https://github.com/hepdata/hepdata-validator',
     license='GPLv2',
     author='Eamonn Maguire',
     author_email='eamonn.maguire@cern.ch',
-    include_package_data=True,
     description=__doc__,
+    keywords='hepdata validator',
     package_data={'hepdata_validator': ["schemas/*.json"]},
-    long_description=open('README.md', 'rt').read(),
+    long_description="HEPData validator code. More information and source code at https://github.com/hepdata/hepdata-validator",
     packages=["hepdata_validator"],
     zip_safe=False,
     platforms='any',
+
     install_requires=[
         "pyyaml",
         "jsonschema"
     ],
     test_suite='hepdata_validator.testsuite',
     tests_require=test_requirements,
-    cmdclass={'test': PyTest},
+    cmdclass={'test': PyTest}
 )
+
