@@ -1,4 +1,4 @@
-HEPData Validator
+## HEPData Validator
 
 [![Build Status](https://api.travis-ci.org/HEPData/hepdata-validator.svg)](https://travis-ci.org/HEPData/hepdata-validator)
 
@@ -8,7 +8,14 @@ HEPData Validator
 
 Includes the JSON Schema for submission files and code to run validations.
 
-Usage.
+### Installation
+Via pip:
+```
+pip install hepdata_validator
+```
+
+
+### Usage
 
 To validate files, you need to instantiate a validator (I love OO).
 
