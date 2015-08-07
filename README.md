@@ -35,7 +35,7 @@ submission_file_validator.get_messages()
 Data file validation is exactly the same.
 
 ``` python
-from hepdata_validator.submission_file_validator import DataFileValidator
+from hepdata_validator.data_file_validator import DataFileValidator
 
 data_file_validator = DataFileValidator()
 
