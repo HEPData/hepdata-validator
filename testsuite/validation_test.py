@@ -14,6 +14,7 @@ class SubmissionFileValidationTest(unittest.TestCase):
 
         self.valid_license_file = 'test_data/valid_submission_license.yaml'
         self.valid_file = 'test_data/valid_submission.yaml'
+        self.valid_empty_file = 'test_data/valid_submission_empty.yaml'
         self.invalid_file = 'test_data/invalid_submission.yaml'
 
     def test_valid_submission_yaml(self):
@@ -22,6 +23,19 @@ class SubmissionFileValidationTest(unittest.TestCase):
         self.validator = None
         self.validator = SubmissionFileValidator()
         valid_sub_yaml = os.path.join(self.base_dir, self.valid_file)
+
+        self.assertEqual(self.validator.validate(valid_sub_yaml), True)
+        self.validator.print_errors(valid_sub_yaml)
+
+        print 'Valid\n'
+
+    def test_valid_submission_yaml_with_empty_section(self):
+        print '___SUBMISSION_FILE_VALIDATION: Testing valid yaml ' \
+              'submission without main section___'
+
+        self.validator = None
+        self.validator = SubmissionFileValidator()
+        valid_sub_yaml = os.path.join(self.base_dir, self.valid_empty_file)
 
         self.assertEqual(self.validator.validate(valid_sub_yaml), True)
         self.validator.print_errors(valid_sub_yaml)
