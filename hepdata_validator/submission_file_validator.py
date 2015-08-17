@@ -29,7 +29,10 @@ class SubmissionFileValidator(Validator):
             # it supports JSON and YAML
 
             data = yaml.load_all(open(file_path, 'r'))
+
             for data_item in data:
+                if data_item is None:
+                    continue
                 try:
                     if 'comment' in data_item:
                         validate(data_item, additional_file_section_schema)
