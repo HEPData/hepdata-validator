@@ -4,6 +4,10 @@
 
 [![Coverage Status](https://coveralls.io/repos/HEPData/hepdata-validator/badge.svg?branch=master&service=github)](https://coveralls.io/github/HEPData/hepdata-validator?branch=master)
 
+[![PyPi](https://img.shields.io/pypi/dm/hepdata-validator.svg)](https://pypi.python.org/pypi/hepdata-validator/)
+
+[![License](https://img.shields.io/github/license/hepdata/hepdata-validator.svg)](https://github.com/HEPData/hepdata-validator/blob/master/LICENSE.txt)
+
 
 
 Includes the JSON Schema for submission files and code to run validations.
