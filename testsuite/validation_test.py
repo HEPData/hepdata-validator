@@ -40,7 +40,6 @@ class SubmissionFileValidationTest(unittest.TestCase):
         self.assertEqual(self.validator.validate(valid_sub_yaml), True)
         self.validator.print_errors(valid_sub_yaml)
 
-        print 'Valid\n'
 
     def test_valid_submission_yaml_with_license(self):
         print '___SUBMISSION_FILE_VALIDATION: ' \
@@ -55,8 +54,6 @@ class SubmissionFileValidationTest(unittest.TestCase):
 
         self.validator.print_errors(valid_sub_yaml)
 
-        print 'Valid\n'
-
     def test_invalid_submission_yaml(self):
         print '___SUBMISSION_FILE_VALIDATION: ' \
               'Testing invalid yaml submission___'
@@ -69,8 +66,6 @@ class SubmissionFileValidationTest(unittest.TestCase):
         )
 
         self.validator.print_errors(invalid_sub_yaml)
-
-        print 'Invalid\n'
 
 
 class DataValidationTest(unittest.TestCase):
@@ -109,7 +104,6 @@ class DataValidationTest(unittest.TestCase):
         self.assertEqual(self.validator.validate(self.valid_file_yaml),
                          True)
         self.validator.print_errors(self.valid_file_yaml)
-        print 'Valid\n'
 
     def test_invalid_yaml_file(self):
         print '___DATA_VALIDATION: Testing invalid yaml submission___'

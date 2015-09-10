@@ -20,13 +20,42 @@
             },
             "id": {
               "id": "http://jsonschema.net/record_ids/record_id/id",
-              "type": ["string", "number"]
+              "type": [
+                "string",
+                "number"
+              ]
             }
           },
           "additionalProperties": false,
           "required": [
             "type",
             "id"
+          ]
+        }
+      ]
+    },
+    "modifications": {
+      "id": "http://jsonschema.net/modifications",
+      "type": "array",
+      "items": [
+        {
+          "id": "http://jsonschema.net/modifications/modification",
+          "type": "object",
+          "properties": {
+            "action": {
+              "id": "http://jsonschema.net/modifications/modification/action",
+              "type": "string"
+            },
+
+            "who": {
+              "id": "http://jsonschema.net/modifications/modification/who",
+              "type": "string"
+            }
+          },
+          "additionalProperties": true,
+          "required": [
+            "action",
+            "who"
           ]
         }
       ]
@@ -71,7 +100,6 @@
               ]
             }
           },
-
           "required": [
             "location"
           ]
@@ -86,5 +114,5 @@
       "name": "comment"
     }
   },
-   "additionalProperties": false
+  "additionalProperties": false
 }
