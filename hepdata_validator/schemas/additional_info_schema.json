@@ -16,7 +16,9 @@
           "properties": {
             "type": {
               "id": "http://jsonschema.net/record_ids/record_id/type",
-              "type": ["string"]
+              "type": [
+                "string"
+              ]
             },
             "id": {
               "id": "http://jsonschema.net/record_ids/record_id/id",
@@ -34,6 +36,13 @@
         }
       ]
     },
+    "dateupdated": {
+      "id": "http://hepdata.org/submission/schema/data/dateupdated",
+      "type": "string",
+      "title": "Date Updated",
+      "description": "Indicates when the submission was last updated.",
+      "name": "dateupdated"
+    },
     "modifications": {
       "id": "http://jsonschema.net/modifications",
       "type": "array",
@@ -46,7 +55,6 @@
               "id": "http://jsonschema.net/modifications/modification/action",
               "type": "string"
             },
-
             "who": {
               "id": "http://jsonschema.net/modifications/modification/who",
               "type": "string"

@@ -24,7 +24,7 @@ class SubmissionFileValidationTest(unittest.TestCase):
         self.validator = SubmissionFileValidator()
         valid_sub_yaml = os.path.join(self.base_dir, self.valid_file)
 
-        self.assertEqual(self.validator.validate(valid_sub_yaml), True)
+        self.validator.validate(valid_sub_yaml)
         self.validator.print_errors(valid_sub_yaml)
 
         print 'Valid\n'

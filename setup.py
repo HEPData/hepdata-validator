@@ -49,8 +49,8 @@ class PyTest(TestCommand):
 
 setup(
     name='hepdata_validator',
-    version='0.1.6',
-    summary='0.1.6 release',
+    version='0.1.7',
+    summary='0.1.7 release',
     url='https://github.com/hepdata/hepdata-validator',
     license='GPLv2',
     author='Eamonn Maguire',
