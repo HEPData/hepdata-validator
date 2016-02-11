@@ -36,6 +36,20 @@
         }
       ]
     },
+    "preprintyear": {
+      "id": "http://hepdata.org/submission/schema/data/preprintyear",
+      "type": "string",
+      "title": "Preprint Year",
+      "description": "Indicates when the submission was last updated.",
+      "name": "preprintyear"
+    },
+    "publicationyear": {
+      "id": "http://hepdata.org/submission/schema/data/publicationyear",
+      "type": "string",
+      "title": "Publication Year",
+      "description": "Indicates when the submission was last updated.",
+      "name": "publicationyear"
+    },
     "dateupdated": {
       "id": "http://hepdata.org/submission/schema/data/dateupdated",
       "type": "string",
