@@ -40,14 +40,14 @@
       "id": "http://hepdata.org/submission/schema/data/preprintyear",
       "type": "string",
       "title": "Preprint Year",
-      "description": "Indicates when the submission was last updated.",
+      "description": "Indicates the year when the submission preprint was first available.",
       "name": "preprintyear"
     },
     "publicationyear": {
       "id": "http://hepdata.org/submission/schema/data/publicationyear",
       "type": "string",
       "title": "Publication Year",
-      "description": "Indicates when the submission was last updated.",
+      "description": "Indicates the year when the submission publication was available.",
       "name": "publicationyear"
     },
     "dateupdated": {
@@ -136,5 +136,5 @@
       "name": "comment"
     }
   },
-  "additionalProperties": false
+  "additionalProperties": true
 }
