@@ -33,10 +33,12 @@ class Validator(object):
 
         try:
             try:
-                data = yaml.load_all(open(file_path, 'r'), Loader=yaml.CLoader)
+                data = yaml.load(open(file_path, 'r'), Loader=yaml.CLoader)
             except:
                 data = yaml.load(open(file_path, 'r'))
+
             validate(data, schema)
+
         except ValidationError as ve:
             self.add_validation_message(
                 ValidationMessage(file=file_path,
