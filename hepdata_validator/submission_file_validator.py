@@ -29,8 +29,8 @@ class SubmissionFileValidator(Validator):
             try:
                 # We try to load using the CLoader for speed improvements.
                 data = yaml.load_all(open(file_path, 'r'), Loader=yaml.CLoader)
-            except:
-                data = yaml.load_all(open(file_path, 'r'))
+            except: #pragma: no cover
+                data = yaml.load_all(open(file_path, 'r')) #pragma: no cover
 
             for data_item in data:
                 if data_item is None:
@@ -50,7 +50,6 @@ class SubmissionFileValidator(Validator):
             else:
                 return True
         except ScannerError as se:
-            print(se)
             self.add_validation_message(
                     ValidationMessage(file=file_path,
                                       message='There was a problem parsing the file. '
