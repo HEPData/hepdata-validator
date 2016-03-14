@@ -29,8 +29,8 @@ class Validator(object):
         try:
             try:
                 data = yaml.load(open(file_path, 'r'), Loader=yaml.CLoader)
-            except:
-                data = yaml.load(open(file_path, 'r'))
+            except: #pragma: no cover
+                data = yaml.load(open(file_path, 'r')) #pragma: no cover
 
             validate(data, schema)
 
