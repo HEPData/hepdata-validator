@@ -3,6 +3,11 @@ from jsonschema import validate, ValidationError
 import yaml
 from yaml.parser import ParserError
 
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+    from yaml import Loader, Dumper
+
 __author__ = 'eamonnmaguire'
 
 
@@ -27,7 +32,10 @@ class Validator(object):
         schema = json.load(open(self.schema_file, 'r'))
 
         try:
-            data = yaml.load(open(file_path, 'r'))
+            try:
+                data = yaml.load_all(open(file_path, 'r'), Loader=yaml.CLoader)
+            except:
+                data = yaml.load(open(file_path, 'r'))
             validate(data, schema)
         except ValidationError as ve:
             self.add_validation_message(

@@ -5,7 +5,6 @@ import yaml
 from yaml.scanner import ScannerError
 from hepdata_validator import Validator, ValidationMessage
 
-
 __author__ = 'eamonnmaguire'
 
 
@@ -20,15 +19,18 @@ class SubmissionFileValidator(Validator):
     def validate(self, file_path):
         try:
             submission_file_schema = json.load(
-                open(self.schema_file, 'r'))
+                    open(self.schema_file, 'r'))
 
             additional_file_section_schema = json.load(
-                open(self.additonal_info_schema, 'r'))
+                    open(self.additonal_info_schema, 'r'))
 
             # even though we are using the yaml package to load,
             # it supports JSON and YAML
-
-            data = yaml.load_all(open(file_path, 'r'))
+            try:
+                # We try to load using the CLoader for speed improvements.
+                data = yaml.load_all(open(file_path, 'r'), Loader=yaml.CLoader)
+            except:
+                data = yaml.load_all(open(file_path, 'r'))
 
             for data_item in data:
                 if data_item is None:
@@ -41,8 +43,8 @@ class SubmissionFileValidator(Validator):
 
                 except ValidationError as ve:
                     self.add_validation_message(
-                        ValidationMessage(file=file_path,
-                                          message=ve.message + ' in ' + str(ve.instance)))
+                            ValidationMessage(file=file_path,
+                                              message=ve.message + ' in ' + str(ve.instance)))
             if self.has_errors(file_path):
                 return False
             else:
@@ -50,8 +52,8 @@ class SubmissionFileValidator(Validator):
         except ScannerError as se:
             print(se)
             self.add_validation_message(
-                ValidationMessage(file=file_path,
-                                  message='There was a problem parsing the file. '
-                                          'This can be because you forgot spaces '
-                                          'after colons in your YAML file for instance.')
+                    ValidationMessage(file=file_path,
+                                      message='There was a problem parsing the file. '
+                                              'This can be because you forgot spaces '
+                                              'after colons in your YAML file for instance.')
             )

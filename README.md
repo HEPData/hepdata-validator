@@ -13,6 +13,9 @@
 Includes the JSON Schema for submission files and code to run validations.
 
 ### Installation
+If you can, install libyaml on your machine. This will allow for the use of CLoader for faster loading
+of YAML files. Not a big deal for small files, but performs markedly better on larger documents.
+
 Via pip:
 ```
 pip install hepdata_validator
