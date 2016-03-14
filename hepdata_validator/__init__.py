@@ -3,11 +3,6 @@ from jsonschema import validate, ValidationError
 import yaml
 from yaml.parser import ParserError
 
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
-
 __author__ = 'eamonnmaguire'
 
 
