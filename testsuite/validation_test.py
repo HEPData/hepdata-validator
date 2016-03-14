@@ -101,9 +101,9 @@ class DataValidationTest(unittest.TestCase):
 
     def test_valid_yaml_file(self):
         print '___DATA_VALIDATION: Testing valid yaml submission___'
-        self.assertEqual(self.validator.validate(self.valid_file_yaml),
-                         True)
+        is_valid = self.validator.validate(self.valid_file_yaml)
         self.validator.print_errors(self.valid_file_yaml)
+        self.assertEqual(is_valid, True)
 
     def test_invalid_yaml_file(self):
         print '___DATA_VALIDATION: Testing invalid yaml submission___'
@@ -123,8 +123,9 @@ class DataValidationTest(unittest.TestCase):
 
     def test_valid_json_file(self):
         print '___DATA_VALIDATION: Testing valid json submission___'
-        self.assertEqual(self.validator.validate(self.valid_file_json),
-                         True)
+        is_valid = self.validator.validate(self.valid_file_json)
+        self.validator.print_errors(self.valid_file_json)
+        self.assertEqual(is_valid, True)
 
         self.validator.print_errors(self.valid_file_json)
         print 'VALID\n'
