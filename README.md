@@ -33,7 +33,7 @@ submission_file_validator = SubmissionFileValidator()
 submission_file_path = 'submission.yaml'
 
 # the validate method takes a string representing the file path. 
-is_valid_submission_file = submission_file_validator.validate(submission_file_path)
+is_valid_submission_file = submission_file_validator.validate(file_path=submission_file_path)
 
 # if there are any error messages, they are retrievable through this call
 submission_file_validator.get_messages()
@@ -47,8 +47,25 @@ from hepdata_validator.data_file_validator import DataFileValidator
 data_file_validator = DataFileValidator()
 
 # the validate method takes a string representing the file path.
-data_file_validator.validate('data.yaml')
+data_file_validator.validate(file_path='data.yaml')
 
 # if there are any error messages, they are retrievable through this call
 data_file_validator.get_messages()
+```
+
+Optionally, if you have already loaded the YAML object, then you can pass it through
+as a data object. You must also pass through the file_path since this is used as a key
+for the error message lookup map.
+
+```python
+
+from hepdata_validator.data_file_validator import DataFileValidator
+import yaml
+
+file = yaml.load(open('data.yaml', 'r'))
+data_file_validator = DataFileValidator()
+
+data_file_validator.validate(file_path='data.yaml', data=file_contents)
+
+data_file_validator.get_messages('data.yaml')
 ```

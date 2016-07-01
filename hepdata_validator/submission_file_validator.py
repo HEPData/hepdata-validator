@@ -16,7 +16,13 @@ class SubmissionFileValidator(Validator):
     schema_file = base_path + '/schemas/submission_schema.json'
     additonal_info_schema = base_path + '/schemas/additional_info_schema.json'
 
-    def validate(self, file_path):
+    def validate(self, **kwargs):
+        """
+        Validates a submission file
+        :param file_path: path to file to be loaded.
+        :param data: pre loaded YAML object (optional).
+        :return: Bool to indicate the validity of the file.
+        """
         try:
             submission_file_schema = json.load(
                     open(self.schema_file, 'r'))
@@ -26,11 +32,18 @@ class SubmissionFileValidator(Validator):
 
             # even though we are using the yaml package to load,
             # it supports JSON and YAML
-            try:
-                # We try to load using the CLoader for speed improvements.
-                data = yaml.load_all(open(file_path, 'r'), Loader=yaml.CLoader)
-            except: #pragma: no cover
-                data = yaml.load_all(open(file_path, 'r')) #pragma: no cover
+            data = kwargs.pop("data", None)
+            file_path = kwargs.pop("file_path", None)
+
+            if file_path is None:
+                raise LookupError("file_path argument must be supplied")
+
+            if data is None:
+                try:
+                    # We try to load using the CLoader for speed improvements.
+                    data = yaml.load_all(open(file_path, 'r'), Loader=yaml.CLoader)
+                except Exception as e: #pragma: no cover
+                    data = yaml.load_all(open(file_path, 'r')) #pragma: no cover
 
             for data_item in data:
                 if data_item is None:

@@ -1,5 +1,8 @@
 import os
 import unittest
+
+import yaml
+
 from hepdata_validator.data_file_validator import DataFileValidator
 from hepdata_validator.submission_file_validator import SubmissionFileValidator
 
@@ -24,7 +27,8 @@ class SubmissionFileValidationTest(unittest.TestCase):
         self.validator = SubmissionFileValidator()
         valid_sub_yaml = os.path.join(self.base_dir, self.valid_file)
 
-        self.validator.validate(valid_sub_yaml)
+        sub_yaml_obj = yaml.load_all(open(valid_sub_yaml, 'r'))
+        self.validator.validate(file_path=valid_sub_yaml, data=sub_yaml_obj)
         self.validator.print_errors(valid_sub_yaml)
 
         print 'Valid\n'
@@ -37,7 +41,7 @@ class SubmissionFileValidationTest(unittest.TestCase):
         self.validator = SubmissionFileValidator()
         valid_sub_yaml = os.path.join(self.base_dir, self.valid_empty_file)
 
-        self.assertEqual(self.validator.validate(valid_sub_yaml), True)
+        self.assertEqual(self.validator.validate(file_path=valid_sub_yaml), True)
         self.validator.print_errors(valid_sub_yaml)
 
 
@@ -50,7 +54,7 @@ class SubmissionFileValidationTest(unittest.TestCase):
         valid_sub_yaml = os.path.join(self.base_dir,
                                       self.valid_license_file)
 
-        self.assertEqual(self.validator.validate(valid_sub_yaml), True)
+        self.assertEqual(self.validator.validate(file_path=valid_sub_yaml), True)
 
         self.validator.print_errors(valid_sub_yaml)
 
@@ -62,7 +66,7 @@ class SubmissionFileValidationTest(unittest.TestCase):
         invalid_sub_yaml = os.path.join(self.base_dir, self.invalid_file)
 
         self.assertEqual(self.validator.validate(
-            invalid_sub_yaml), False
+            file_path=invalid_sub_yaml), False
         )
 
         self.validator.print_errors(invalid_sub_yaml)
@@ -101,13 +105,13 @@ class DataValidationTest(unittest.TestCase):
 
     def test_valid_yaml_file(self):
         print '___DATA_VALIDATION: Testing valid yaml submission___'
-        is_valid = self.validator.validate(self.valid_file_yaml)
+        is_valid = self.validator.validate(file_path=self.valid_file_yaml)
         self.validator.print_errors(self.valid_file_yaml)
         self.assertEqual(is_valid, True)
 
     def test_invalid_yaml_file(self):
         print '___DATA_VALIDATION: Testing invalid yaml submission___'
-        self.assertEqual(self.validator.validate(self.invalid_file_yaml),
+        self.assertEqual(self.validator.validate(file_path=self.invalid_file_yaml),
                          False)
 
         self.validator.print_errors(self.invalid_file_yaml)
@@ -116,14 +120,14 @@ class DataValidationTest(unittest.TestCase):
 
     def test_valid_file_with_percent_errors(self):
         print '___DATA_VALIDATION: Testing valid yaml percent error ___'
-        self.assertEqual(self.validator.validate(self.valid_file_error_percent_yaml),
+        self.assertEqual(self.validator.validate(file_path=self.valid_file_error_percent_yaml),
                          False)
         self.validator.print_errors(self.valid_file_error_percent_yaml)
         print 'Invalid\n'
 
     def test_valid_json_file(self):
         print '___DATA_VALIDATION: Testing valid json submission___'
-        is_valid = self.validator.validate(self.valid_file_json)
+        is_valid = self.validator.validate(file_path=self.valid_file_json)
         self.validator.print_errors(self.valid_file_json)
         self.assertEqual(is_valid, True)
 
@@ -132,7 +136,7 @@ class DataValidationTest(unittest.TestCase):
 
     def test_invalid_json_file(self):
         print '___DATA_VALIDATION: Testing invalid json submission___'
-        self.assertEqual(self.validator.validate(self.invalid_file_json),
+        self.assertEqual(self.validator.validate(file_path=self.invalid_file_json),
                          False)
         self.validator.print_errors(self.invalid_file_json)
         print 'Invalid\n'

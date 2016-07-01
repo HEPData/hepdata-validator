@@ -18,20 +18,26 @@ class Validator(object):
     def __init__(self):
         self.messages = {}
 
-    def validate(self, file_path):
+    def validate(self, **kwargs):
         """
         Validates a file.
         :param file_path: path to file to be loaded.
+        :param data: pre loaded YAML object (optional).
         :return: true if valid, false otherwise
         """
         schema = json.load(open(self.schema_file, 'r'))
 
-        try:
+        data = kwargs.pop("data", None)
+        file_path = kwargs.pop("file_path", None)
+
+        if data is None:
+
             try:
                 data = yaml.load(open(file_path, 'r'), Loader=yaml.CLoader)
             except: #pragma: no cover
                 data = yaml.load(open(file_path, 'r')) #pragma: no cover
 
+        try:
             validate(data, schema)
 
         except ValidationError as ve:
