@@ -37,6 +37,9 @@ is_valid_submission_file = submission_file_validator.validate(file_path=submissi
 
 # if there are any error messages, they are retrievable through this call
 submission_file_validator.get_messages()
+
+# the error messages can be printed
+submission_file_validator.print_errors(submission_file_path)
 ```
 
 Data file validation is exactly the same.
@@ -51,6 +54,9 @@ data_file_validator.validate(file_path='data.yaml')
 
 # if there are any error messages, they are retrievable through this call
 data_file_validator.get_messages()
+
+# the error messages can be printed
+data_file_validator.print_errors('data.yaml')
 ```
 
 Optionally, if you have already loaded the YAML object, then you can pass it through

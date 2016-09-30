@@ -65,7 +65,8 @@ class SubmissionFileValidator(Validator):
         except ScannerError as se:
             self.add_validation_message(
                     ValidationMessage(file=file_path,
-                                      message='There was a problem parsing the file. '
+                                      message='There was a problem parsing the file.  '
                                               'This can be because you forgot spaces '
-                                              'after colons in your YAML file for instance.')
+                                              'after colons in your YAML file for instance.  '
+                                              'Diagnostic information follows.\n' + str(se))
             )
