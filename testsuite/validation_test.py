@@ -103,6 +103,11 @@ class DataValidationTest(unittest.TestCase):
             'test_data/valid_data_with_error.yaml'
         )
 
+        self.invalid_data_yaml = os.path.join(
+            self.base_dir,
+            'test_data/invalid_data.yaml'
+        )
+
     def test_valid_yaml_file(self):
         print '___DATA_VALIDATION: Testing valid yaml submission___'
         is_valid = self.validator.validate(file_path=self.valid_file_yaml)
@@ -139,6 +144,13 @@ class DataValidationTest(unittest.TestCase):
         self.assertEqual(self.validator.validate(file_path=self.invalid_file_json),
                          False)
         self.validator.print_errors(self.invalid_file_json)
+        print 'Invalid\n'
+
+    def test_invalid_data_file(self):
+        print '___DATA_VALIDATION: Testing invalid data file___'
+        self.assertEqual(self.validator.validate(file_path=self.invalid_data_yaml),
+                         False)
+        self.validator.print_errors(self.invalid_data_yaml)
         print 'Invalid\n'
 
 
