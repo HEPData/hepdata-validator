@@ -1,6 +1,7 @@
 import json
 from jsonschema import validate, ValidationError
 import yaml
+from yaml.scanner import ScannerError
 from yaml.parser import ParserError
 
 from .version import __version__
@@ -35,9 +36,17 @@ class Validator(object):
         if data is None:
 
             try:
-                data = yaml.load(open(file_path, 'r'), Loader=yaml.CLoader)
-            except:  # pragma: no cover
-                data = yaml.load(open(file_path, 'r'))  # pragma: no cover
+                try:
+                    data = yaml.load(open(file_path, 'r'), Loader=yaml.CLoader)
+                except ScannerError as se:
+                    self.add_validation_message(ValidationMessage(file=file_path, message=str(se)))
+                    return False
+            except: #pragma: no cover
+                try: #pragma: no cover
+                    data = yaml.load(open(file_path, 'r')) #pragma: no cover
+                except ScannerError as se: #pragma: no cover
+                    self.add_validation_message(ValidationMessage(file=file_path, message=str(se))) #pragma: no cover
+                    return False #pragma: no cover
 
         try:
             validate(data, schema)
