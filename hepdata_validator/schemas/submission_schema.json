@@ -50,6 +50,14 @@
       "id": "http://jsonschema.net/data_file",
       "type": "string"
     },
+    "group": {
+      "id": "http://jsonschema.net/group",
+      "description": "It is possible to group data records together using a string or number. This can be used to conceptually linked data tables together (e.g. multiple records can correspond to the same overall plot)",
+      "type": [
+        "string",
+        "number"
+      ]
+    },
     "license": {
       "id": "http://jsonschema.net/data_file/license",
       "type": "object",
@@ -88,6 +96,10 @@
               "id": "http://jsonschema.net/additional_resources/resource/description",
               "type": "string"
             },
+            "type": {
+              "id": "http://jsonschema.net/additional_resources/resource/type",
+              "type": "string"
+            },
             "license": {
               "id": "http://jsonschema.net/additional_resources/resource/license",
               "type": "object",
@@ -116,12 +128,48 @@
           ]
         }
       ]
+    },
+    "associated_records": {
+      "id": "http://jsonschema.net/associated_records",
+      "type": "array",
+      "description": "Links to other HEPData Submissions or INSPIRE Records that relate to this submission.",
+      "items": [
+        {
+          "id": "http://jsonschema.net/associated_records/output",
+          "type": "object",
+          "properties": {
+            "type": {
+              "id": "http://jsonschema.net/associated_records/output/type",
+              "type": "string"
+            },
+            "identifier": {
+              "id": "http://jsonschema.net/associated_records/output/identifier",
+              "type": [
+                "string",
+                "number"
+              ]
+            },
+            "description": {
+              "id": "http://jsonschema.net/associated_records/output/description",
+              "type": "string"
+            },
+            "url": {
+              "id": "http://jsonschema.net/associated_records/output/url",
+              "type": "string"
+            }
+          },
+          "required": [
+            "identifier",
+            "type"
+          ]
+        }
+      ]
     }
   },
-    "required": [
-      "name",
-      "description",
-      "keywords",
-      "data_file"
-    ]
+  "required": [
+    "name",
+    "description",
+    "keywords",
+    "data_file"
+  ]
 }

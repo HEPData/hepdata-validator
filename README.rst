@@ -27,8 +27,6 @@ HEPData is built upon Invenio 3 and is open source and free to use!
 * Documentation: http://hepdata-validator.readthedocs.io/
 
 
-
-
 Installation
 ------------
 

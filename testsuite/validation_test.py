@@ -3,10 +3,8 @@ import unittest
 
 import yaml
 
-from hepdata_validator.data_file_validator import DataFileValidator
+from hepdata_validator.data_file_validator import DataFileValidator, UnsupportedDataSchemaException
 from hepdata_validator.submission_file_validator import SubmissionFileValidator
-
-__author__ = 'eamonnmaguire'
 
 
 class SubmissionFileValidationTest(unittest.TestCase):
@@ -17,8 +15,10 @@ class SubmissionFileValidationTest(unittest.TestCase):
 
         self.valid_license_file = 'test_data/valid_submission_license.yaml'
         self.valid_file = 'test_data/valid_submission.yaml'
+        self.valid_file_with_associated_records = 'test_data/valid_submission_with_associated_record.yaml'
         self.valid_empty_file = 'test_data/valid_submission_empty.yaml'
         self.invalid_file = 'test_data/invalid_submission.yaml'
+        self.invalid_syntax_file = 'test_data/invalid_syntax_submission.yaml'
 
     def test_valid_submission_yaml(self):
         print '___SUBMISSION_FILE_VALIDATION: Testing valid yaml submission___'
@@ -31,7 +31,40 @@ class SubmissionFileValidationTest(unittest.TestCase):
         self.validator.validate(file_path=valid_sub_yaml, data=sub_yaml_obj)
         self.validator.print_errors(valid_sub_yaml)
 
-        print 'Valid\n'
+    def test_no_file_path_supplied(self):
+        self.validator = SubmissionFileValidator()
+        try:
+            self.validator.validate(file_path=None)
+        except LookupError as le:
+            assert (le)
+
+    def test_invalid_syntax(self):
+        self.validator = SubmissionFileValidator()
+        invalid_syntax_file = os.path.join(self.base_dir, self.invalid_syntax_file)
+
+        self.assertFalse(self.validator.validate(file_path=invalid_syntax_file))
+
+        self.assertTrue(self.validator.has_errors(invalid_syntax_file))
+        self.assertTrue(len(self.validator.get_messages(invalid_syntax_file)) == 1)
+        self.validator.print_errors(invalid_syntax_file)
+        for message in self.validator.get_messages(invalid_syntax_file):
+            print message.message
+            self.assertTrue(message.message.index("There was a problem parsing the file.") == 0)
+
+        self.assertTrue(len(self.validator.get_messages()) == 1)
+        self.validator.clear_messages()
+        self.assertTrue(len(self.validator.get_messages()) == 0)
+
+    def test_valid_submission_yaml_with_associated_records(self):
+        print '___SUBMISSION_FILE_VALIDATION: Testing valid yaml submission with associated records___'
+
+        self.validator = None
+        self.validator = SubmissionFileValidator()
+        valid_sub_yaml = os.path.join(self.base_dir, self.valid_file_with_associated_records)
+
+        self.assertTrue(self.validator.validate(file_path=valid_sub_yaml))
+        self.assertTrue(not self.validator.has_errors(valid_sub_yaml))
+        self.validator.print_errors(valid_sub_yaml)
 
     def test_valid_submission_yaml_with_empty_section(self):
         print '___SUBMISSION_FILE_VALIDATION: Testing valid yaml ' \
@@ -43,7 +76,6 @@ class SubmissionFileValidationTest(unittest.TestCase):
 
         self.assertEqual(self.validator.validate(file_path=valid_sub_yaml), True)
         self.validator.print_errors(valid_sub_yaml)
-
 
     def test_valid_submission_yaml_with_license(self):
         print '___SUBMISSION_FILE_VALIDATION: ' \
@@ -103,10 +135,14 @@ class DataValidationTest(unittest.TestCase):
             'test_data/valid_data_with_error.yaml'
         )
 
-        self.invalid_data_yaml = os.path.join(
+        self.invalid_syntax_data_file = os.path.join(
             self.base_dir,
-            'test_data/invalid_data.yaml'
+            'test_data/invalid_data_file.yaml'
         )
+
+        self.valid_custom_file = os.path.join(
+            self.base_dir,
+            'test_data/valid_file_custom.yaml')
 
     def test_valid_yaml_file(self):
         print '___DATA_VALIDATION: Testing valid yaml submission___'
@@ -120,15 +156,12 @@ class DataValidationTest(unittest.TestCase):
                          False)
 
         self.validator.print_errors(self.invalid_file_yaml)
-        print 'Invalid\n'
-
 
     def test_valid_file_with_percent_errors(self):
         print '___DATA_VALIDATION: Testing valid yaml percent error ___'
         self.assertEqual(self.validator.validate(file_path=self.valid_file_error_percent_yaml),
                          False)
         self.validator.print_errors(self.valid_file_error_percent_yaml)
-        print 'Invalid\n'
 
     def test_valid_json_file(self):
         print '___DATA_VALIDATION: Testing valid json submission___'
@@ -137,21 +170,42 @@ class DataValidationTest(unittest.TestCase):
         self.assertEqual(is_valid, True)
 
         self.validator.print_errors(self.valid_file_json)
-        print 'VALID\n'
 
     def test_invalid_json_file(self):
         print '___DATA_VALIDATION: Testing invalid json submission___'
         self.assertEqual(self.validator.validate(file_path=self.invalid_file_json),
                          False)
         self.validator.print_errors(self.invalid_file_json)
-        print 'Invalid\n'
 
-    def test_invalid_data_file(self):
-        print '___DATA_VALIDATION: Testing invalid data file___'
-        self.assertEqual(self.validator.validate(file_path=self.invalid_data_yaml),
-                         False)
-        self.validator.print_errors(self.invalid_data_yaml)
-        print 'Invalid\n'
+    def test_load_data_with_custom_data_type(self):
+        self.validator = DataFileValidator()
+        custom_schema_path = os.path.join(self.base_dir, 'test_data/custom_data_schema.json')
+        self.validator.load_custom_schema('different', custom_schema_path)
+
+        self.assertTrue('different' in self.validator.custom_data_schemas)
+
+        self.assertTrue(self.validator.validate(file_path=self.valid_custom_file))
+
+    def test_load_invalid_custom_schema(self):
+        self.validator.custom_data_schemas = {}
+        print('Loading invalid schema')
+        try:
+            self.validator.load_custom_schema('different')
+        except UnsupportedDataSchemaException as udse:
+            self.assertTrue(udse.message == "There is no schema defined for the 'different' data type.")
+            self.assertTrue(udse.message == udse.__unicode__())
+
+    def test_load_invalid_data_file(self):
+
+        print('Loading invalid data file')
+
+        self.assertFalse(self.validator.validate(file_path=self.invalid_syntax_data_file))
+
+        self.assertTrue(self.validator.has_errors(self.invalid_syntax_data_file))
+        self.assertTrue(len(self.validator.get_messages(self.invalid_syntax_data_file)) == 1)
+        self.validator.print_errors(self.invalid_syntax_data_file)
+        for message in self.validator.get_messages(self.invalid_syntax_data_file):
+            self.assertTrue(message.message.index("There was a problem parsing the file.") == 0)
 
 
 if __name__ == '__main__':

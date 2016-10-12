@@ -3,7 +3,7 @@
   "id": "http://hepdata.org/submission/schema/additional_info",
   "type": "object",
   "title": "This section is optional for the provision of information about the overall submission.",
-  "description": "An explanation about the puropose of this instance described by this schema.",
+  "description": "An explanation about the purpose of this instance described by this schema.",
   "name": "/",
   "properties": {
     "record_ids": {
@@ -124,6 +124,42 @@
           },
           "required": [
             "location"
+          ]
+        }
+      ]
+    },
+    "associated_records": {
+      "id": "http://jsonschema.net/associated_records",
+      "type": "array",
+      "description": "Links to other HEPData Submissions or INSPIRE Records that relate to this submission.",
+      "items": [
+        {
+          "id": "http://jsonschema.net/associated_records/output",
+          "type": "object",
+          "properties": {
+            "type": {
+              "id": "http://jsonschema.net/associated_records/output/type",
+              "type": "string"
+            },
+            "identifier": {
+              "id": "http://jsonschema.net/associated_records/output/identifier",
+              "type": [
+                "string",
+                "number"
+              ]
+            },
+            "description": {
+              "id": "http://jsonschema.net/associated_records/output/description",
+              "type": "string"
+            },
+            "url": {
+              "id": "http://jsonschema.net/associated_records/output/url",
+              "type": "string"
+            }
+          },
+          "required": [
+            "identifier",
+            "type"
           ]
         }
       ]
