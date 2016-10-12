@@ -11,6 +11,12 @@
 .. image:: https://img.shields.io/github/license/HEPData/hepdata-validator.svg
     :target: https://github.com/HEPData/hepdata-validator/blob/master/LICENSE
 
+.. image:: https://img.shields.io/github/release/hepdata/hepdata-validator.svg?maxAge=2592000
+    :target: https://github.com/HEPData/hepdata-validator/releases
+
+.. image:: https://img.shields.io/github/issues/hepdata/hepdata-validator.svg?maxAge=2592000
+    :target: https://github.com/HEPData/hepdata-validator/issues
+
 .. image:: https://readthedocs.org/projects/hepdata-validator/badge/?version=latest
     :target: http://hepdata-validator.readthedocs.io/
 
@@ -25,8 +31,6 @@ HEPData is built upon Invenio 3 and is open source and free to use!
 * Free software: GPLv2 license
 
 * Documentation: http://hepdata-validator.readthedocs.io/
-
-
 
 
 Installation

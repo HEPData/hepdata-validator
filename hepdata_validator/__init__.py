@@ -1,8 +1,28 @@
-import json
-from jsonschema import validate, ValidationError
-import yaml
-from yaml.scanner import ScannerError
-from yaml.parser import ParserError
+# -*- coding: utf-8 -*-
+#
+# This file is part of HEPData.
+# Copyright (C) 2016 CERN.
+#
+# HEPData is free software; you can redistribute it
+# and/or modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of the
+# License, or (at your option) any later version.
+#
+# HEPData is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with HEPData; if not, write to the
+# Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+# MA 02111-1307, USA.
+#
+# In applying this license, CERN does not
+# waive the privileges and immunities granted to it by virtue of its status
+# as an Intergovernmental Organization or submit itself to any jurisdiction.
+
+import abc
 
 from .version import __version__
 
@@ -15,12 +35,17 @@ class Validator(object):
     which validates schema files created with the
     JSONschema syntax http://json-schema.org/
     """
-    messages = {}
-    schema_file = ''
+    __metaclass__ = abc.ABCMeta
 
-    def __init__(self):
+    messages = {}
+    default_schema_file = ''
+
+    def __init__(self, *args, **kwargs):
         self.messages = {}
 
+        self.schemas = kwargs.get('schemas', {})
+
+    @abc.abstractmethod
     def validate(self, **kwargs):
         """
         Validates a file.
@@ -28,41 +53,6 @@ class Validator(object):
         :param data: pre loaded YAML object (optional).
         :return: true if valid, false otherwise
         """
-        schema = json.load(open(self.schema_file, 'r'))
-
-        data = kwargs.pop("data", None)
-        file_path = kwargs.pop("file_path", None)
-
-        if data is None:
-
-            try:
-                try:
-                    data = yaml.load(open(file_path, 'r'), Loader=yaml.CLoader)
-                except ScannerError as se:
-                    self.add_validation_message(ValidationMessage(file=file_path, message=str(se)))
-                    return False
-            except: #pragma: no cover
-                try: #pragma: no cover
-                    data = yaml.load(open(file_path, 'r')) #pragma: no cover
-                except ScannerError as se: #pragma: no cover
-                    self.add_validation_message(ValidationMessage(file=file_path, message=str(se))) #pragma: no cover
-                    return False #pragma: no cover
-
-        try:
-            validate(data, schema)
-
-        except ValidationError as ve:
-            self.add_validation_message(
-                ValidationMessage(file=file_path,
-                                  message="{} in {}".format(ve.message, ve.instance)))
-            return False
-        except ParserError as pe:
-            self.add_validation_message(
-                ValidationMessage(file=file_path,
-                                  message=pe.__str__()))
-            return False
-
-        return True
 
     def has_errors(self, file_name):
         """
@@ -131,11 +121,3 @@ class ValidationMessage(object):
 
     def __unicode__(self):
         return self.level + ' - ' + self.message
-
-
-class UnsupportedDataSchemaException(Exception):
-    def __init__(self, message=''):
-        self.message = message
-
-    def __unicode__(self):
-        return self.message

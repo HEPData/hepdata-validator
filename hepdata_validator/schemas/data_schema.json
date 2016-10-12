@@ -3,6 +3,10 @@
   "id": "http://hepdata.org/submission/schema/data",
   "type": "object",
   "properties": {
+    "type": {
+      "id": "http://jsonschema.net/data_file",
+      "type": "string"
+    },
     "independent_variables": {
       "id": "http://hepdata.org/submission/schema/data/independent_variables",
       "type": "array",
@@ -37,7 +41,10 @@
               "properties": {
                 "value": {
                   "id": "http://hepdata.org/submission/schema/data/independent_variables/0/values/1/value",
-                  "type": ["string","number"]
+                  "type": [
+                    "string",
+                    "number"
+                  ]
                 },
                 "low": {
                   "id": "http://hepdata.org/submission/schema/data/independent_variables/0/values/1/value",
@@ -105,7 +112,6 @@
                     "number"
                   ]
                 },
-
                 "units": {
                   "id": "http://hepdata.org/submission/schema/data/dependent_variables/axis/qualifiers/qualifier/name",
                   "type": "string"
@@ -127,7 +133,10 @@
               "properties": {
                 "value": {
                   "id": "http://hepdata.org/submission/schema/data/dependent_variables/axis/values/point/value/value",
-                  "type": ["string","number"]
+                  "type": [
+                    "string",
+                    "number"
+                  ]
                 },
                 "errors": {
                   "id": "http://hepdata.org/submission/schema/data/dependent_variables/axis/values/point/value/errors",
@@ -138,7 +147,10 @@
                     "properties": {
                       "symerror": {
                         "id": "http://hepdata.org/submission/schema/data/dependent_variables/axis/values/point/value/errors/error/symerror",
-                        "type": ["number", "string"]
+                        "type": [
+                          "number",
+                          "string"
+                        ]
                       },
                       "asymerror": {
                         "id": "http://hepdata.org/submission/schema/data/dependent_variables/axis/values/point/value/errors/error/asymerror",
@@ -146,11 +158,17 @@
                         "properties": {
                           "minus": {
                             "id": "http://hepdata.org/submission/schema/data/dependent_variables/axis/values/point/value/errors/error/asymerror/minus",
-                            "type": ["number", "string"]
+                            "type": [
+                              "number",
+                              "string"
+                            ]
                           },
                           "plus": {
                             "id": "http://hepdata.org/submission/schema/data/dependent_variables/axis/values/point/value/errors/error/asymerror/plus",
-                            "type": ["number", "string"]
+                            "type": [
+                              "number",
+                              "string"
+                            ]
                           }
                         }
                       },

@@ -13,7 +13,7 @@ class SubmissionFileValidator(Validator):
     Validates the Submission file YAML/JSON file
     """
     base_path = os.path.dirname(__file__)
-    schema_file = base_path + '/schemas/submission_schema.json'
+    default_schema_file = base_path + '/schemas/submission_schema.json'
     additonal_info_schema = base_path + '/schemas/additional_info_schema.json'
 
     def validate(self, **kwargs):
@@ -25,7 +25,7 @@ class SubmissionFileValidator(Validator):
         """
         try:
             submission_file_schema = json.load(
-                    open(self.schema_file, 'r'))
+                    open(self.default_schema_file, 'r'))
 
             additional_file_section_schema = json.load(
                     open(self.additonal_info_schema, 'r'))
@@ -58,6 +58,7 @@ class SubmissionFileValidator(Validator):
                     self.add_validation_message(
                             ValidationMessage(file=file_path,
                                               message=ve.message + ' in ' + str(ve.instance)))
+
             if self.has_errors(file_path):
                 return False
             else:
@@ -70,3 +71,4 @@ class SubmissionFileValidator(Validator):
                                               'after colons in your YAML file for instance.  '
                                               'Diagnostic information follows.\n' + str(se))
             )
+            return False
