@@ -1,4 +1,6 @@
 import sys
+
+import os
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
@@ -11,6 +13,10 @@ test_requirements = [
     'pytest-pep8>=1.0.6',
     'coverage>=3.7.1',
 ]
+
+extras_require = {'docs': ['Sphinx>=1.4.2'],
+                  'tests': test_requirements,
+                  'all': []}
 
 
 class PyTest(TestCommand):
@@ -47,10 +53,15 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
+g = {}
+with open(os.path.join('hepdata_validator', 'version.py'), 'rt') as fp:
+    exec (fp.read(), g)
+    version = g['__version__']
+
 setup(
     name='hepdata_validator',
-    version='0.1.10',
-    summary='0.1.10 release',
+    version=version,
+    summary='{0} release'.format(version),
     url='https://github.com/hepdata/hepdata-validator',
     license='GPLv2',
     author='Eamonn Maguire',
@@ -62,7 +73,7 @@ setup(
     packages=["hepdata_validator"],
     zip_safe=False,
     platforms='any',
-
+    extras_require=extras_require,
     install_requires=[
         "pyyaml",
         "jsonschema"

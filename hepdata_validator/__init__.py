@@ -3,7 +3,9 @@ from jsonschema import validate, ValidationError
 import yaml
 from yaml.parser import ParserError
 
-__author__ = 'eamonnmaguire'
+from .version import __version__
+
+__all__ = ('__version__', )
 
 
 class Validator(object):
@@ -34,8 +36,8 @@ class Validator(object):
 
             try:
                 data = yaml.load(open(file_path, 'r'), Loader=yaml.CLoader)
-            except: #pragma: no cover
-                data = yaml.load(open(file_path, 'r')) #pragma: no cover
+            except:  # pragma: no cover
+                data = yaml.load(open(file_path, 'r'))  # pragma: no cover
 
         try:
             validate(data, schema)
@@ -120,3 +122,11 @@ class ValidationMessage(object):
 
     def __unicode__(self):
         return self.level + ' - ' + self.message
+
+
+class UnsupportedDataSchemaException(Exception):
+    def __init__(self, message=''):
+        self.message = message
+
+    def __unicode__(self):
+        return self.message
