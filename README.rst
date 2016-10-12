@@ -3,13 +3,13 @@
 ==================
 
 .. image:: https://img.shields.io/travis/HEPData/hepdata-validator.svg
-    :target: https://travis-ci.org/HEPData/hepdata
+    :target: https://travis-ci.org/HEPData/hepdata-validator
 
 .. image:: https://coveralls.io/repos/github/HEPData/hepdata-validator/badge.svg?branch=master
-    :target: https://coveralls.io/github/HEPData/hepdata?branch=master
+    :target: https://coveralls.io/github/HEPData/hepdata-validator?branch=master
 
 .. image:: https://img.shields.io/github/license/HEPData/hepdata-validator.svg
-    :target: https://github.com/HEPData/hepdata/blob/master/LICENSE
+    :target: https://github.com/HEPData/hepdata-validator/blob/master/LICENSE
 
 .. image:: https://readthedocs.org/projects/hepdata-validator/badge/?version=latest
     :target: http://hepdata-validator.readthedocs.io/
