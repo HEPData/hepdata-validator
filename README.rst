@@ -59,7 +59,7 @@ To validate files, you need to instantiate a validator (I love OO).
     
     # if there are any error messages, they are retrievable through this call
     submission_file_validator.get_messages()
-    ```
+
     
 Data file validation is exactly the same.
 
