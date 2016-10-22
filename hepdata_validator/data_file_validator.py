@@ -66,41 +66,62 @@ class DataFileValidator(Validator):
             raise UnsupportedDataSchemaException(
                 message="There is no schema defined for the '{0}' data type.".format(type))
 
-    def validate(self, file_path):
-        try:
-            default_data_schema = json.load(
-                open(self.default_schema_file, 'r'))
+    def validate(self, **kwargs):
+        """
+        Validates a data file
+
+        :param file_path: path to file to be loaded.
+        :param data: pre loaded YAML object (optional).
+        :return: Bool to indicate the validity of the file.
+        """
+
+        default_data_schema = json.load(open(self.default_schema_file, 'r'))
+
+        # even though we are using the yaml package to load,
+        # it supports JSON and YAML
+        data = kwargs.pop("data", None)
+        file_path = kwargs.pop("file_path", None)
+
+        if file_path is None:
+            raise LookupError("file_path argument must be supplied")
+
+        if data is None:
 
             try:
-                data = yaml.load_all(open(file_path, 'r'), Loader=yaml.CLoader)
-            except: #pragma: no cover
-                data = yaml.load_all(open(file_path, 'r')) #pragma: no cover
-
-            for data_item in data:
-                if data_item is None:
-                    continue
+                # We try to load using the CLoader for speed improvements.
                 try:
-                    if 'type' in data_item:
-                        custom_schema = self.load_custom_schema(data_item['type'])
-                        json_validate(data_item, custom_schema)
-                    else:
-                        json_validate(data_item, default_data_schema)
-
-                except ValidationError as ve:
+                    data = yaml.load(open(file_path, 'r'), Loader=yaml.CLoader)
+                except ScannerError as se:
+                    self.add_validation_message(ValidationMessage(file=file_path, message=
+                    'There was a problem parsing the file.\n' + str(se)))
+                    return False
+            except: #pragma: no cover
+                try:  # pragma: no cover
+                    data = yaml.load(open(file_path, 'r'))  # pragma: no cover
+                except ScannerError as se:  # pragma: no cover
                     self.add_validation_message(
-                        ValidationMessage(file=file_path,
-                                          message=ve.message + ' in ' + str(ve.instance)))
-            if self.has_errors(file_path):
-                return False
+                        ValidationMessage(file=file_path, message=
+                    'There was a problem parsing the file.\n' + str(se))) # pragma: no cover
+                    return False
+
+        try:
+
+            if 'type' in data:
+                custom_schema = self.load_custom_schema(data['type'])
+                json_validate(data, custom_schema)
             else:
-                return True
-        except ScannerError as se:
+                json_validate(data, default_data_schema)
+
+        except ValidationError as ve:
+
             self.add_validation_message(
                 ValidationMessage(file=file_path,
-                                  message='There was a problem parsing the file. '
-                                          'This can be because you forgot spaces '
-                                          'after colons in your YAML file for instance.\n{0}'.format(se.__repr__()))
-            )
+                                    message=ve.message + ' in ' + str(ve.instance)))
+
+        if self.has_errors(file_path):
+            return False
+        else:
+            return True
 
 
 class UnsupportedDataSchemaException(Exception):

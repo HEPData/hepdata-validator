@@ -14,21 +14,20 @@ class SubmissionFileValidator(Validator):
     """
     base_path = os.path.dirname(__file__)
     default_schema_file = base_path + '/schemas/submission_schema.json'
-    additonal_info_schema = base_path + '/schemas/additional_info_schema.json'
+    additional_info_schema = base_path + '/schemas/additional_info_schema.json'
 
     def validate(self, **kwargs):
         """
         Validates a submission file
+
         :param file_path: path to file to be loaded.
         :param data: pre loaded YAML object (optional).
         :return: Bool to indicate the validity of the file.
         """
         try:
-            submission_file_schema = json.load(
-                    open(self.default_schema_file, 'r'))
+            submission_file_schema = json.load(open(self.default_schema_file, 'r'))
 
-            additional_file_section_schema = json.load(
-                    open(self.additonal_info_schema, 'r'))
+            additional_file_section_schema = json.load(open(self.additional_info_schema, 'r'))
 
             # even though we are using the yaml package to load,
             # it supports JSON and YAML
@@ -57,18 +56,18 @@ class SubmissionFileValidator(Validator):
                 except ValidationError as ve:
                     self.add_validation_message(
                             ValidationMessage(file=file_path,
-                                              message=ve.message + ' in ' + str(ve.instance)))
+                                                message=ve.message + ' in ' + str(ve.instance)))
 
             if self.has_errors(file_path):
                 return False
             else:
                 return True
-        except ScannerError as se:
-            self.add_validation_message(
-                    ValidationMessage(file=file_path,
-                                      message='There was a problem parsing the file.  '
-                                              'This can be because you forgot spaces '
-                                              'after colons in your YAML file for instance.  '
-                                              'Diagnostic information follows.\n' + str(se))
-            )
+
+        except ScannerError as se:  # pragma: no cover
+            self.add_validation_message(  # pragma: no cover
+                ValidationMessage(file=file_path, message=
+                    'There was a problem parsing the file.  '
+                    'This can be because you forgot spaces '
+                    'after colons in your YAML file for instance.  '
+                    'Diagnostic information follows.\n' + str(se)))
             return False
