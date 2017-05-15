@@ -3,6 +3,7 @@ from jsonschema import validate, ValidationError
 import os
 import yaml
 from yaml.scanner import ScannerError
+from yaml.parser import ParserError
 from hepdata_validator import Validator, ValidationMessage
 
 __author__ = 'eamonnmaguire'
@@ -48,7 +49,7 @@ class SubmissionFileValidator(Validator):
                 if data_item is None:
                     continue
                 try:
-                    if 'comment' in data_item:
+                    if 'name' not in data_item:
                         validate(data_item, additional_file_section_schema)
                     else:
                         validate(data_item, submission_file_schema)
@@ -70,4 +71,12 @@ class SubmissionFileValidator(Validator):
                     'This can be because you forgot spaces '
                     'after colons in your YAML file for instance.  '
                     'Diagnostic information follows.\n' + str(se)))
+            return False
+
+        except ParserError as pe:
+            self.add_validation_message(ValidationMessage(file=file_path, message=pe.__str__()))
+            return False
+
+        except IOError as ioe:
+            self.add_validation_message(ValidationMessage(file=file_path, message=ioe.__str__()))
             return False

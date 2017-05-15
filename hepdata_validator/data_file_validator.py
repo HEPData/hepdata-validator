@@ -27,6 +27,7 @@ import json
 import os
 import yaml
 from yaml.scanner import ScannerError
+from yaml.parser import ParserError
 
 from hepdata_validator import Validator, ValidationMessage
 from jsonschema import validate as json_validate, ValidationError
@@ -95,13 +96,28 @@ class DataFileValidator(Validator):
                     self.add_validation_message(ValidationMessage(file=file_path, message=
                     'There was a problem parsing the file.\n' + str(se)))
                     return False
+                except ParserError as pe:
+                    self.add_validation_message(ValidationMessage(file=file_path, message=
+                    'There was a problem parsing the file.\n' + pe.__str__()))
+                    return False
+                except IOError as ioe:
+                    self.add_validation_message(ValidationMessage(file=file_path, message=
+                    'There was a problem parsing the file.\n' + ioe.__str__()))
+                    return False
             except: #pragma: no cover
                 try:  # pragma: no cover
                     data = yaml.load(open(file_path, 'r'))  # pragma: no cover
                 except ScannerError as se:  # pragma: no cover
-                    self.add_validation_message(
-                        ValidationMessage(file=file_path, message=
+                    self.add_validation_message(ValidationMessage(file=file_path, message=
                     'There was a problem parsing the file.\n' + str(se))) # pragma: no cover
+                    return False
+                except ParserError as pe:  # pragma: no cover
+                    self.add_validation_message(ValidationMessage(file=file_path, message=
+                    'There was a problem parsing the file.\n' + pe.__str__()))
+                    return False
+                except IOError as ioe:
+                    self.add_validation_message(ValidationMessage(file=file_path, message=
+                    'There was a problem parsing the file.\n' + ioe.__str__()))
                     return False
 
         try:
