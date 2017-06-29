@@ -26,8 +26,12 @@ import json
 
 import os
 import yaml
-from yaml.scanner import ScannerError
-from yaml.parser import ParserError
+
+# We try to load using the CSafeLoader for speed improvements.
+try:
+    from yaml import CSafeLoader as Loader
+except ImportError: #pragma: no cover
+    from yaml import SafeLoader as Loader #pragma: no cover
 
 from hepdata_validator import Validator, ValidationMessage
 from jsonschema import validate as json_validate, ValidationError
@@ -89,36 +93,11 @@ class DataFileValidator(Validator):
         if data is None:
 
             try:
-                # We try to load using the CLoader for speed improvements.
-                try:
-                    data = yaml.load(open(file_path, 'r'), Loader=yaml.CLoader)
-                except ScannerError as se:
-                    self.add_validation_message(ValidationMessage(file=file_path, message=
-                    'There was a problem parsing the file.\n' + str(se)))
-                    return False
-                except ParserError as pe:
-                    self.add_validation_message(ValidationMessage(file=file_path, message=
-                    'There was a problem parsing the file.\n' + pe.__str__()))
-                    return False
-                except IOError as ioe:
-                    self.add_validation_message(ValidationMessage(file=file_path, message=
-                    'There was a problem parsing the file.\n' + ioe.__str__()))
-                    return False
-            except: #pragma: no cover
-                try:  # pragma: no cover
-                    data = yaml.load(open(file_path, 'r'))  # pragma: no cover
-                except ScannerError as se:  # pragma: no cover
-                    self.add_validation_message(ValidationMessage(file=file_path, message=
-                    'There was a problem parsing the file.\n' + str(se))) # pragma: no cover
-                    return False
-                except ParserError as pe:  # pragma: no cover
-                    self.add_validation_message(ValidationMessage(file=file_path, message=
-                    'There was a problem parsing the file.\n' + pe.__str__()))
-                    return False
-                except IOError as ioe:
-                    self.add_validation_message(ValidationMessage(file=file_path, message=
-                    'There was a problem parsing the file.\n' + ioe.__str__()))
-                    return False
+                data = yaml.load(open(file_path, 'r'), Loader=Loader)
+            except Exception as e:
+                self.add_validation_message(ValidationMessage(file=file_path, message=
+                'There was a problem parsing the file.\n' + e.__str__()))
+                return False
 
         try:
 

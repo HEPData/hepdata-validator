@@ -47,11 +47,11 @@
                   ]
                 },
                 "low": {
-                  "id": "http://hepdata.org/submission/schema/data/independent_variables/0/values/1/value",
+                  "id": "http://hepdata.org/submission/schema/data/independent_variables/0/values/1/low",
                   "type": "number"
                 },
                 "high": {
-                  "id": "http://hepdata.org/submission/schema/data/independent_variables/0/values/1/value",
+                  "id": "http://hepdata.org/submission/schema/data/independent_variables/0/values/1/high",
                   "type": "number"
                 }
               },

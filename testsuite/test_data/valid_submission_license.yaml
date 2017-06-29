@@ -7,8 +7,8 @@ additional_resources:
     description: "Full source code for creating this data"
     license:
       name: 'GPL 2'
-      location: 'somewhere over the rainbow...'
-      blah: blah
+      url: 'somewhere over the rainbow...'
+      description: blah
 
 modifications: # what, by whom and when encoded or changed
   - {action: 'Encoded', date: '27 FEB 2014', who: 'Graeme Watt'}
@@ -58,7 +58,7 @@ additional_resources:
     description: "Full source code for creating this data"
     license:
       name: 'GPL 2'
-
+      url: 'some url'
 ---
 # This is Table 2.
 name: "Table 2"

@@ -3,7 +3,13 @@ from jsonschema import validate, ValidationError
 import os
 import yaml
 from yaml.scanner import ScannerError
-from yaml.parser import ParserError
+
+# We try to load using the CSafeLoader for speed improvements.
+try:
+    from yaml import CSafeLoader as Loader
+except ImportError: #pragma: no cover
+    from yaml import SafeLoader as Loader #pragma: no cover
+
 from hepdata_validator import Validator, ValidationMessage
 
 __author__ = 'eamonnmaguire'
@@ -39,11 +45,7 @@ class SubmissionFileValidator(Validator):
                 raise LookupError("file_path argument must be supplied")
 
             if data is None:
-                try:
-                    # We try to load using the CLoader for speed improvements.
-                    data = yaml.load_all(open(file_path, 'r'), Loader=yaml.CLoader)
-                except Exception as e: #pragma: no cover
-                    data = yaml.load_all(open(file_path, 'r')) #pragma: no cover
+                data = yaml.load_all(open(file_path, 'r'), Loader=Loader)
 
             for data_item in data:
                 if data_item is None:
@@ -73,10 +75,6 @@ class SubmissionFileValidator(Validator):
                     'Diagnostic information follows.\n' + str(se)))
             return False
 
-        except ParserError as pe:
-            self.add_validation_message(ValidationMessage(file=file_path, message=pe.__str__()))
-            return False
-
-        except IOError as ioe:
-            self.add_validation_message(ValidationMessage(file=file_path, message=ioe.__str__()))
+        except Exception as e:
+            self.add_validation_message(ValidationMessage(file=file_path, message=e.__str__()))
             return False
