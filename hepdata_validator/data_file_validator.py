@@ -39,6 +39,23 @@ from jsonschema import validate as json_validate, ValidationError
 __author__ = 'eamonnmaguire'
 
 
+def _eos_fix_read_data(data_file_path):
+    data = yaml.load(open(data_file_path, 'r'), Loader=Loader)
+    if data is None:
+        # force eos to refresh local cache
+        os.stat(data_file_path)
+        data = yaml.load(open(data_file_path, 'r'), Loader=Loader)
+
+    if data is None:
+        stat = os.stat(data_file_path)
+        raise Exception(
+            'Failed to load data file {0}, stat of the file {1}.'.format(
+                data_file_path,
+                stat,
+            )
+        )
+
+
 class DataFileValidator(Validator):
     """
     Validates the Data file YAML/JSON file
@@ -93,7 +110,7 @@ class DataFileValidator(Validator):
         if data is None:
 
             try:
-                data = yaml.load(open(file_path, 'r'), Loader=Loader)
+                data = _eos_fix_read_data(file_path)
             except Exception as e:
                 self.add_validation_message(ValidationMessage(file=file_path, message=
                 'There was a problem parsing the file.\n' + e.__str__()))
