@@ -190,13 +190,6 @@
         },
         "additionalProperties": false
       }
-    },
-    "name": {
-      "id": "http://hepdata.org/submission/schema/data/name",
-      "type": "string",
-      "title": "Name.",
-      "description": "Used to reference a data record when everything is in the same file.",
-      "name": "name"
     }
   },
   "additionalProperties": false,

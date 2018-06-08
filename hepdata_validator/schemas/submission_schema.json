@@ -5,11 +5,13 @@
   "properties": {
     "name": {
       "id": "http://jsonschema.net/name",
-      "type": "string"
+      "type": "string",
+      "maxLength": 64
     },
     "location": {
       "id": "http://jsonschema.net/location",
-      "type": "string"
+      "type": "string",
+      "maxLength": 256
     },
     "description": {
       "id": "http://jsonschema.net/description",
@@ -24,7 +26,8 @@
         "properties": {
           "name": {
             "id": "http://jsonschema.net/keywords/keyword/name",
-            "type": "string"
+            "type": "string",
+            "maxLength": 128
           },
           "values": {
             "id": "http://jsonschema.net/keywords/keyword/values",
@@ -62,11 +65,13 @@
       "properties": {
         "name": {
           "id": "http://jsonschema.net/data_file/license/name",
-          "type": "string"
+          "type": "string",
+          "maxLength": 256
         },
         "url": {
           "id": "http://jsonschema.net/data_file/license/url",
-          "type": "string"
+          "type": "string",
+          "maxLength": 256
         },
         "description": {
           "id": "http://jsonschema.net/data_file/license/description",
@@ -87,7 +92,8 @@
         "properties": {
           "location": {
             "id": "http://jsonschema.net/additional_resources/resource/location",
-            "type": "string"
+            "type": "string",
+            "maxLength": 256
           },
           "description": {
             "id": "http://jsonschema.net/additional_resources/resource/description",
@@ -95,7 +101,8 @@
           },
           "type": {
             "id": "http://jsonschema.net/additional_resources/resource/type",
-            "type": "string"
+            "type": "string",
+            "maxLength": 64
           },
           "license": {
             "id": "http://jsonschema.net/additional_resources/resource/license",
@@ -103,11 +110,13 @@
             "properties": {
               "name": {
                 "id": "http://jsonschema.net/additional_resources/resource/license/name",
-                "type": "string"
+                "type": "string",
+                "maxLength": 256
               },
               "url": {
                 "id": "http://jsonschema.net/additional_resources/resource/license/url",
-                "type": "string"
+                "type": "string",
+                "maxLength": 256
               },
               "description": {
                 "id": "http://jsonschema.net/additional_resources/resource/license/description",
@@ -122,40 +131,6 @@
         },
         "required": [
           "location"
-        ]
-      }
-    },
-    "associated_records": {
-      "id": "http://jsonschema.net/associated_records",
-      "type": "array",
-      "description": "Links to other HEPData Submissions or INSPIRE Records that relate to this submission.",
-      "items": {
-        "id": "http://jsonschema.net/associated_records/output",
-        "type": "object",
-        "properties": {
-          "type": {
-            "id": "http://jsonschema.net/associated_records/output/type",
-            "type": "string"
-          },
-          "identifier": {
-            "id": "http://jsonschema.net/associated_records/output/identifier",
-            "type": [
-              "string",
-              "number"
-            ]
-          },
-          "description": {
-            "id": "http://jsonschema.net/associated_records/output/description",
-            "type": "string"
-          },
-          "url": {
-            "id": "http://jsonschema.net/associated_records/output/url",
-            "type": "string"
-          }
-        },
-        "required": [
-          "identifier",
-          "type"
         ]
       }
     }

@@ -28,7 +28,6 @@ from .version import __version__
 
 __all__ = ('__version__', )
 
-
 class Validator(object):
     """
     Provides a general 'interface' for Validator in HEPdata
@@ -101,7 +100,7 @@ class Validator(object):
         Prints the errors observed for a file
         """
         for error in self.get_messages(file_name):
-            print '\t', error.__unicode__()
+            print('\t', error.__unicode__())
 
 
 class ValidationMessage(object):

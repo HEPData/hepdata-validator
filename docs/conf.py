@@ -26,8 +26,6 @@ from __future__ import print_function
 
 import os
 
-import sphinx.environment
-
 
 # -- General configuration ------------------------------------------------
 
@@ -131,17 +129,16 @@ todo_include_todos = False
 html_theme = 'alabaster'
 
 html_theme_options = {
-    'description': 'HEPData web application.',
-    'github_user': 'hepdata',
+    'description': 'HEPData Validator.',
+    'github_user': 'HEPData',
     'github_repo': 'hepdata-validator',
     'github_button': True,
     'github_banner': True,
     'show_powered_by': False,
     'extra_nav_links': {
-        'GitHub': 'http://github.com/HEPData/hepdata-validator',
-        'Submission Guidelines': 'http://github.com/HEPData/hepdata-submission',
-        'HEPData@GitHub': 'http://github.com/HEPData/hepdata',
-        'HEPData.net': 'http://hepdata.net'
+        'HEPData@GitHub': 'https://github.com/HEPData',
+        'HEPData Submission': 'https://github.com/HEPData/hepdata-submission',
+        'hepdata.net': 'https://hepdata.net'
     }
 }
 
@@ -331,4 +328,4 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {'https://docs.python.org/2/': None}

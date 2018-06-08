@@ -118,41 +118,8 @@
           }
         },
         "required": [
-          "location"
-        ]
-      }
-    },
-    "associated_records": {
-      "id": "http://jsonschema.net/associated_records",
-      "type": "array",
-      "description": "Links to other HEPData Submissions or INSPIRE Records that relate to this submission.",
-      "items": {
-        "id": "http://jsonschema.net/associated_records/output",
-        "type": "object",
-        "properties": {
-          "type": {
-            "id": "http://jsonschema.net/associated_records/output/type",
-            "type": "string"
-          },
-          "identifier": {
-            "id": "http://jsonschema.net/associated_records/output/identifier",
-            "type": [
-              "string",
-              "number"
-            ]
-          },
-          "description": {
-            "id": "http://jsonschema.net/associated_records/output/description",
-            "type": "string"
-          },
-          "url": {
-            "id": "http://jsonschema.net/associated_records/output/url",
-            "type": "string"
-          }
-        },
-        "required": [
-          "identifier",
-          "type"
+          "location",
+          "description"
         ]
       }
     },

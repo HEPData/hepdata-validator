@@ -3,47 +3,55 @@
 ==================
 
 .. image:: https://img.shields.io/travis/HEPData/hepdata-validator.svg
-    :target: https://travis-ci.org/HEPData/hepdata-validator
+   :target: https://travis-ci.org/HEPData/hepdata-validator
+   :alt: Travis Status
 
 .. image:: https://coveralls.io/repos/github/HEPData/hepdata-validator/badge.svg?branch=master
-    :target: https://coveralls.io/github/HEPData/hepdata-validator?branch=master
+   :target: https://coveralls.io/github/HEPData/hepdata-validator?branch=master
+   :alt: Coveralls Status
 
 .. image:: https://img.shields.io/github/license/HEPData/hepdata-validator.svg
-    :target: https://github.com/HEPData/hepdata-validator/blob/master/LICENSE
+   :target: https://github.com/HEPData/hepdata-validator/blob/master/LICENSE.txt
+   :alt: License
 
 .. image:: https://img.shields.io/github/release/hepdata/hepdata-validator.svg?maxAge=2592000
-    :target: https://github.com/HEPData/hepdata-validator/releases
+   :target: https://github.com/HEPData/hepdata-validator/releases
+   :alt: GitHub Releases
 
 .. image:: https://img.shields.io/github/issues/hepdata/hepdata-validator.svg?maxAge=2592000
-    :target: https://github.com/HEPData/hepdata-validator/issues
+   :target: https://github.com/HEPData/hepdata-validator/issues
+   :alt: GitHub Issues
 
 .. image:: https://readthedocs.org/projects/hepdata-validator/badge/?version=latest
-    :target: http://hepdata-validator.readthedocs.io/
+   :target: http://hepdata-validator.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
 
+JSON schema and validation code for HEPData submissions
 
-The Durham High Energy Physics Database (HEPData) has been built up over the past four decades as a unique open-access
-repository for scattering data from experimental particle physics. It currently comprises the data points from plots and
-tables related to several thousand publications including those from the Large Hadron Collider (LHC). HEPData is funded
-by a grant from the UK STFC and is based at the IPPP at Durham University.
-
-HEPData is built upon Invenio 3 and is open source and free to use!
-
-* Free software: GPLv2 license
-
-* Documentation: http://hepdata-validator.readthedocs.io/
+* Documentation: http://hepdata-validator.readthedocs.io
 
 
 Installation
 ------------
 
-If you can, install libyaml on your machine. This will allow for the use of CLoader for faster loading
-of YAML files. Not a big deal for small files, but performs markedly better on larger documents.
+If you can, install LibYAML (a C library for parsing and emitting YAML) on your machine.
+This will allow for the use of CLoader for faster loading of YAML files.
+Not a big deal for small files, but performs markedly better on larger documents.
 
 Via pip:
 
 .. code:: bash
 
-  pip install hepdata_validator
+   pip install hepdata-validator
+
+Via GitHub (for developers):
+
+.. code:: bash
+
+   git clone https://github.com/HEPData/hepdata-validator
+   cd hepdata-validator
+   pip install -e . -r requirements.txt
+   py.test testsuite
 
 
 Usage
@@ -87,7 +95,7 @@ Data file validation is exactly the same.
 
 
 Optionally, if you have already loaded the YAML object, then you can pass it through
-as a data object. You must also pass through the file_path since this is used as a key
+as a data object. You must also pass through the ``file_path`` since this is used as a key
 for the error message lookup map.
 
 .. code:: python
@@ -101,3 +109,8 @@ for the error message lookup map.
     data_file_validator.validate(file_path='data.yaml', data=file_contents)
     
     data_file_validator.get_messages('data.yaml')
+
+
+An example `offline validation script <https://github.com/HEPData/hepdata-submission/blob/master/scripts/check.py>`_
+uses the ``hepdata_validator`` package to validate the ``submission.yaml`` file and all YAML data files of a
+HEPData submission.
