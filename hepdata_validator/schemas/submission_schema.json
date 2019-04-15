@@ -1,144 +1,64 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "http://jsonschema.net",
+  "id": "https://hepdata.net/submission/schemas/submission_schema.json",
+  "title": "Submission table",
+  "description": "Metadata for a HEPData table apart from independent_variables and dependent_variables",
   "type": "object",
   "properties": {
-    "name": {
-      "id": "http://jsonschema.net/name",
-      "type": "string",
-      "maxLength": 64
-    },
-    "location": {
-      "id": "http://jsonschema.net/location",
-      "type": "string",
-      "maxLength": 256
-    },
-    "description": {
-      "id": "http://jsonschema.net/description",
-      "type": "string"
-    },
+    "name": { "type": "string", "maxLength": 64 },
+    "location": { "type": "string", "maxLength": 256 },
+    "description": { "type": "string" },
     "keywords": {
-      "id": "http://jsonschema.net/keywords",
       "type": "array",
       "items": {
-        "id": "http://jsonschema.net/keywords/keyword",
         "type": "object",
         "properties": {
-          "name": {
-            "id": "http://jsonschema.net/keywords/keyword/name",
-            "type": "string",
-            "maxLength": 128
-          },
+          "name": { "type": "string", "maxLength": 128, "enum": ["cmenergies", "observables", "reactions", "phrases"] },
           "values": {
-            "id": "http://jsonschema.net/keywords/keyword/values",
             "type": "array",
-            "items": {
-              "id": "http://jsonschema.net/keywords/keyword/values/value",
-              "type": [
-                "string",
-                "number"
-              ]
-            }
+            "items": { "type": [ "string", "number" ] }
           }
         },
-        "required": [
-          "name",
-          "values"
-        ]
+        "required": [ "name", "values" ],
+        "additionalProperties": false
       }
     },
-    "data_file": {
-      "id": "http://jsonschema.net/data_file",
-      "type": "string"
-    },
-    "group": {
-      "id": "http://jsonschema.net/group",
-      "description": "It is possible to group data records together using a string or number. This can be used to conceptually linked data tables together (e.g. multiple records can correspond to the same overall plot)",
-      "type": [
-        "string",
-        "number"
-      ]
-    },
-    "license": {
-      "id": "http://jsonschema.net/data_file/license",
+    "data_file": { "type": "string" },
+    "data_schema": { "type": "string" },
+    "data_license": {
       "type": "object",
       "properties": {
-        "name": {
-          "id": "http://jsonschema.net/data_file/license/name",
-          "type": "string",
-          "maxLength": 256
-        },
-        "url": {
-          "id": "http://jsonschema.net/data_file/license/url",
-          "type": "string",
-          "maxLength": 256
-        },
-        "description": {
-          "id": "http://jsonschema.net/data_file/license/description",
-          "type": "string"
-        }
+        "name": { "type": "string", "maxLength": 256 },
+        "url": { "type": "string", "maxLength": 256 },
+        "description": { "type": "string" }
       },
-      "required": [
-        "name",
-        "url"
-      ]
+      "required": [ "name", "url" ],
+      "additionalProperties": false
     },
     "additional_resources": {
-      "id": "http://jsonschema.net/additional_resources",
       "type": "array",
       "items": {
-        "id": "http://jsonschema.net/additional_resources/resource",
         "type": "object",
         "properties": {
-          "location": {
-            "id": "http://jsonschema.net/additional_resources/resource/location",
-            "type": "string",
-            "maxLength": 256
-          },
-          "description": {
-            "id": "http://jsonschema.net/additional_resources/resource/description",
-            "type": "string"
-          },
-          "type": {
-            "id": "http://jsonschema.net/additional_resources/resource/type",
-            "type": "string",
-            "maxLength": 64
-          },
+          "location": { "type": "string", "maxLength": 256 },
+          "description": { "type": "string" },
+          "type": { "type": "string", "maxLength": 64 },
           "license": {
-            "id": "http://jsonschema.net/additional_resources/resource/license",
             "type": "object",
             "properties": {
-              "name": {
-                "id": "http://jsonschema.net/additional_resources/resource/license/name",
-                "type": "string",
-                "maxLength": 256
-              },
-              "url": {
-                "id": "http://jsonschema.net/additional_resources/resource/license/url",
-                "type": "string",
-                "maxLength": 256
-              },
-              "description": {
-                "id": "http://jsonschema.net/additional_resources/resource/license/description",
-                "type": "string"
-              }
+              "name": { "type": "string", "maxLength": 256 },
+              "url": { "type": "string", "maxLength": 256 },
+              "description": { "type": "string" }
             },
-            "required": [
-              "name",
-              "url"
-            ]
+            "required": [ "name", "url" ],
+            "additionalProperties": false
           }
         },
-        "required": [
-          "location"
-        ]
+        "required": [ "location" ],
+        "additionalProperties": false
       }
     }
   },
-  "required": [
-    "name",
-    "description",
-    "keywords",
-    "data_file"
-  ]
+  "required": ["name", "description", "keywords", "data_file"],
+  "additionalProperties": false
 }

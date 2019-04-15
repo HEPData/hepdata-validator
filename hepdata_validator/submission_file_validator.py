@@ -47,11 +47,11 @@ class SubmissionFileValidator(Validator):
             if data is None:
                 data = yaml.load_all(open(file_path, 'r'), Loader=Loader)
 
-            for data_item in data:
+            for data_item_index, data_item in enumerate(data):
                 if data_item is None:
                     continue
                 try:
-                    if 'name' not in data_item:
+                    if not data_item_index and 'data_file' not in data_item:
                         validate(data_item, additional_file_section_schema)
                     else:
                         validate(data_item, submission_file_schema)

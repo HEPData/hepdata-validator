@@ -3,6 +3,12 @@ import unittest
 
 import yaml
 
+# We try to load using the CSafeLoader for speed improvements.
+try:
+    from yaml import CSafeLoader as Loader
+except ImportError: #pragma: no cover
+    from yaml import SafeLoader as Loader #pragma: no cover
+
 from hepdata_validator.data_file_validator import DataFileValidator, UnsupportedDataSchemaException
 from hepdata_validator.submission_file_validator import SubmissionFileValidator
 
@@ -22,13 +28,12 @@ class SubmissionFileValidationTest(unittest.TestCase):
         self.invalid_parser_file = 'test_data/invalid_parser_submission.yaml'
 
     def test_valid_submission_yaml(self):
-        print '___SUBMISSION_FILE_VALIDATION: Testing valid yaml submission___'
+        print('___SUBMISSION_FILE_VALIDATION: Testing valid yaml submission___')
 
         self.validator = None
         self.validator = SubmissionFileValidator()
         valid_sub_yaml = os.path.join(self.base_dir, self.valid_file)
-
-        sub_yaml_obj = yaml.load_all(open(valid_sub_yaml, 'r'))
+        sub_yaml_obj = yaml.load_all(open(valid_sub_yaml, 'r'), Loader=Loader)
         self.validator.validate(file_path=valid_sub_yaml, data=sub_yaml_obj)
         self.validator.print_errors(valid_sub_yaml)
 
@@ -49,7 +54,7 @@ class SubmissionFileValidationTest(unittest.TestCase):
         self.assertTrue(len(self.validator.get_messages(invalid_syntax_file)) == 1)
         self.validator.print_errors(invalid_syntax_file)
         for message in self.validator.get_messages(invalid_syntax_file):
-            print message.message
+            print(message.message)
             self.assertTrue(message.message.index("There was a problem parsing the file.") == 0)
 
         self.assertTrue(len(self.validator.get_messages()) == 1)
@@ -57,19 +62,20 @@ class SubmissionFileValidationTest(unittest.TestCase):
         self.assertTrue(len(self.validator.get_messages()) == 0)
 
     def test_valid_submission_yaml_with_associated_records(self):
-        print '___SUBMISSION_FILE_VALIDATION: Testing valid yaml submission with associated records___'
+        print('___SUBMISSION_FILE_VALIDATION: Testing valid yaml submission with associated records___')
 
         self.validator = None
         self.validator = SubmissionFileValidator()
         valid_sub_yaml = os.path.join(self.base_dir, self.valid_file_with_associated_records)
-
-        self.assertTrue(self.validator.validate(file_path=valid_sub_yaml))
-        self.assertTrue(not self.validator.has_errors(valid_sub_yaml))
+        is_valid = self.validator.validate(file_path=valid_sub_yaml)
         self.validator.print_errors(valid_sub_yaml)
 
+        self.assertTrue(is_valid)
+        self.assertTrue(not self.validator.has_errors(valid_sub_yaml))
+
     def test_valid_submission_yaml_with_empty_section(self):
-        print '___SUBMISSION_FILE_VALIDATION: Testing valid yaml ' \
-              'submission without main section___'
+        print('___SUBMISSION_FILE_VALIDATION: Testing valid yaml ' \
+              'submission without main section___')
 
         self.validator = None
         self.validator = SubmissionFileValidator()
@@ -79,21 +85,21 @@ class SubmissionFileValidationTest(unittest.TestCase):
         self.validator.print_errors(valid_sub_yaml)
 
     def test_valid_submission_yaml_with_license(self):
-        print '___SUBMISSION_FILE_VALIDATION: ' \
-              'Testing valid yaml submission with license___'
+        print('___SUBMISSION_FILE_VALIDATION: ' \
+              'Testing valid yaml submission with license___')
 
         self.validator = None
         self.validator = SubmissionFileValidator()
         valid_sub_yaml = os.path.join(self.base_dir,
                                       self.valid_license_file)
 
-        self.assertEqual(self.validator.validate(file_path=valid_sub_yaml), True)
-
+        is_valid = self.validator.validate(file_path=valid_sub_yaml)
         self.validator.print_errors(valid_sub_yaml)
+        self.assertEqual(is_valid, True)
 
     def test_invalid_submission_yaml(self):
-        print '___SUBMISSION_FILE_VALIDATION: ' \
-              'Testing invalid yaml submission___'
+        print('___SUBMISSION_FILE_VALIDATION: ' \
+              'Testing invalid yaml submission___')
         self.validator = None
         self.validator = SubmissionFileValidator()
         invalid_sub_yaml = os.path.join(self.base_dir, self.invalid_file)
@@ -105,8 +111,8 @@ class SubmissionFileValidationTest(unittest.TestCase):
         self.validator.print_errors(invalid_sub_yaml)
 
     def test_invalid_parser_submission_yaml(self):
-        print '___SUBMISSION_FILE_VALIDATION: ' \
-              'Testing invalid parser yaml submission___'
+        print('___SUBMISSION_FILE_VALIDATION: ' \
+              'Testing invalid parser yaml submission___')
         self.validator = None
         self.validator = SubmissionFileValidator()
         invalid_sub_yaml = os.path.join(self.base_dir, self.invalid_parser_file)
@@ -118,8 +124,8 @@ class SubmissionFileValidationTest(unittest.TestCase):
         self.validator.print_errors(invalid_sub_yaml)
 
     def test_ioerror_submission_yaml(self):
-        print '___SUBMISSION_FILE_VALIDATION: ' \
-              'Testing ioerror yaml submission___'
+        print('___SUBMISSION_FILE_VALIDATION: ' \
+              'Testing ioerror yaml submission___')
         self.validator = None
         self.validator = SubmissionFileValidator()
         invalid_sub_yaml = os.path.join(self.base_dir, self.valid_file[:-1])
@@ -183,26 +189,26 @@ class DataValidationTest(unittest.TestCase):
             assert (le)
 
     def test_valid_yaml_file(self):
-        print '___DATA_VALIDATION: Testing valid yaml submission___'
+        print('___DATA_VALIDATION: Testing valid yaml submission___')
         is_valid = self.validator.validate(file_path=self.valid_file_yaml)
         self.validator.print_errors(self.valid_file_yaml)
         self.assertEqual(is_valid, True)
 
     def test_invalid_yaml_file(self):
-        print '___DATA_VALIDATION: Testing invalid yaml submission___'
+        print('___DATA_VALIDATION: Testing invalid yaml submission___')
         self.assertEqual(self.validator.validate(file_path=self.invalid_file_yaml),
                          False)
 
         self.validator.print_errors(self.invalid_file_yaml)
 
     def test_valid_file_with_percent_errors(self):
-        print '___DATA_VALIDATION: Testing valid yaml percent error ___'
+        print('___DATA_VALIDATION: Testing valid yaml percent error ___')
         self.assertEqual(self.validator.validate(file_path=self.valid_file_error_percent_yaml),
                          False)
         self.validator.print_errors(self.valid_file_error_percent_yaml)
 
     def test_valid_json_file(self):
-        print '___DATA_VALIDATION: Testing valid json submission___'
+        print('___DATA_VALIDATION: Testing valid json submission___')
         is_valid = self.validator.validate(file_path=self.valid_file_json)
         self.validator.print_errors(self.valid_file_json)
         self.assertEqual(is_valid, True)
@@ -210,7 +216,7 @@ class DataValidationTest(unittest.TestCase):
         self.validator.print_errors(self.valid_file_json)
 
     def test_invalid_json_file(self):
-        print '___DATA_VALIDATION: Testing invalid json submission___'
+        print('___DATA_VALIDATION: Testing invalid json submission___')
         self.assertEqual(self.validator.validate(file_path=self.invalid_file_json),
                          False)
         self.validator.print_errors(self.invalid_file_json)
@@ -246,14 +252,14 @@ class DataValidationTest(unittest.TestCase):
             self.assertTrue(message.message.index("There was a problem parsing the file.") == 0)
 
     def test_invalid_parser_yaml_file(self):
-        print '___DATA_VALIDATION: Testing invalid parser yaml submission___'
+        print('___DATA_VALIDATION: Testing invalid parser yaml submission___')
         self.assertEqual(self.validator.validate(file_path=self.invalid_parser_file),
                          False)
 
         self.validator.print_errors(self.invalid_parser_file)
 
     def test_ioerror_yaml_file(self):
-        print '___DATA_VALIDATION: Testing ioerror yaml submission___'
+        print('___DATA_VALIDATION: Testing ioerror yaml submission___')
         self.assertEqual(self.validator.validate(file_path=self.valid_file_yaml[:-1]),
                          False)
 

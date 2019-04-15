@@ -4,11 +4,11 @@ additional_resources:
     description: "Full source code for creating this data"
   - location: "http://github.com/HEPData/hepdata"
     description: "Full source code for creating this data"
-associated_records:
+record_ids:
   - type: "HEPData"
-    identifier: "ins1226111"
+    id: "ins1226111"
   - type: "INSPIRE"
-    identifier: "1221113"
+    id: "1221113"
 dateupdated: '01/02/2016 10:38:36'
 preprintyear: '2015'
 publicationyear: '2016'
@@ -45,9 +45,8 @@ description: The measured fiducial cross sections.  The first systematic uncerta
 keywords: # used for searching, possibly multiple values for each keyword
   - { name: reactions, values: [P P --> Z0 Z0 X]}
   - { name: observables, values: [SIG]}
-  - { name: energies, values: [7000]}
+  - { name: cmenergies, values: [7000]}
 data_file: data1.yaml
-type: "different"
 additional_resources:
   - location: "http://github.com/HEPData/hepdata"
     description: "Full source code for creating this data"
@@ -62,5 +61,5 @@ description: The measured total cross sections.  The first systematic uncertaint
 keywords: # used for searching, possibly multiple values for each keyword
   - { name: reactions, values: [P P --> Z0 Z0 X]}
   - { name: observables, values: [SIG]}
-  - { name: energies, values: [7000]}
+  - { name: cmenergies, values: [7000]}
 data_file: data2.yaml

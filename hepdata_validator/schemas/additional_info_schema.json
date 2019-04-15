@@ -1,132 +1,75 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "http://hepdata.org/submission/schema/additional_info",
+  "id": "https://hepdata.net/submission/schemas/additional_info_schema.json",
+  "title": "Additional information",
+  "description": "Optional information concerning a whole submission rather than individual data tables",
   "type": "object",
-  "title": "This section is optional for the provision of information about the overall submission.",
-  "description": "An explanation about the purpose of this instance described by this schema.",
-  "name": "/",
   "properties": {
     "record_ids": {
-      "id": "http://jsonschema.net/record_ids",
       "type": "array",
       "items": {
-        "id": "http://jsonschema.net/record_ids/record_id",
         "type": "object",
         "properties": {
-          "type": {
-            "id": "http://jsonschema.net/record_ids/record_id/type",
-            "type": [
-              "string"
-            ]
-          },
-          "id": {
-            "id": "http://jsonschema.net/record_ids/record_id/id",
-            "type": [
-              "string",
-              "number"
-            ]
-          }
+          "type": { "type": [ "string" ] },
+          "id": { "type": [ "string", "number" ] }
         },
-        "additionalProperties": false,
-        "required": [
-          "type",
-          "id"
-        ]
+        "required": [ "type", "id" ],
+        "additionalProperties": false
       }
     },
     "preprintyear": {
-      "id": "http://hepdata.org/submission/schema/data/preprintyear",
       "type": "string",
       "title": "Preprint Year",
       "description": "Indicates the year when the submission preprint was first available.",
       "name": "preprintyear"
     },
     "publicationyear": {
-      "id": "http://hepdata.org/submission/schema/data/publicationyear",
       "type": "string",
       "title": "Publication Year",
       "description": "Indicates the year when the submission publication was available.",
       "name": "publicationyear"
     },
     "dateupdated": {
-      "id": "http://hepdata.org/submission/schema/data/dateupdated",
       "type": "string",
       "title": "Date Updated",
       "description": "Indicates when the submission was last updated.",
       "name": "dateupdated"
     },
     "modifications": {
-      "id": "http://jsonschema.net/modifications",
       "type": "array",
       "items": {
-        "id": "http://jsonschema.net/modifications/modification",
         "type": "object",
         "properties": {
-          "action": {
-            "id": "http://jsonschema.net/modifications/modification/action",
-            "type": "string"
-          },
-          "who": {
-            "id": "http://jsonschema.net/modifications/modification/who",
-            "type": "string"
-          }
+          "action": { "type": "string" },
+          "who": { "type": "string" }
         },
-        "additionalProperties": true,
-        "required": [
-          "action",
-          "who"
-        ]
+        "required": [ "action", "who" ]
       }
     },
     "additional_resources": {
-      "id": "http://jsonschema.net/additional_resources",
       "type": "array",
       "items": {
-        "id": "http://jsonschema.net/additional_resources/resource",
         "type": "object",
         "properties": {
-          "location": {
-            "id": "http://jsonschema.net/additional_resources/resource/location",
-            "type": "string"
-          },
-          "description": {
-            "id": "http://jsonschema.net/additional_resources/resource/description",
-            "type": "string"
-          },
+          "location": { "type": "string" },
+          "description": { "type": "string" },
           "license": {
-            "id": "http://jsonschema.net/additional_resources/resource/license",
             "type": "object",
             "properties": {
-              "name": {
-                "id": "http://jsonschema.net/additional_resources/resource/license/name",
-                "type": "string"
-              },
-              "url": {
-                "id": "http://jsonschema.net/additional_resources/resource/license/url",
-                "type": "string"
-              },
-              "description": {
-                "id": "http://jsonschema.net/additional_resources/resource/license/description",
-                "type": "string"
-              }
+              "name": { "type": "string" },
+              "url": { "type": "string" },
+              "description": { "type": "string" }
             },
-            "additionalProperties": false,
-            "required": [
-              "name",
-              "url"
-            ]
+            "required": [ "name", "url" ],
+            "additionalProperties": false
           }
         },
-        "required": [
-          "location",
-          "description"
-        ]
+        "required": [ "location", "description" ]
       }
     },
     "comment": {
-      "id": "http://hepdata.org/submission/schema/additional_info/comment",
       "type": "string",
-      "title": "Comment.",
+      "title": "Comment",
       "description": "Information that applies to all data tables.",
       "name": "comment"
     }

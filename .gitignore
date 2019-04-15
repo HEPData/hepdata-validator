@@ -55,5 +55,5 @@ docs/_build/
 # PyBuilder
 target/
 
-# Local config file
-hepdata/config_local.py
+# PyCharm
+.idea/

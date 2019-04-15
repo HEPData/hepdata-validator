@@ -40,7 +40,7 @@ description: The measured fiducial cross sections.  The first systematic uncerta
 keywords: # used for searching, possibly multiple values for each keyword
   - { name: reactions, values: [P P --> Z0 Z0 X]}
   - { name: observables, values: [SIG]}
-  - { name: energies, values: [7000]}
+  - { name: cmenergies, values: [7000]}
 data_file: data1.yaml
 additional_resources:
   - location: "http://github.com/HEPData/hepdata"
@@ -56,5 +56,5 @@ description: The measured total cross sections.  The first systematic uncertaint
 keywords: # used for searching, possibly multiple values for each keyword
   - { name: reactions, values: [P P --> Z0 Z0 X]}
   - { name: observables, values: [SIG]}
-  - { name: energies, values: [7000]}
+  - { name: cmenergies, values: [7000]}
 data_file: data2.yaml

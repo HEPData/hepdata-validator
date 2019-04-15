@@ -34,7 +34,7 @@ JSON schema and validation code for HEPData submissions
 Installation
 ------------
 
-If you can, install LibYAML (a C library for parsing and emitting YAML) on your machine.
+If you can, install `LibYAML <https://pyyaml.org/wiki/LibYAML>`_ (a C library for parsing and emitting YAML) on your machine.
 This will allow for the use of CLoader for faster loading of YAML files.
 Not a big deal for small files, but performs markedly better on larger documents.
 
@@ -51,7 +51,7 @@ Via GitHub (for developers):
    git clone https://github.com/HEPData/hepdata-validator
    cd hepdata-validator
    pip install -e . -r requirements.txt
-   py.test testsuite
+   pytest testsuite
 
 
 Usage

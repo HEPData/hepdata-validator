@@ -5,7 +5,7 @@ description: The measured fiducial cross sections.  The first systematic uncerta
 keywords: # used for searching, possibly multiple values for each keyword
   - { name: reactions, value: [P P --> Z0 Z0 X]}
   - { name: observables, value: [SIG]}
-  - { name: energies, value: [7000]}
+  - { name: cmenergies, value: [7000]}
 data_file: 12321
 additional_resources:
   - location: "http:github.com/HEPData/hepdata"
