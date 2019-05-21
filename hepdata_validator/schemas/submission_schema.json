@@ -24,7 +24,6 @@
       }
     },
     "data_file": { "type": "string" },
-    "data_schema": { "type": "string" },
     "data_license": {
       "type": "object",
       "properties": {

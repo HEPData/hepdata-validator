@@ -69,9 +69,7 @@
     },
     "comment": {
       "type": "string",
-      "title": "Comment",
-      "description": "Information that applies to all data tables.",
-      "name": "comment"
+      "description": "Information that applies to all data tables."
     }
   },
   "additionalProperties": true
