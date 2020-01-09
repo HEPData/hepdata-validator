@@ -23,19 +23,20 @@
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
 from __future__ import print_function
+from builtins import object
 import abc
 
 from .version import __version__
+from future.utils import with_metaclass
 
 __all__ = ('__version__', )
 
-class Validator(object):
+class Validator(with_metaclass(abc.ABCMeta, object)):
     """
     Provides a general 'interface' for Validator in HEPdata
     which validates schema files created with the
     JSONschema syntax http://json-schema.org/
     """
-    __metaclass__ = abc.ABCMeta
 
     messages = {}
     default_schema_file = ''

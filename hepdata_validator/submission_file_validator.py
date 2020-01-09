@@ -1,3 +1,4 @@
+from builtins import str
 import json
 from jsonschema import validate, ValidationError
 import os
