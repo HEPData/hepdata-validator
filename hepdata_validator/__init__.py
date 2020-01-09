@@ -22,6 +22,7 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
+from __future__ import print_function
 import abc
 
 from .version import __version__
@@ -100,7 +101,7 @@ class Validator(object):
         Prints the errors observed for a file
         """
         for error in self.get_messages(file_name):
-            print('\t', error.__unicode__())
+            print(('\t', error.__unicode__()))
 
 
 class ValidationMessage(object):

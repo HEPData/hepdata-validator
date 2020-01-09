@@ -1,6 +1,7 @@
 pytest>=2.7.0
 coverage
 coveralls
+future
 pyyaml
 jsonschema
 pytest-cov
