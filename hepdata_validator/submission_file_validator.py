@@ -20,8 +20,19 @@ class SubmissionFileValidator(Validator):
     Validates the Submission file YAML/JSON file
     """
     base_path = os.path.dirname(__file__)
-    default_schema_file = base_path + '/schemas/submission_schema.json'
-    additional_info_schema = base_path + '/schemas/additional_info_schema.json'
+    submission_filename = 'submission_schema.json'
+    additional_info_filename = 'additional_info_schema.json'
+
+    def __init__(self, *args, **kwargs):
+        super(SubmissionFileValidator, self).__init__(*args, **kwargs)
+        self.default_schema_file = os.path.join(self.base_path,
+                                                'schemas',
+                                                self.schema_version,
+                                                self.submission_filename)
+        self.additional_info_schema = os.path.join(self.base_path,
+                                                   'schemas',
+                                                   self.schema_version,
+                                                   self.additional_info_filename)
 
     def validate(self, **kwargs):
         """

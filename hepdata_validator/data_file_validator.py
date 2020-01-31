@@ -44,9 +44,16 @@ class DataFileValidator(Validator):
     Validates the Data file YAML/JSON file
     """
     base_path = os.path.dirname(__file__)
-    default_schema_file = base_path + '/schemas/data_schema.json'
+    schema_name = 'data_schema.json'
 
     custom_data_schemas = {}
+
+    def __init__(self, *args, **kwargs):
+        super(DataFileValidator, self).__init__(*args, **kwargs)
+        self.default_schema_file = os.path.join(self.base_path,
+                                                'schemas',
+                                                self.schema_version,
+                                                self.schema_name)
 
     def load_custom_schema(self, type, schema_file_path=None):
         """

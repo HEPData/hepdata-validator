@@ -36,13 +36,11 @@ class Validator(object):
     """
     __metaclass__ = abc.ABCMeta
 
-    messages = {}
-    default_schema_file = ''
-
     def __init__(self, *args, **kwargs):
         self.messages = {}
-
+        self.default_schema_file = ''
         self.schemas = kwargs.get('schemas', {})
+        self.schema_version = kwargs.get('schema_version', 'v2')
 
     @abc.abstractmethod
     def validate(self, **kwargs):
