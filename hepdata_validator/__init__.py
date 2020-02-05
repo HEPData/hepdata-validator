@@ -28,7 +28,7 @@ from .version import __version__
 
 __all__ = ('__version__', )
 
-LATEST_SCHEMA_VERSION = 'v2'
+LATEST_SCHEMA_VERSION = '1.0.0'
 
 class Validator(object):
     """
