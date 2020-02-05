@@ -28,6 +28,8 @@ from .version import __version__
 
 __all__ = ('__version__', )
 
+LATEST_SCHEMA_VERSION = 'v2'
+
 class Validator(object):
     """
     Provides a general 'interface' for Validator in HEPdata
@@ -40,7 +42,7 @@ class Validator(object):
         self.messages = {}
         self.default_schema_file = ''
         self.schemas = kwargs.get('schemas', {})
-        self.schema_version = kwargs.get('schema_version', 'v2')
+        self.schema_version = kwargs.get('schema_version', LATEST_SCHEMA_VERSION)
 
     @abc.abstractmethod
     def validate(self, **kwargs):
