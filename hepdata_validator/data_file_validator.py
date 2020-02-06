@@ -68,7 +68,10 @@ class DataFileValidator(Validator):
             if schema_file_path:
                 _schema_file = schema_file_path
             else:
-                _schema_file = os.path.join(self.base_path, 'schemas', "{0}_schema.json".format(type))
+                _schema_file = os.path.join(self.base_path,
+                                            'schemas',
+                                            self.schema_version,
+                                            "{0}_schema.json".format(type))
 
             custom_data_schema = json.load(open(_schema_file, 'r'))
             self.custom_data_schemas[type] = custom_data_schema

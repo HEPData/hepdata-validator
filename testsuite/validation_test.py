@@ -269,6 +269,14 @@ class DataValidationTest(unittest.TestCase):
 
     def test_load_data_with_custom_data_type(self):
         self.validator = DataFileValidator()
+        # This is actually one of the default schemas but it allows testing
+        # of custom files in the default path
+        self.validator.load_custom_schema('data')
+        self.assertTrue('data' in self.validator.custom_data_schemas)
+        self.assertTrue(self.validator.validate(file_path=self.valid_file_json))
+
+    def test_load_data_with_custom_data_type_and_path(self):
+        self.validator = DataFileValidator()
         custom_schema_path = os.path.join(self.base_dir, 'test_data/custom_data_schema.json')
         self.validator.load_custom_schema('different', custom_schema_path)
 
