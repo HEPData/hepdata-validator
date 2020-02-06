@@ -31,7 +31,7 @@ __all__ = ('__version__', )
 LATEST_SCHEMA_VERSION = '1.0.0'
 
 RAW_SCHEMAS_URL = 'https://raw.githubusercontent.com/HEPData/hepdata-validator/' \
-    + __version__ + '/hepdata_validator/schemas/' + LATEST_SCHEMA_VERSION
+    + __version__ + '/hepdata_validator/schemas'
 
 class Validator(object):
     """

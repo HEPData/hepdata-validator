@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://hepdata.net/submission/schemas/data_schema.json",
+  "id": "https://hepdata.net/submission/schemas/1.0.0/data_schema.json",
   "title": "Data table",
   "description": "A HEPData table comprising independent_variables and dependent_variables",
   "type": "object",
