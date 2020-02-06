@@ -54,8 +54,8 @@ class SubmissionFileValidationTest(unittest.TestCase):
         )
         self.validator.print_errors(valid_sub_yaml)
 
-    def test_valid_v0_submission_yaml_against_v2(self):
-        print('___SUBMISSION_FILE_VALIDATION: Testing valid v0 yaml submission against v2 schema___')
+    def test_valid_v0_submission_yaml_against_v1(self):
+        print('___SUBMISSION_FILE_VALIDATION: Testing valid v0 yaml submission against v1 schema___')
 
         self.validator = None
         self.validator = SubmissionFileValidator()
