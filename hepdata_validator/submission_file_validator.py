@@ -42,10 +42,18 @@ class SubmissionFileValidator(Validator):
         :param data: pre loaded YAML object (optional).
         :return: Bool to indicate the validity of the file.
         """
-        try:
-            submission_file_schema = json.load(open(self.default_schema_file, 'r'))
+        data_file_handle = None
+        return_value = False
 
-            additional_file_section_schema = json.load(open(self.additional_info_schema, 'r'))
+        try:
+            submission_file_schema = None
+            additional_file_section_schema = None
+            
+            with open(self.default_schema_file, 'r') as submission_schema:
+                submission_file_schema = json.load(submission_schema)
+
+            with open(self.additional_info_schema, 'r') as additional_schema:
+                additional_file_section_schema = json.load(additional_schema)
 
             # even though we are using the yaml package to load,
             # it supports JSON and YAML
@@ -56,7 +64,8 @@ class SubmissionFileValidator(Validator):
                 raise LookupError("file_path argument must be supplied")
 
             if data is None:
-                data = yaml.load_all(open(file_path, 'r'), Loader=Loader)
+                data_file_handle = open(file_path, 'r')
+                data = yaml.load_all(data_file_handle, Loader=Loader)
 
             for data_item_index, data_item in enumerate(data):
                 if data_item is None:
@@ -72,10 +81,8 @@ class SubmissionFileValidator(Validator):
                             ValidationMessage(file=file_path,
                                                 message=ve.message + ' in ' + str(ve.instance)))
 
-            if self.has_errors(file_path):
-                return False
-            else:
-                return True
+            if not self.has_errors(file_path):
+                return_value = True
 
         except ScannerError as se:  # pragma: no cover
             self.add_validation_message(  # pragma: no cover
@@ -84,8 +91,14 @@ class SubmissionFileValidator(Validator):
                     'This can be because you forgot spaces '
                     'after colons in your YAML file for instance.  '
                     'Diagnostic information follows.\n' + str(se)))
-            return False
+            return_value = False
 
         except Exception as e:
             self.add_validation_message(ValidationMessage(file=file_path, message=e.__str__()))
-            return False
+            return_value = False
+
+        finally:
+            if data_file_handle:
+                data_file_handle.close()
+
+        return return_value

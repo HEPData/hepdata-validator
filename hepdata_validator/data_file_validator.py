@@ -73,8 +73,9 @@ class DataFileValidator(Validator):
                                             self.schema_version,
                                             "{0}_schema.json".format(type))
 
-            custom_data_schema = json.load(open(_schema_file, 'r'))
-            self.custom_data_schemas[type] = custom_data_schema
+            with open(_schema_file, 'r') as f:
+                custom_data_schema = json.load(f)
+                self.custom_data_schemas[type] = custom_data_schema
 
             return custom_data_schema
         except Exception as e:
@@ -90,7 +91,10 @@ class DataFileValidator(Validator):
         :return: Bool to indicate the validity of the file.
         """
 
-        default_data_schema = json.load(open(self.default_schema_file, 'r'))
+        default_data_schema = None
+
+        with open(self.default_schema_file, 'r') as f:
+            default_data_schema = json.load(f)
 
         # even though we are using the yaml package to load,
         # it supports JSON and YAML
@@ -103,7 +107,8 @@ class DataFileValidator(Validator):
         if data is None:
 
             try:
-                data = yaml.load(open(file_path, 'r'), Loader=Loader)
+                with open(file_path, 'r') as df:
+                    data = yaml.load(df, Loader=Loader)
             except Exception as e:
                 self.add_validation_message(ValidationMessage(file=file_path, message=
                 'There was a problem parsing the file.\n' + e.__str__()))
