@@ -114,3 +114,18 @@ for the error message lookup map.
 An example `offline validation script <https://github.com/HEPData/hepdata-submission/blob/master/scripts/check.py>`_
 uses the ``hepdata_validator`` package to validate the ``submission.yaml`` file and all YAML data files of a
 HEPData submission.
+
+
+Schemas
+-------
+
+There are currently 2 versions of the JSON schemas, `0.1.0
+<https://github.com/HEPData/hepdata-validator/tree/master/hepdata_validator/schemas/0.1.0>`_ and `1.0.0
+<https://github.com/HEPData/hepdata-validator/tree/master/hepdata_validator/schemas/1.0.0>`_. In most cases you should use
+**1.0.0** (the default). If you need to use a different version, you can pass a keyword argument ``schema_version``
+when initialising the validator:
+
+.. code:: python
+
+    submission_file_validator = SubmissionFileValidator(schema_version='0.1.0')
+    data_file_validator = DataFileValidator(schema_version='0.1.0')

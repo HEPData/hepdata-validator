@@ -28,6 +28,11 @@ from .version import __version__
 
 __all__ = ('__version__', )
 
+LATEST_SCHEMA_VERSION = '1.0.0'
+
+RAW_SCHEMAS_URL = 'https://raw.githubusercontent.com/HEPData/hepdata-validator/' \
+    + __version__ + '/hepdata_validator/schemas'
+
 class Validator(object):
     """
     Provides a general 'interface' for Validator in HEPdata
@@ -36,13 +41,11 @@ class Validator(object):
     """
     __metaclass__ = abc.ABCMeta
 
-    messages = {}
-    default_schema_file = ''
-
     def __init__(self, *args, **kwargs):
         self.messages = {}
-
+        self.default_schema_file = ''
         self.schemas = kwargs.get('schemas', {})
+        self.schema_version = kwargs.get('schema_version', LATEST_SCHEMA_VERSION)
 
     @abc.abstractmethod
     def validate(self, **kwargs):

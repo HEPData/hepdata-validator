@@ -21,6 +21,7 @@ class SubmissionFileValidationTest(unittest.TestCase):
 
         self.valid_license_file = 'test_data/valid_submission_license.yaml'
         self.valid_file = 'test_data/valid_submission.yaml'
+        self.valid_v0_file = 'test_data/valid_submission_v0.yaml'
         self.valid_file_with_associated_records = 'test_data/valid_submission_with_associated_record.yaml'
         self.valid_empty_file = 'test_data/valid_submission_empty.yaml'
         self.invalid_file = 'test_data/invalid_submission.yaml'
@@ -34,7 +35,36 @@ class SubmissionFileValidationTest(unittest.TestCase):
         self.validator = SubmissionFileValidator()
         valid_sub_yaml = os.path.join(self.base_dir, self.valid_file)
         sub_yaml_obj = yaml.load_all(open(valid_sub_yaml, 'r'), Loader=Loader)
-        self.validator.validate(file_path=valid_sub_yaml, data=sub_yaml_obj)
+        self.assertEqual(
+            self.validator.validate(file_path=valid_sub_yaml, data=sub_yaml_obj),
+            True
+        )
+        self.validator.print_errors(valid_sub_yaml)
+
+    def test_valid_v0_submission_yaml(self):
+        print('___SUBMISSION_FILE_VALIDATION: Testing valid v0 yaml submission___')
+
+        self.validator = None
+        self.validator = SubmissionFileValidator(schema_version='0.1.0')
+        valid_sub_yaml = os.path.join(self.base_dir, self.valid_v0_file)
+        sub_yaml_obj = yaml.load_all(open(valid_sub_yaml, 'r'), Loader=Loader)
+        self.assertEqual(
+            self.validator.validate(file_path=valid_sub_yaml, data=sub_yaml_obj),
+            True
+        )
+        self.validator.print_errors(valid_sub_yaml)
+
+    def test_valid_v0_submission_yaml_against_v1(self):
+        print('___SUBMISSION_FILE_VALIDATION: Testing valid v0 yaml submission against v1 schema___')
+
+        self.validator = None
+        self.validator = SubmissionFileValidator()
+        valid_sub_yaml = os.path.join(self.base_dir, self.valid_v0_file)
+        sub_yaml_obj = yaml.load_all(open(valid_sub_yaml, 'r'), Loader=Loader)
+        self.assertEqual(
+            self.validator.validate(file_path=valid_sub_yaml, data=sub_yaml_obj),
+            False
+        )
         self.validator.print_errors(valid_sub_yaml)
 
     def test_no_file_path_supplied(self):
@@ -215,6 +245,22 @@ class DataValidationTest(unittest.TestCase):
 
         self.validator.print_errors(self.valid_file_json)
 
+    def test_valid_yaml_file_against_v0(self):
+        print('___DATA_VALIDATION: Testing valid yaml submission against v0___')
+        validator = DataFileValidator(schema_version='0.1.0')
+        self.assertTrue('schemas/0.1.0/data_schema.json' in validator.default_schema_file)
+        is_valid = validator.validate(file_path=self.valid_file_yaml)
+        validator.print_errors(self.valid_file_yaml)
+        self.assertEqual(is_valid, True)
+
+    def test_valid_json_file_against_v0(self):
+        print('___DATA_VALIDATION: Testing valid json submission against v0___')
+        validator = DataFileValidator(schema_version='0.1.0')
+        self.assertTrue('schemas/0.1.0/data_schema.json' in validator.default_schema_file)
+        is_valid = validator.validate(file_path=self.valid_file_json)
+        self.assertEqual(is_valid, True)
+        validator.print_errors(self.valid_file_json)
+
     def test_invalid_json_file(self):
         print('___DATA_VALIDATION: Testing invalid json submission___')
         self.assertEqual(self.validator.validate(file_path=self.invalid_file_json),
@@ -222,6 +268,14 @@ class DataValidationTest(unittest.TestCase):
         self.validator.print_errors(self.invalid_file_json)
 
     def test_load_data_with_custom_data_type(self):
+        self.validator = DataFileValidator()
+        # This is actually one of the default schemas but it allows testing
+        # of custom files in the default path
+        self.validator.load_custom_schema('data')
+        self.assertTrue('data' in self.validator.custom_data_schemas)
+        self.assertTrue(self.validator.validate(file_path=self.valid_file_json))
+
+    def test_load_data_with_custom_data_type_and_path(self):
         self.validator = DataFileValidator()
         custom_schema_path = os.path.join(self.base_dir, 'test_data/custom_data_schema.json')
         self.validator.load_custom_schema('different', custom_schema_path)
