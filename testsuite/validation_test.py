@@ -193,9 +193,9 @@ class DataValidationTest(unittest.TestCase):
             self.base_dir,
             'test_data/invalid_file.json')
 
-        self.valid_file_error_percent_yaml = os.path.join(
+        self.valid_file_uncertainty_percent_yaml = os.path.join(
             self.base_dir,
-            'test_data/valid_data_with_error.yaml'
+            'test_data/valid_data_with_percent.yaml'
         )
 
         self.invalid_syntax_data_file = os.path.join(
@@ -211,6 +211,18 @@ class DataValidationTest(unittest.TestCase):
         self.valid_custom_file = os.path.join(
             self.base_dir,
             'test_data/valid_file_custom.yaml')
+
+        self.file_with_zero_uncertainty = os.path.join(
+            self.base_dir,
+            'test_data/file_with_zero_uncertainty.yaml')
+
+        self.file_with_zero_percent = os.path.join(
+            self.base_dir,
+            'test_data/valid_data_with_zero_percent.yaml')
+
+        self.file_with_inconsistent_values = os.path.join(
+            self.base_dir,
+            'test_data/file_with_inconsistent_values.yaml')
 
     def test_no_file_path_supplied(self):
         try:
@@ -231,11 +243,11 @@ class DataValidationTest(unittest.TestCase):
 
         self.validator.print_errors(self.invalid_file_yaml)
 
-    def test_valid_file_with_percent_errors(self):
-        print('___DATA_VALIDATION: Testing valid yaml percent error ___')
-        self.assertEqual(self.validator.validate(file_path=self.valid_file_error_percent_yaml),
-                         False)
-        self.validator.print_errors(self.valid_file_error_percent_yaml)
+    def test_valid_file_with_percent_uncertainty(self):
+        print('___DATA_VALIDATION: Testing valid yaml percent uncertainty ___')
+        is_valid = self.validator.validate(file_path=self.valid_file_uncertainty_percent_yaml)
+        self.validator.print_errors(self.valid_file_uncertainty_percent_yaml)
+        self.assertEqual(is_valid, True)
 
     def test_valid_json_file(self):
         print('___DATA_VALIDATION: Testing valid json submission___')
@@ -318,6 +330,24 @@ class DataValidationTest(unittest.TestCase):
                          False)
 
         self.validator.print_errors(self.valid_file_yaml[:-1])
+
+    def test_file_with_zero_uncertainty(self):
+        print('___DATA_VALIDATION: Testing file with zero uncertainty___')
+        self.assertEqual(self.validator.validate(file_path=self.file_with_zero_uncertainty), False)
+
+        self.validator.print_errors(self.file_with_zero_uncertainty)
+
+    def test_file_with_zero_percent(self):
+        print('___DATA_VALIDATION: Testing file with zero percent uncertainty___')
+        self.assertEqual(self.validator.validate(file_path=self.file_with_zero_percent), False)
+
+        self.validator.print_errors(self.file_with_zero_percent)
+
+    def test_file_with_inconsistent_values(self):
+        print('___DATA_VALIDATION: Testing file with inconsistent values list___')
+        self.assertEqual(self.validator.validate(file_path=self.file_with_inconsistent_values), False)
+
+        self.validator.print_errors(self.file_with_inconsistent_values)
 
 
 if __name__ == '__main__':

@@ -16,6 +16,6 @@ dependent_variables:
           - {symerror: 0.34, label: "sys,lumi"}
       - value: 5.7
         errors:
-          - {symerror: 0.4, label: stat}
-          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
-          - {symerror: 0.4, label: "sys,lumi"}
+          - {symerror: 0.0, label: stat}
+          - {asymerror: {plus: 0.0, minus: 0.0}, label: sys}
+          - {symerror: 0.0, label: "sys,lumi"}

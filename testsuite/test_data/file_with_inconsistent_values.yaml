@@ -3,7 +3,6 @@ independent_variables:
   - header: {name: SQRT(S), units: GEV}
     values:
       - value: 7000
-      - value: 8000
 dependent_variables:
   - header: {name: SIG(total), units: FB}
     qualifiers:
