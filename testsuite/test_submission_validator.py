@@ -91,9 +91,8 @@ def test_no_file_path_v1(validator_v1):
     Tests the SubmissionFileValidator V1 against a non-existing file path
     """
 
-    # TODO: Inconsistency between DataFileValidator and SubmissionFileValidator
-    # TODO: This should raised a LookupError
-    assert validator_v1.validate(file_path=None) is False
+    with pytest.raises(LookupError):
+        validator_v1.validate(file_path=None)
 
 
 def test_invalid_syntax_v1(validator_v1, data_path):
@@ -104,7 +103,7 @@ def test_invalid_syntax_v1(validator_v1, data_path):
     file = os.path.join(data_path, 'invalid_syntax_submission.yaml')
 
     assert validator_v1.validate(file_path=file) is False
-    assert validator_v1.has_errors(file_name=file) is True
+    assert validator_v1.has_errors(file) is True
     assert len(validator_v1.get_messages(file_name=file)) == 1
 
     validator_v1.print_errors(file)

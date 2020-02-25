@@ -167,7 +167,7 @@ def test_load_valid_custom_data_and_path_v1(validator_v1, data_path):
     assert is_valid is True
 
 
-def test_load_invalid_custom_schema_v1(validator_v1, data_path):
+def test_load_invalid_custom_schema_v1(validator_v1):
     """
     Tests the DataFileValidator V1 against an unsupported schema
     """
@@ -189,7 +189,7 @@ def test_invalid_syntax_data_file_v1(validator_v1, data_path):
     file = os.path.join(data_path, 'invalid_data_file.yaml')
 
     assert validator_v1.validate(file_path=file) is False
-    assert validator_v1.has_errors(file_name=file) is True
+    assert validator_v1.has_errors(file) is True
     assert len(validator_v1.get_messages(file_name=file)) == 1
 
     validator_v1.print_errors(file)
