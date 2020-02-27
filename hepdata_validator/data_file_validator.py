@@ -121,7 +121,8 @@ class DataFileValidator(Validator):
                 json_validate(data, custom_schema)
             else:
                 json_validate(data, default_data_schema)
-                if self.schema_version != '0.1.0':
+                major_schema_version = int(self.schema_version.split('.')[0])
+                if major_schema_version > 0:
                     check_for_zero_uncertainty(data)
                     check_length_values(data)
 
@@ -170,19 +171,8 @@ def check_for_zero_uncertainty(data):
                             error_plus = error['asymerror']['plus']
                             error_minus = error['asymerror']['minus']
 
-                        if isinstance(error_plus, str):
-                            error_plus = error_plus.replace('%', '')
-                        try:
-                            error_plus = float(error_plus)
-                        except ValueError:
-                            pass
-
-                        if isinstance(error_minus, str):
-                            error_minus = error_minus.replace('%', '')
-                        try:
-                            error_minus = float(error_minus)
-                        except ValueError:
-                            pass
+                        error_plus = convert_to_float(error_plus)
+                        error_minus = convert_to_float(error_minus)
 
                         if error_plus == 0 and error_minus == 0:
                             zero_uncertainties.append(True)
@@ -191,8 +181,25 @@ def check_for_zero_uncertainty(data):
 
                     if all(zero_uncertainties):
                         raise ValidationError('Uncertainties should not all be zero', instance=value)
-                        
-                        
+
+
+def convert_to_float(error):
+    """
+    Convert error from a string to a float if possible.
+
+    :param error: uncertainty from either 'symerror' or 'asymerror'
+    :return: error as a float if possible, otherwise the original string
+    """
+    if isinstance(error, str):
+        error = error.replace('%', '')  # strip percentage symbol
+    try:
+        error = float(error)
+    except ValueError:
+        pass  # for example, an empty string
+
+    return error
+
+
 def check_length_values(data):
     """
     Check that the length of the 'values' list is consistent for

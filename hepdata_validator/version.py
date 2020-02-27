@@ -27,4 +27,4 @@
 
 from __future__ import absolute_import, print_function
 
-__version__ = "0.2.0-alpha.1"
+__version__ = "0.2.0-alpha.2"
