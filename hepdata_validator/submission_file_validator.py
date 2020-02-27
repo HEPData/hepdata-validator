@@ -84,6 +84,9 @@ class SubmissionFileValidator(Validator):
             if not self.has_errors(file_path):
                 return_value = True
 
+        except LookupError as le:
+            raise le
+
         except ScannerError as se:  # pragma: no cover
             self.add_validation_message(  # pragma: no cover
                 ValidationMessage(file=file_path, message=

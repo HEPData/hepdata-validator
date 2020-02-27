@@ -103,12 +103,14 @@ for the error message lookup map.
     from hepdata_validator.data_file_validator import DataFileValidator
     import yaml
     
-    file = yaml.load(open('data.yaml', 'r'))
+    file_contents = yaml.load(open('data.yaml', 'r'))
     data_file_validator = DataFileValidator()
     
     data_file_validator.validate(file_path='data.yaml', data=file_contents)
     
     data_file_validator.get_messages('data.yaml')
+
+    data_file_validator.print_errors('data.yaml')
 
 
 An example `offline validation script <https://github.com/HEPData/hepdata-submission/blob/master/scripts/check.py>`_
