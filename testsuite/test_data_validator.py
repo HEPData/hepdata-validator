@@ -1,5 +1,6 @@
 import os
 import pytest
+from hepdata_validator import VALID_SCHEMA_VERSIONS
 from hepdata_validator.data_file_validator import DataFileValidator
 from hepdata_validator.data_file_validator import UnsupportedDataSchemaException
 
@@ -255,3 +256,22 @@ def test_file_with_inconsistent_values_v1(validator_v1, data_path):
     validator_v1.print_errors(file)
 
     assert is_valid is False
+
+
+def test_invalid_schema_version():
+    with pytest.raises(ValueError) as excinfo:
+        validator = DataFileValidator(schema_version='0.9999.99')
+
+    assert "Invalid schema version 0.9999.99" == str(excinfo.value)
+
+
+def test_invalid_schema_file():
+    # Fudge the schema versions constant so we can check the file check works
+    VALID_SCHEMA_VERSIONS.append('0.9999.9999')
+    try:
+        with pytest.raises(ValueError) as excinfo:
+            validator = DataFileValidator(schema_version='0.9999.9999')
+
+        assert "Invalid schema file" in str(excinfo.value)
+    finally:
+        VALID_SCHEMA_VERSIONS.pop()
