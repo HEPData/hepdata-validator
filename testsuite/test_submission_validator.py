@@ -1,6 +1,7 @@
 import os
 import pytest
 import yaml
+from hepdata_validator import VALID_SCHEMA_VERSIONS
 from hepdata_validator.submission_file_validator import SubmissionFileValidator
 
 # We try to load using the CSafeLoader for speed improvements.
@@ -196,3 +197,22 @@ def test_io_error_submission_yaml_v1(validator_v1, data_path):
     validator_v1.print_errors(file)
 
     assert is_valid is False
+
+
+def test_invalid_schema_version():
+    with pytest.raises(ValueError) as excinfo:
+        validator = SubmissionFileValidator(schema_version='0.9999.99')
+
+    assert "Invalid schema version 0.9999.99" == str(excinfo.value)
+
+
+def test_invalid_schema_file():
+    # Fudge the schema versions constant so we can check the file check works
+    VALID_SCHEMA_VERSIONS.append('0.9999.9999')
+    try:
+        with pytest.raises(ValueError) as excinfo:
+            validator = SubmissionFileValidator(schema_version='0.9999.9999')
+
+        assert "Invalid schema file" in str(excinfo.value)
+    finally:
+        VALID_SCHEMA_VERSIONS.pop()

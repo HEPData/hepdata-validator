@@ -25,14 +25,8 @@ class SubmissionFileValidator(Validator):
 
     def __init__(self, *args, **kwargs):
         super(SubmissionFileValidator, self).__init__(*args, **kwargs)
-        self.default_schema_file = os.path.join(self.base_path,
-                                                'schemas',
-                                                self.schema_version,
-                                                self.submission_filename)
-        self.additional_info_schema = os.path.join(self.base_path,
-                                                   'schemas',
-                                                   self.schema_version,
-                                                   self.additional_info_filename)
+        self.default_schema_file = self._get_schema_filepath(self.submission_filename)
+        self.additional_info_schema = self._get_schema_filepath(self.additional_info_filename)
 
     def validate(self, **kwargs):
         """

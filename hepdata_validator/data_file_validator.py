@@ -50,10 +50,7 @@ class DataFileValidator(Validator):
 
     def __init__(self, *args, **kwargs):
         super(DataFileValidator, self).__init__(*args, **kwargs)
-        self.default_schema_file = os.path.join(self.base_path,
-                                                'schemas',
-                                                self.schema_version,
-                                                self.schema_name)
+        self.default_schema_file = self._get_schema_filepath(self.schema_name)
 
     def load_custom_schema(self, type, schema_file_path=None):
         """
