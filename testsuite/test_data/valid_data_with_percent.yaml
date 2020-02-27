@@ -1,14 +1,4 @@
-
 ---
-name: 'Table 1'
-label: 'Data from Table 4'
-description: |
-    Measured double-differential dijet cross sections for the range 0.0 &lt;= y* &lt; 0.5 and jet radius parameter R = 0.4.  The statistical uncertainties from data and MC simulation have been combined.  The three columns correspond to nominal, stronger or weaker correlations between jet energy scale uncertainty components
-keywords:
-  - {name: reactions, values: ['P P --> JET JET X']}
-  - {name: observables, values: ['D2SIG/DM/DYRAP']}
-  - {name: cmenergies, values: [7000.0]}
-additional_resources:
 independent_variables:
   - header: {name: 'M(2JET)', units: 'TEV'}
     values:
@@ -49,7 +39,7 @@ dependent_variables:
       - value: 777000.0
         errors:
           - {symerror: 0.73%, label: 'stat'}
-          - {asymerror: {plus: 3.1%, minus: -3.0%}, label: 'sys'}
+          - {asymerror: {plus: '', minus: -3.0%}, label: 'sys'}  # empty string for 'plus' component
           - {symerror: 0.4%, label: 'sys'}
           - {symerror: 0.1%, label: 'sys'}
           - {symerror: 0.2%, label: 'sys'}
@@ -61,7 +51,7 @@ dependent_variables:
           - {symerror: 1.0%, label: 'sys'}
           - {symerror: 0.3%, label: 'sys'}
           - {symerror: 0.8%, label: 'sys'}
-          - {asymerror: {plus: 0.5%, minus: -0.6%}, label: 'sys'}
+          - {asymerror: {plus: 0.5%, minus: ''}, label: 'sys'}  # empty string for 'minus' component
           - {symerror: 0.0%, label: 'sys'}
           - {symerror: 0.0%, label: 'sys'}
           - {symerror: 0.0%, label: 'sys'}

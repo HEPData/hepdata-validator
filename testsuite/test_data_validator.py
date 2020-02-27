@@ -86,7 +86,7 @@ def test_valid_yaml_file_v1(validator_v1, data_path):
 
 def test_invalid_yaml_file_v1(validator_v1, data_path):
     """
-    Tests the DataFileValidator V1 against an invalid JSON
+    Tests the DataFileValidator V1 against an invalid YAML
     """
 
     file = os.path.join(data_path, 'invalid_file.yaml')
@@ -96,16 +96,16 @@ def test_invalid_yaml_file_v1(validator_v1, data_path):
     assert is_valid is False
 
 
-def test_valid_yaml_file_with_percent_errors_v1(validator_v1, data_path):
+def test_valid_yaml_file_with_percent_uncertainty_v1(validator_v1, data_path):
     """
-    Tests the DataFileValidator V1 against a valid YAML with some errors
+    Tests the DataFileValidator V1 against a valid YAML with percentage uncertainties
     """
 
-    file = os.path.join(data_path, 'valid_data_with_error.yaml')
+    file = os.path.join(data_path, 'valid_data_with_percent.yaml')
     is_valid = validator_v1.validate(file_path=file)
     validator_v1.print_errors(file)
 
-    assert is_valid is False
+    assert is_valid is True
 
 
 def test_valid_json_file_v1(validator_v1, data_path):
@@ -200,7 +200,7 @@ def test_invalid_syntax_data_file_v1(validator_v1, data_path):
 
 def test_invalid_parser_yaml_file_v1(validator_v1, data_path):
     """
-    Tests the DataFileValidator V1 against an in invalid parser file
+    Tests the DataFileValidator V1 against an invalid parser file
     """
 
     file = os.path.join(data_path, 'invalid_parser_file.yaml')
@@ -218,6 +218,39 @@ def test_io_error_yaml_file_v1(validator_v1, data_path):
     file = os.path.join(data_path, 'valid_file.yaml')
     file = file[:-1]
 
+    is_valid = validator_v1.validate(file_path=file)
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+
+
+def test_file_with_zero_uncertainty_v1(validator_v1, data_path):
+    """
+    Tests the DataFileValidator V1 against a file with zero uncertainties
+    """
+    file = os.path.join(data_path, 'file_with_zero_uncertainty.yaml')
+    is_valid = validator_v1.validate(file_path=file)
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+
+
+def test_file_with_zero_percent_v1(validator_v1, data_path):
+    """
+    Tests the DataFileValidator V1 against a file with zero percentage uncertainties
+    """
+    file = os.path.join(data_path, 'valid_data_with_zero_percent.yaml')
+    is_valid = validator_v1.validate(file_path=file)
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+
+
+def test_file_with_inconsistent_values_v1(validator_v1, data_path):
+    """
+    Tests the DataFileValidator V1 against a file with an inconsistent values list
+    """
+    file = os.path.join(data_path, 'file_with_inconsistent_values.yaml')
     is_valid = validator_v1.validate(file_path=file)
     validator_v1.print_errors(file)
 

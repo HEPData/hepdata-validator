@@ -1,0 +1,89 @@
+---
+independent_variables:
+  - header: {name: 'M(2JET)', units: 'TEV'}
+    values:
+      - {low: 0.26, high: 0.31}
+dependent_variables:
+  - header: {name: 'D2(SIG)/DM(2JET)/DYRAP*', units: 'PB*TEV*-1'}
+    qualifiers:
+      - {name: SQRT(S), value: '7000.0', units: 'GeV'}
+      - {name: YRAP*, value: '0.0-0.5'}
+      - {name: R, value: '0.4'}
+      - {name: RE, value: 'P P --> JET JET X'}
+      - {name: PT(JET1), value: '> 100', units: 'GEV'}
+      - {name: PT(JET2), value: '> 50', units: 'GEV'}
+      - {name: ABS(YRAP(JET1)), value: '< 3.0'}
+      - {name: ABS(YRAP(JET2)), value: '< 3.0'}
+      - {name: Correlation assumptions, value: 'Nominal'}
+    values:
+      - value: 777000.0
+        errors:
+          - {symerror: 0.0%, label: 'stat'}
+          - {asymerror: {plus: 0.0%, minus: -0.0%}, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {asymerror: {plus: 0.0%, minus: -0.0%}, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {asymerror: {plus: 0.0%, minus: -0.0%}, label: 'sys'}
+          - {asymerror: {plus: 0.0%, minus: -0.0%}, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {asymerror: {plus: 0.0%, minus: -0.0%}, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {asymerror: {plus: 0.0%, minus: -0.0%}, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {asymerror: {plus: 0.0%, minus: -0.0%}, label: 'sys'}
+          - {asymerror: {plus: 0.0%, minus: -0.0%}, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {asymerror: {plus: 0.0%, minus: -0.0%}, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {asymerror: {plus: 0.0%, minus: -0.0%}, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {asymerror: {plus: -0.0%, minus: 0.0%}, label: 'sys'}
+          - {asymerror: {plus: -0.0%, minus: 0.0%}, label: 'sys'}
+          - {asymerror: {plus: 0.0%, minus: -0.0%}, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {asymerror: {plus: 0.0%, minus: -0.0%}, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}
+          - {symerror: 0.0%, label: 'sys'}

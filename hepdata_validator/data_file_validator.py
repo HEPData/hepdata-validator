@@ -121,6 +121,10 @@ class DataFileValidator(Validator):
                 json_validate(data, custom_schema)
             else:
                 json_validate(data, default_data_schema)
+                major_schema_version = int(self.schema_version.split('.')[0])
+                if major_schema_version > 0:
+                    check_for_zero_uncertainty(data)
+                    check_length_values(data)
 
         except ValidationError as ve:
 
@@ -143,3 +147,70 @@ class UnsupportedDataSchemaException(Exception):
 
     def __unicode__(self):
         return self.message
+
+
+def check_for_zero_uncertainty(data):
+    """
+    Check that uncertainties are not all zero.
+    
+    :param data: data table in YAML format
+    :return: raise ValidationError if uncertainties are all zero
+    """
+    for dependent_variable in data['dependent_variables']:
+
+        if 'values' in dependent_variable:
+            for value in dependent_variable['values']:
+
+                if 'errors' in value:
+                    zero_uncertainties = []
+                    for error in value['errors']:
+
+                        if 'symerror' in error:
+                            error_plus = error_minus = error['symerror']
+                        elif 'asymerror' in error:
+                            error_plus = error['asymerror']['plus']
+                            error_minus = error['asymerror']['minus']
+
+                        error_plus = convert_to_float(error_plus)
+                        error_minus = convert_to_float(error_minus)
+
+                        if error_plus == 0 and error_minus == 0:
+                            zero_uncertainties.append(True)
+                        else:
+                            zero_uncertainties.append(False)
+
+                    if all(zero_uncertainties):
+                        raise ValidationError('Uncertainties should not all be zero', instance=value)
+
+
+def convert_to_float(error):
+    """
+    Convert error from a string to a float if possible.
+
+    :param error: uncertainty from either 'symerror' or 'asymerror'
+    :return: error as a float if possible, otherwise the original string
+    """
+    if isinstance(error, str):
+        error = error.replace('%', '')  # strip percentage symbol
+    try:
+        error = float(error)
+    except ValueError:
+        pass  # for example, an empty string
+
+    return error
+
+
+def check_length_values(data):
+    """
+    Check that the length of the 'values' list is consistent for
+    each of the independent_variables and dependent_variables.
+    
+    :param data: data table in YAML format
+    :return: raise ValidationError if inconsistent
+    """
+    indep_count = [len(indep['values']) for indep in data['independent_variables']]
+    dep_count = [len(dep['values']) for dep in data['dependent_variables']]
+    if len(set(indep_count + dep_count)) > 1:  # if more than one unique count
+        raise ValidationError("Inconsistent length of 'values' list: " + 
+                              "independent_variables%s, dependent_variables%s" % (str(indep_count), str(dep_count)),
+                              instance=data)
