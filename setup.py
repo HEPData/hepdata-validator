@@ -68,7 +68,7 @@ setup(
     author_email='eamonn.maguire@cern.ch',
     description=__doc__,
     keywords='hepdata validator',
-    package_data={'hepdata_validator': ["schemas/*.json"]},
+    package_data={'hepdata_validator': ["schemas/**/*.json"]},
     long_description="HEPData validator code. More information and source code at https://github.com/hepdata/hepdata-validator",
     packages=["hepdata_validator"],
     zip_safe=False,
