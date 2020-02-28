@@ -20,10 +20,22 @@ install:
   - "travis_retry pip install --upgrade -r requirements.txt"
 
 script:
-  - python setup.py install
+  - python setup.py install sdist bdist_wheel
   - pytest testsuite
 
 after_success:
   - coveralls
 
 sudo: false
+
+deploy:
+  skip_cleanup: true
+  skip_existing: true
+  provider: pypi
+  user: hepdata
+  password:
+    secure: aB/CZsmjyCpuxF/+1l73pDjxGFHvH1Ndg/Qf4UtSWuez32UB4hVqQpqiiUlDQOuJtBcW67+3rJeNDc9eJo78rMpqT7ojKirTuGXdz9+kINFqTRtqHU3gR15xea6CBZSj5FLBE6+mh+fSAinojil9hg2WSAaqDrJp11VIFEfil4FAv5MwNIo8xP6i98Pdt9lAXBsWIt+lYDo+w8ZPBw0mP7DAEagx2O2get2NFJrdWHb8jPiDG4ON0r0JN70cugXvqdGg3//R6p8An8xGqxdVtmqwUf5W8SHiOaCxGIkh3yzkSQL+GOWNbA+H+xiIqy3CY4bXJOAW/LM2x6TV1NhE+X/6YwBZYprouDjW+TJoVLqq1wFZ/wql8PFH5YgPakwm13KVqmkrhPXY9Ky3r0hhNgkNzVjvgMewXZmrYOhKVjK6wnmvc3KNtfW7eb+PbINAahNvzcrqHGzyR4L8kvmQgAFk5EeSQxI3f5Z8oZf9EirDarfWHKLL3RVq0HqkKPvMOYqbfUkCTbBWqGyOFKFhYZT9YkzpIXQlnqioLsgxBSR5wdpDNOhQslh9zxc/s+rT3bCRSrI/MeZHOIMYc/SFnDlKjIRkNiQ9VufP8zHjHE1lHuTilHUJYMY8ifh1L6LR+269DmuYTDG7u0XWlxFO+3JNYzj9qbDvumKRubhEny4=
+  distributions: "sdist bdist_wheel"
+  on:
+    tags: true
+    repo: HEPData/hepdata-validator

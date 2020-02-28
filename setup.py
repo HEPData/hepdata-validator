@@ -4,6 +4,8 @@ import os
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
+'JSON schema and validation code for HEPData submissions'
+
 __author__ = 'eamonnmaguire'
 
 test_requirements = [
@@ -64,8 +66,8 @@ setup(
     summary='{0} release'.format(version),
     url='https://github.com/hepdata/hepdata-validator',
     license='GPLv2',
-    author='Eamonn Maguire',
-    author_email='eamonn.maguire@cern.ch',
+    author='HEPData Team',
+    author_email='info@hepdata.net',
     description=__doc__,
     keywords='hepdata validator',
     package_data={'hepdata_validator': ["schemas/**/*.json"]},
