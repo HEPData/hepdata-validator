@@ -18,6 +18,10 @@
    :target: https://github.com/HEPData/hepdata-validator/releases
    :alt: GitHub Releases
 
+.. image:: https://img.shields.io/pypi/v/hepdata-validator
+   :target: https://pypi.org/project/hepdata-validator/
+   :alt: PyPI Version
+
 .. image:: https://img.shields.io/github/issues/hepdata/hepdata-validator.svg?maxAge=2592000
    :target: https://github.com/HEPData/hepdata-validator/issues
    :alt: GitHub Issues
