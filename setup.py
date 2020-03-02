@@ -1,10 +1,10 @@
+"""JSON schema and validation code for HEPData submissions"""
+
 import sys
 
 import os
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
-
-'JSON schema and validation code for HEPData submissions'
 
 __author__ = 'eamonnmaguire'
 
@@ -60,10 +60,13 @@ with open(os.path.join('hepdata_validator', 'version.py'), 'rt') as fp:
     exec (fp.read(), g)
     version = g['__version__']
 
+# Get the long description from the README file
+with open('README.rst', 'rt') as fp:
+    long_description = fp.read()
+
 setup(
     name='hepdata_validator',
     version=version,
-    summary='{0} release'.format(version),
     url='https://github.com/hepdata/hepdata-validator',
     license='GPLv2',
     author='HEPData Team',
@@ -71,7 +74,8 @@ setup(
     description=__doc__,
     keywords='hepdata validator',
     package_data={'hepdata_validator': ["schemas/**/*.json"]},
-    long_description="HEPData validator code. More information and source code at https://github.com/hepdata/hepdata-validator",
+    long_description=long_description,
+    long_description_content_type='text/x-rst',
     packages=["hepdata_validator"],
     zip_safe=False,
     platforms='any',
