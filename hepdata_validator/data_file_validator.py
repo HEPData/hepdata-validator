@@ -176,7 +176,7 @@ def check_for_zero_uncertainty(data):
                         else:
                             zero_uncertainties.append(False)
 
-                    if all(zero_uncertainties):
+                    if len(zero_uncertainties) > 0 and all(zero_uncertainties):
                         raise ValidationError('Uncertainties should not all be zero', instance=value)
 
 
