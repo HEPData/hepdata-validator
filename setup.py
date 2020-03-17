@@ -83,7 +83,8 @@ setup(
     extras_require=extras_require,
     install_requires=[
         "pyyaml",
-        "jsonschema"
+        "jsonschema",
+        "requests",
     ],
     test_suite='hepdata_validator.testsuite',
     tests_require=test_requirements,
