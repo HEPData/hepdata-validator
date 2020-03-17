@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of HEPData.
-# Copyright (C) 2016 CERN.
+# Copyright (C) 2020 CERN.
 #
 # HEPData is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -47,13 +47,14 @@ class Validator(object):
         self.messages = {}
         self.default_schema_file = ''
         self.schemas = kwargs.get('schemas', {})
+        self.schema_folder = kwargs.get('schema_folder', 'schemas')
         self.schema_version = kwargs.get('schema_version', LATEST_SCHEMA_VERSION)
         if self.schema_version not in VALID_SCHEMA_VERSIONS:
             raise ValueError('Invalid schema version ' + self.schema_version)
 
     def _get_schema_filepath(self, schema_filename):
         full_filepath = os.path.join(self.base_path,
-                                     'schemas',
+                                     self.schema_folder,
                                      self.schema_version,
                                      schema_filename)
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of HEPData.
-# Copyright (C) 2016 CERN.
+# Copyright (C) 2020 CERN.
 #
 # HEPData is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General Public License as
@@ -66,7 +66,7 @@ class DataFileValidator(Validator):
                 _schema_file = schema_file_path
             else:
                 _schema_file = os.path.join(self.base_path,
-                                            'schemas',
+                                            self.schema_folder,
                                             self.schema_version,
                                             "{0}_schema.json".format(type))
 
