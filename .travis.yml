@@ -39,7 +39,7 @@ addons:
     - python-dev
 
 before_install:
-  - "travis_retry pip install --upgrade pip setuptools wheel"
+  - "travis_retry pip install --upgrade pip setuptools wheel coveralls"
 
 install:
   - "travis_retry pip install -e .[tests]"
