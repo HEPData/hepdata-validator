@@ -3,7 +3,7 @@ import pytest
 import shutil as sh
 from hepdata_validator.schema_downloader import HTTPSchemaDownloader
 from requests.exceptions import HTTPError
-from unittest.mock import patch
+from mock import patch
 
 
 ####################################################

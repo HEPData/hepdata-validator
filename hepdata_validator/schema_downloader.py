@@ -114,11 +114,18 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
         """
 
         file_path = os.path.join(self.saved_schema_path, schema_name)
+        file_folder = os.path.dirname(file_path)
 
         # Skip download if the file exist
         if os.path.isfile(file_path) and not overwrite:
             return
 
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        # This is compatible both with Python2 and Python3
+        try:
+            os.makedirs(file_folder)
+        except OSError:
+            if not os.path.isdir(file_folder) or not os.access(file_folder, os.W_OK):
+                raise
+
         with open(file_path, 'w') as f:
             f.write(schema_spec)

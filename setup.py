@@ -13,6 +13,7 @@ test_requirements = [
     'pytest-cov>=1.8.0',
     'pytest-pep8>=1.0.6',
     'coverage>=3.7.1',
+    'mock>=2.0.0',
 ]
 
 extras_require = {
