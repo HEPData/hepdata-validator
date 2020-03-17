@@ -6,7 +6,6 @@ import os
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
-__author__ = 'eamonnmaguire'
 
 test_requirements = [
     'pytest>=2.7.0',
@@ -16,9 +15,11 @@ test_requirements = [
     'coverage>=3.7.1',
 ]
 
-extras_require = {'docs': ['Sphinx>=1.4.2'],
-                  'tests': test_requirements,
-                  'all': []}
+extras_require = {
+    'all': [],
+    'docs': ['Sphinx>=1.4.2'],
+    'tests': test_requirements,
+}
 
 
 class PyTest(TestCommand):
@@ -57,7 +58,7 @@ class PyTest(TestCommand):
 
 g = {}
 with open(os.path.join('hepdata_validator', 'version.py'), 'rt') as fp:
-    exec (fp.read(), g)
+    exec(fp.read(), g)
     version = g['__version__']
 
 # Get the long description from the README file

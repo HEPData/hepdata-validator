@@ -1,6 +1,0 @@
-pytest>=2.7.0
-coverage
-coveralls
-pyyaml
-jsonschema
-pytest-cov

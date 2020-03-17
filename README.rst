@@ -54,7 +54,7 @@ Via GitHub (for developers):
 
    git clone https://github.com/HEPData/hepdata-validator
    cd hepdata-validator
-   pip install --upgrade -e . -r requirements.txt
+   pip install --upgrade -e .[tests]
    pytest testsuite
 
 
