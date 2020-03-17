@@ -61,7 +61,29 @@ Via GitHub (for developers):
 Usage
 -----
 
-To validate files, you need to instantiate a validator (I love OO).
+To validate against remote schemas, instantiate a ``HTTPSchemaDownloader`` object.
+
+This object retrieves schemas from a remote location, and optionally save them in the local file system,
+following the structure: ``schemas_remote/<host>/<version>/<schema_name>``
+
+.. code:: python
+
+    from hepdata_validator.schema_downloader import HTTPSchemaDownloader
+
+    downloader = HTTPSchemaDownloader(
+        endpoint="https://scikit-hep.org/pyhf/schemas/1.0.0",
+        company="scikit-hep.org",
+        version="1.0.0",
+    )
+
+    schema_name = "defs.json"
+    schema_spec = downloader.get_schema(schema_name)
+
+    # The downloader stores the remote schema in the local path
+    downloader.save_locally(schema_name, schema_spec)
+
+
+To validate submissions, instantiate a ``SubmissionFileValidator`` object:
 
 .. code:: python
 
@@ -80,7 +102,11 @@ To validate files, you need to instantiate a validator (I love OO).
     submission_file_validator.print_errors(submission_file_path)
 
 
-Data file validation is exactly the same.
+To validate data files, you need to instantiate a ``DataFileValidator`` object.
+
+In this case, the ``DataFileValidator`` can take a ``schema_folder`` argument to specify
+the location of the schemas it is going to validate (by default ``schemas``).
+This is useful when validating against schemas stored inside ``schemas_remote/<organization_name>``.
 
 .. code:: python
     
@@ -125,13 +151,22 @@ HEPData submission.
 Schemas
 -------
 
-There are currently 2 versions of the JSON schemas, `0.1.0
+When considering **native HEP JSON schemas**, there are currently 2 versions: `0.1.0
 <https://github.com/HEPData/hepdata-validator/tree/master/hepdata_validator/schemas/0.1.0>`_ and `1.0.0
-<https://github.com/HEPData/hepdata-validator/tree/master/hepdata_validator/schemas/1.0.0>`_. In most cases you should use
-**1.0.0** (the default). If you need to use a different version, you can pass a keyword argument ``schema_version``
-when initialising the validator:
+<https://github.com/HEPData/hepdata-validator/tree/master/hepdata_validator/schemas/1.0.0>`_.
+In most cases you should use **1.0.0** (the default). If you need to use a different version,
+you can pass a keyword argument ``schema_version`` when initialising the validator:
 
 .. code:: python
 
-    submission_file_validator = SubmissionFileValidator(schema_version='0.1.0')
-    data_file_validator = DataFileValidator(schema_version='0.1.0')
+    sub_validator = SubmissionFileValidator(schema_version='0.1.0')
+    data_validator = DataFileValidator(schema_version='0.1.0')
+
+When using **remotely defined schemas**, versions depend on the organization providing those schemas,
+and it is their responsibility to offer a way of keeping track of different schemas versions.
+An example may be:
+
+.. code:: python
+
+    sub_validator = SubmissionFileValidator(schema_folder='schemas_remote/scikit-hep.org', schema_version='1.0.0')
+    data_validator = DataFileValidator(schema_folder='schemas_remote/scikit-hep.org', schema_version='1.0.0')
