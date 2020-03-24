@@ -44,7 +44,7 @@ class SchemaDownloaderInterface(object):
         :return: str.
         """
 
-        pass
+        raise NotImplementedError()
 
     @abstractmethod
     def save_locally(self, schema_name, schema_spec, overwrite):
@@ -56,7 +56,7 @@ class SchemaDownloaderInterface(object):
         :return: None.
         """
 
-        pass
+        raise NotImplementedError()
 
 
 class HTTPSchemaDownloader(SchemaDownloaderInterface):
