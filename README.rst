@@ -64,17 +64,13 @@ Usage
 To validate against remote schemas, instantiate a ``HTTPSchemaDownloader`` object.
 
 This object retrieves schemas from a remote location, and optionally save them in the local file system,
-following the structure: ``schemas_remote/<host>/<version>/<schema_name>``
+following the structure: ``schemas_remote/<org>/<project>/<version>/<schema_name>``
 
 .. code:: python
 
     from hepdata_validator.schema_downloader import HTTPSchemaDownloader
 
-    downloader = HTTPSchemaDownloader(
-        endpoint="https://scikit-hep.org/pyhf/schemas/1.0.0",
-        company="scikit-hep.org",
-        version="1.0.0",
-    )
+    downloader = HTTPSchemaDownloader("https://scikit-hep.org/pyhf/schemas/1.0.0")
 
     schema_name = "defs.json"
     schema_spec = downloader.get_schema(schema_name)
