@@ -23,6 +23,7 @@
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
 import os
+import re
 import requests
 from abc import ABCMeta
 from abc import abstractmethod
@@ -65,31 +66,53 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
     Used to validate schemas available across the internet.
     """
 
-    def __init__(self, endpoint, company, version):
+    def __init__(self, schemas_url):
         """
         Initializes the local folder where schemas will be stored.
-        :param endpoint: str.
-        :param company: str.
-        :param version: str.
+        :param schemas_url: str.
         """
 
-        self.endpoint = endpoint
-        self.company = company
-        self.version = version
+        self.org = None
+        self.project = None
+        self.version = None
 
-        self.saved_schema_folder = "schemas_remote"
-        self.saved_schema_path = self._build_local_path(company, version)
+        self.schemas_path = None
+        self.schemas_url = schemas_url.strip("/")
 
-    def _build_local_path(self, company, version):
+        self._parse_remote_url(schemas_url)
+        self._build_local_path("schemas_remote", self.org, self.project, self.version)
+
+    def _parse_remote_url(self, url):
         """
-        Builds the remote schemas complete URL, up to the schema names
-        :param company: str
-        :param version: str.
-        :return: str.
+        Parses a remote URL supposing the following structure:
+        http(s)://<organization>/<project>/schemas/<version>/
+        :param url: str
+        """
+
+        nodes = url.split("/")
+
+        try:
+            assert re.compile(r"https?:").match(nodes[0])
+            assert re.compile(r"[\w.-]+").match(nodes[2])
+            assert re.compile(r"[\w.-]+").match(nodes[3])
+            assert re.compile(r"schemas").match(nodes[4])
+            assert re.compile(r"v?\d+.\d+(.\d+)?").match(nodes[5])
+        except (AssertionError, IndexError):
+            raise ValueError("Invalid remote schemas URL")
+        else:
+            self.org = nodes[2]
+            self.project = nodes[3]
+            self.version = nodes[5]
+
+    def _build_local_path(self, *paths):
+        """
+        Builds the schemas local saving path
+        :param paths: str.
         """
 
         base_path = os.path.dirname(__file__)
-        return os.path.join(base_path, self.saved_schema_folder, company, version)
+        saving_path = os.path.join(base_path, *paths)
+        self.schemas_path = saving_path
 
     def get_schema(self, schema_name):
         """
@@ -98,7 +121,7 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
         :return: str.
         """
 
-        schema_url = self.endpoint + "/" + schema_name
+        schema_url = self.schemas_url + "/" + schema_name
         schema_resp = requests.get(schema_url)
         schema_resp.raise_for_status()
 
@@ -113,7 +136,7 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
         :return: None.
         """
 
-        file_path = os.path.join(self.saved_schema_path, schema_name)
+        file_path = os.path.join(self.schemas_path, schema_name)
         file_folder = os.path.dirname(file_path)
 
         # Skip download if the file exist

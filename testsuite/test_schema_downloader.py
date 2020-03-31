@@ -17,11 +17,7 @@ def http_downloader():
     Generates a valid HTTPSchemaDownloader using example names
     """
 
-    return HTTPSchemaDownloader(
-        endpoint="https://testing.com/schemas/1.0.0",
-        company="testing.com",
-        version="1.0.0",
-    )
+    return HTTPSchemaDownloader("https://testing.com/test-project/schemas/1.0.0")
 
 
 ####################################################
@@ -55,6 +51,25 @@ def get_patched_invalid_response(url):
 ####################################################
 #            HTTPSchemaDownloader tests            #
 ####################################################
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "ftp://testing.com/project/schemas/1.0.0",
+        "https://testing.com/project/schemas/v1",
+        "https://testing.com/schemas/1.0.0",
+        "https://testing.com/project/1.0.0",
+        "https://testing.com/1.0.0",
+    ],
+)
+def test_http_downloader_invalid_url(url):
+    """
+    Tests the correct validation of urls by the HTTPSchemaDownloader
+    """
+
+    with pytest.raises(ValueError):
+        HTTPSchemaDownloader(url)
 
 
 @patch('requests.get', new=get_patched_valid_response)
@@ -94,7 +109,7 @@ def test_http_downloader_save_schema(http_downloader):
 
     http_downloader.save_locally(schema_name, schema_spec, overwrite=True)
 
-    expected_folder = http_downloader.saved_schema_path
+    expected_folder = http_downloader.schemas_path
     expected_path = os.path.join(expected_folder, schema_name)
 
     assert os.path.isfile(expected_path)
@@ -113,7 +128,7 @@ def test_http_downloader_save_existing_schema(http_downloader):
     http_downloader.save_locally(schema_name, schema_spec_1, overwrite=True)
     http_downloader.save_locally(schema_name, schema_spec_2, overwrite=False)
 
-    expected_folder = http_downloader.saved_schema_path
+    expected_folder = http_downloader.schemas_path
     expected_path = os.path.join(expected_folder, schema_name)
 
     with open(expected_path, 'r') as f:
@@ -128,7 +143,7 @@ def test_http_downloader_invalid_schema_folder(http_downloader):
     :param http_downloader: HTTPSchemaDownloader
     """
 
-    expected_folder = http_downloader.saved_schema_path
+    expected_folder = http_downloader.schemas_path
 
     # Create folder with restrictive permissions
     sh.rmtree(expected_folder)
