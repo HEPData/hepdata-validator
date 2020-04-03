@@ -55,6 +55,16 @@ class SchemaDownloaderInterface(object):
         raise NotImplementedError()
 
     @abstractmethod
+    def get_schema_type(self, schema_name):
+        """
+        Builds the data type of the file given its schema name
+        :param schema_name: str.
+        :return: str.
+        """
+
+        raise NotImplementedError()
+
+    @abstractmethod
     def save_locally(self, schema_name, schema_spec, overwrite):
         """
         Saves the remote schema in the local file system
@@ -133,6 +143,16 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
         schema_resp.raise_for_status()
 
         return schema_resp.json()
+
+    def get_schema_type(self, schema_name):
+        """
+        Builds the data type of the file given its schema name
+        :param schema_name: str.
+        :return: str.
+        """
+
+        name, ext = schema_name.split(".")
+        return "_".join([self.org, self.project, self.version, name])
 
     def save_locally(self, schema_name, schema_spec, overwrite=False):
         """

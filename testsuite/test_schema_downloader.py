@@ -98,6 +98,18 @@ def test_http_downloader_get_missing_schema(http_downloader):
         http_downloader.get_schema_spec(file_name)
 
 
+def test_http_downloader_get_schema_type(http_downloader):
+    """
+    Tests the HTTPSchemaDownloader data type building
+    :param http_downloader: HTTPSchemaDownloader
+    """
+
+    file_name = "custom.json"
+
+    schema_type = http_downloader.get_schema_type(file_name)
+    assert schema_type == "testing.com_test-project_1.0.0_custom"
+
+
 def test_http_downloader_save_schema(http_downloader):
     """
     Tests the HTTPSchemaDownloader with an invalid initialization
