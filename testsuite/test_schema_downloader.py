@@ -1,3 +1,4 @@
+import json
 import os
 import pytest
 import shutil as sh
@@ -35,9 +36,8 @@ class MockedResponse(object):
         if self.http_code != 200:
             raise HTTPError
 
-    @property
-    def text(self):
-        return self.content
+    def json(self):
+        return json.loads(self.content)
 
 
 def get_patched_valid_response(url):
@@ -73,7 +73,7 @@ def test_http_downloader_invalid_url(url):
 
 
 @patch('requests.get', new=get_patched_valid_response)
-def test_http_downloader_get_schema(http_downloader):
+def test_http_downloader_get_schema_spec(http_downloader):
     """
     Tests the HTTPSchemaDownloader with a real schema name
     :param http_downloader: HTTPSchemaDownloader
@@ -81,7 +81,7 @@ def test_http_downloader_get_schema(http_downloader):
 
     file_name = "real_schema.json"
 
-    schema_spec = http_downloader.get_schema(file_name)
+    schema_spec = http_downloader.get_schema_spec(file_name)
     assert len(schema_spec) > 0
 
 
@@ -95,7 +95,7 @@ def test_http_downloader_get_missing_schema(http_downloader):
     file_name = "missing_schema.json"
 
     with pytest.raises(HTTPError):
-        http_downloader.get_schema(file_name)
+        http_downloader.get_schema_spec(file_name)
 
 
 def test_http_downloader_save_schema(http_downloader):
@@ -105,7 +105,7 @@ def test_http_downloader_save_schema(http_downloader):
     """
 
     schema_name = "dummy.json"
-    schema_spec = '{"key_1": "value_1", "key_2": "value_2"}'
+    schema_spec = {"key_1": "value_1", "key_2": "value_2"}
 
     http_downloader.save_locally(schema_name, schema_spec, overwrite=True)
 
@@ -122,8 +122,8 @@ def test_http_downloader_save_existing_schema(http_downloader):
     """
 
     schema_name = "dummy.json"
-    schema_spec_1 = '{"key_1": "value_1", "key_2": "value_2"}'
-    schema_spec_2 = '{"key_1": "new_value_1", "key_2": "new_value_2"}'
+    schema_spec_1 = {"key_1": "value_1", "key_2": "value_2"}
+    schema_spec_2 = {"key_1": "new_value_1", "key_2": "new_value_2"}
 
     http_downloader.save_locally(schema_name, schema_spec_1, overwrite=True)
     http_downloader.save_locally(schema_name, schema_spec_2, overwrite=False)
@@ -134,7 +134,7 @@ def test_http_downloader_save_existing_schema(http_downloader):
     with open(expected_path, 'r') as f:
         file_content = f.read()
 
-    assert file_content == schema_spec_1
+    assert json.loads(file_content) == schema_spec_1
 
 
 def test_http_downloader_invalid_schema_folder(http_downloader):
@@ -150,7 +150,7 @@ def test_http_downloader_invalid_schema_folder(http_downloader):
     os.makedirs(expected_folder, mode=0o400)
 
     schema_name = "dummy.json"
-    schema_spec = '{"key_1": "value_1", "key_2": "value_2"}'
+    schema_spec = {"key_1": "value_1", "key_2": "value_2"}
 
     with pytest.raises(OSError):
         http_downloader.save_locally(schema_name, schema_spec, overwrite=True)

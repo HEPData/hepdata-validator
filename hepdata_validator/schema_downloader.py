@@ -22,11 +22,18 @@
 # waive the privileges and immunities granted to it by virtue of its status
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
+import json
 import os
 import re
 import requests
 from abc import ABCMeta
 from abc import abstractmethod
+
+# This is compatible both with Python2 and Python3
+try:
+    from urllib.parse import urljoin
+except ImportError:                     # pragma: no cover
+    from urlparse import urljoin        # pragma: no cover
 
 
 class SchemaDownloaderInterface(object):
@@ -38,11 +45,11 @@ class SchemaDownloaderInterface(object):
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def get_schema(self, schema_name):
+    def get_schema_spec(self, schema_name):
         """
         Retrieves the specified schema from a remote URL.
         :param schema_name: str.
-        :return: str.
+        :return: dict.
         """
 
         raise NotImplementedError()
@@ -114,24 +121,24 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
         saving_path = os.path.join(base_path, *paths)
         self.schemas_path = saving_path
 
-    def get_schema(self, schema_name):
+    def get_schema_spec(self, schema_name):
         """
         Downloads the specified schema from a remote URL.
         :param schema_name: str.
-        :return: str.
+        :return: dict.
         """
 
-        schema_url = self.schemas_url + "/" + schema_name
+        schema_url = urljoin(self.schemas_url, schema_name)
         schema_resp = requests.get(schema_url)
         schema_resp.raise_for_status()
 
-        return schema_resp.text
+        return schema_resp.json()
 
     def save_locally(self, schema_name, schema_spec, overwrite=False):
         """
         Saves the remote schema in the local file system
         :param schema_name: str.
-        :param schema_spec: str.
+        :param schema_spec: dict.
         :param overwrite: bool.
         :return: None.
         """
@@ -151,4 +158,5 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
                 raise
 
         with open(file_path, 'w') as f:
-            f.write(schema_spec)
+            schema_str = json.dumps(schema_spec, indent=2)
+            f.write(schema_str)
