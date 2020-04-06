@@ -23,7 +23,6 @@
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
 import json
-
 import os
 import yaml
 
@@ -45,12 +44,18 @@ class DataFileValidator(Validator):
     """
     base_path = os.path.dirname(__file__)
     schema_name = 'data_schema.json'
-
     custom_data_schemas = {}
 
     def __init__(self, *args, **kwargs):
         super(DataFileValidator, self).__init__(*args, **kwargs)
         self.default_schema_file = self._get_schema_filepath(self.schema_name)
+
+    def _get_major_version(self):
+        """
+        Parses the major version of the validator
+        :return: integer corresponding to the validator major version
+        """
+        return int(self.schema_version.split('.')[0])
 
     def load_custom_schema(self, type, schema_file_path=None):
         """
@@ -84,19 +89,14 @@ class DataFileValidator(Validator):
         Validates a data file
 
         :param file_path: path to file to be loaded.
+        :param file_type: file data type (optional).
         :param data: pre loaded YAML object (optional).
         :return: Bool to indicate the validity of the file.
         """
 
-        default_data_schema = None
-
-        with open(self.default_schema_file, 'r') as f:
-            default_data_schema = json.load(f)
-
-        # even though we are using the yaml package to load,
-        # it supports JSON and YAML
-        data = kwargs.pop("data", None)
         file_path = kwargs.pop("file_path", None)
+        file_type = kwargs.pop("file_type", None)
+        data = kwargs.pop("data", None)
 
         if file_path is None:
             raise LookupError("file_path argument must be supplied")
@@ -104,30 +104,36 @@ class DataFileValidator(Validator):
         if data is None:
 
             try:
+                # The yaml package support both JSON and YAML
                 with open(file_path, 'r') as df:
                     data = yaml.load(df, Loader=Loader)
             except Exception as e:
-                self.add_validation_message(ValidationMessage(file=file_path, message=
-                'There was a problem parsing the file.\n' + e.__str__()))
+                self.add_validation_message(ValidationMessage(
+                    file=file_path,
+                    message='There was a problem parsing the file.\n' + e.__str__(),
+                ))
                 return False
 
         try:
-
-            if 'type' in data:
+            if file_type:
+                custom_schema = self.load_custom_schema(file_type)
+                json_validate(data, custom_schema)
+            elif 'type' in data:
                 custom_schema = self.load_custom_schema(data['type'])
                 json_validate(data, custom_schema)
             else:
-                json_validate(data, default_data_schema)
-                major_schema_version = int(self.schema_version.split('.')[0])
-                if major_schema_version > 0:
+                with open(self.default_schema_file, 'r') as f:
+                    default_data_schema = json.load(f)
+                    json_validate(data, default_data_schema)
+                if self._get_major_version() > 0:
                     check_for_zero_uncertainty(data)
                     check_length_values(data)
 
         except ValidationError as ve:
-
-            self.add_validation_message(
-                ValidationMessage(file=file_path,
-                                    message=ve.message + ' in ' + str(ve.instance)))
+            self.add_validation_message(ValidationMessage(
+                file=file_path,
+                message=ve.message + ' in ' + str(ve.instance),
+            ))
 
         if self.has_errors(file_path):
             return False
