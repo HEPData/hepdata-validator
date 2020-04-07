@@ -18,7 +18,7 @@ def http_downloader():
     Generates a valid HTTPSchemaDownloader using example names
     """
 
-    return HTTPSchemaDownloader("https://testing.com/test-project/schemas/1.0.0")
+    return HTTPSchemaDownloader("https://testing.com/test-project/schemas/1.0.0/")
 
 
 ####################################################
@@ -76,7 +76,6 @@ def test_http_downloader_invalid_url(url):
 def test_http_downloader_get_schema_spec(http_downloader):
     """
     Tests the HTTPSchemaDownloader with a real schema name
-    :param http_downloader: HTTPSchemaDownloader
     """
 
     file_name = "real_schema.json"
@@ -89,7 +88,6 @@ def test_http_downloader_get_schema_spec(http_downloader):
 def test_http_downloader_get_missing_schema(http_downloader):
     """
     Tests the HTTPSchemaDownloader with a missing schema name
-    :param http_downloader: HTTPSchemaDownloader
     """
 
     file_name = "missing_schema.json"
@@ -101,7 +99,6 @@ def test_http_downloader_get_missing_schema(http_downloader):
 def test_http_downloader_get_schema_type(http_downloader):
     """
     Tests the HTTPSchemaDownloader data type building
-    :param http_downloader: HTTPSchemaDownloader
     """
 
     file_name = "custom.json"
@@ -113,7 +110,6 @@ def test_http_downloader_get_schema_type(http_downloader):
 def test_http_downloader_save_schema(http_downloader):
     """
     Tests the HTTPSchemaDownloader with an invalid initialization
-    :param http_downloader: HTTPSchemaDownloader
     """
 
     schema_name = "dummy.json"
@@ -130,7 +126,6 @@ def test_http_downloader_save_schema(http_downloader):
 def test_http_downloader_save_existing_schema(http_downloader):
     """
     Tests the HTTPSchemaDownloader with an invalid initialization
-    :param http_downloader: HTTPSchemaDownloader
     """
 
     schema_name = "dummy.json"
@@ -152,7 +147,6 @@ def test_http_downloader_save_existing_schema(http_downloader):
 def test_http_downloader_invalid_schema_folder(http_downloader):
     """
     Tests the HTTPSchemaDownloader with an invalid folder
-    :param http_downloader: HTTPSchemaDownloader
     """
 
     expected_folder = http_downloader.schemas_path

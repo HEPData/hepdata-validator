@@ -70,10 +70,10 @@ following the structure: ``schemas_remote/<org>/<project>/<version>/<schema_name
 
     from hepdata_validator.schema_downloader import HTTPSchemaDownloader
 
-    downloader = HTTPSchemaDownloader("https://scikit-hep.org/pyhf/schemas/1.0.0")
+    downloader = HTTPSchemaDownloader('https://scikit-hep.org/pyhf/schemas/1.0.0/')
 
-    schema_name = "defs.json"
-    schema_spec = downloader.get_schema(schema_name)
+    schema_name = 'workspace.json'
+    schema_spec = downloader.get_schema_spec(schema_name)
 
     # The downloader stores the remote schema in the local path
     downloader.save_locally(schema_name, schema_spec)
@@ -102,7 +102,6 @@ To validate data files, you need to instantiate a ``DataFileValidator`` object.
 
 In this case, the ``DataFileValidator`` can take a ``schema_folder`` argument to specify
 the location of the schemas it is going to validate (by default ``schemas``).
-This is useful when validating against schemas stored inside ``schemas_remote/<organization_name>``.
 
 .. code:: python
     
@@ -155,8 +154,12 @@ you can pass a keyword argument ``schema_version`` when initialising the validat
 
 .. code:: python
 
-    sub_validator = SubmissionFileValidator(schema_version='0.1.0')
-    data_validator = DataFileValidator(schema_version='0.1.0')
+    submission_file_validator = SubmissionFileValidator(schema_version='0.1.0')
+    data_file_validator = DataFileValidator(schema_version='0.1.0')
+
+
+Remote Schemas
+-------
 
 When using **remotely defined schemas**, versions depend on the organization providing those schemas,
 and it is their responsibility to offer a way of keeping track of different schemas versions.
@@ -164,5 +167,21 @@ An example may be:
 
 .. code:: python
 
-    sub_validator = SubmissionFileValidator(schema_folder='schemas_remote/scikit-hep.org', schema_version='1.0.0')
-    data_validator = DataFileValidator(schema_folder='schemas_remote/scikit-hep.org', schema_version='1.0.0')
+    data_validator = DataFileValidator()
+
+    # Split remote schema path and schema name
+    schema_path = 'https://scikit-hep.org/pyhf/schemas/1.0.0/'
+    schema_name = 'workspace.json'
+
+    # Create Downloader object and save the schema
+    pyhf_downloader = HTTPSchemaDownloader(schema_path)
+    pyhf_type = pyhf_downloader.get_schema_type(schema_name)
+    pyhf_spec = pyhf_downloader.get_schema_spec(schema_name)
+    pyhf_downloader.save_locally(schema_name, pyhf_spec)
+
+    # Load the custom schema as a custom type
+    pyhf_path = os.path.join(pyhf_downloader.schemas_path, schema_name)
+    data_validator.load_custom_schema(pyhf_type, pyhf_path)
+
+    # Validate a specific schema instance
+    data_validator.validate(file_path='pyhf_workspace.json', file_type=pyhf_type)
