@@ -168,6 +168,23 @@ def test_load_valid_custom_data_and_path_v1(validator_v1, data_path):
     assert is_valid is True
 
 
+def test_load_valid_custom_remote_data_and_path_v1(validator_v1, data_path):
+    """
+    Tests the DataFileValidator V1 against a valid remotely-defined schema
+    """
+
+    remote_schema_path = os.path.join(data_path, 'custom_remote_data_schema.json')
+    remote_schema_type = 'my_remote_schema'
+
+    validator_v1.load_custom_schema(remote_schema_type, remote_schema_path)
+
+    file = os.path.join(data_path, 'valid_file_custom_remote.json')
+    is_valid = validator_v1.validate(file_path=file, file_type=remote_schema_type)
+    validator_v1.print_errors(file)
+
+    assert is_valid is True
+
+
 def test_validate_valid_custom_data_type(validator_v1, data_path):
     """
     Tests the validation of a custom file type, defined at validation time
