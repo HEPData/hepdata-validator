@@ -25,7 +25,6 @@
 import json
 import os
 import re
-import requests
 from abc import ABCMeta
 from abc import abstractmethod
 
@@ -86,10 +85,11 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
     Used to validate schemas available across the internet.
     """
 
-    def __init__(self, schemas_url):
+    def __init__(self, schemas_resolver, schemas_url):
         """
         Initializes the local folder where schemas will be stored.
 
+        :param schemas_resolver: SchemaResolverInterface
         :param schemas_url: str.
         """
 
@@ -101,9 +101,10 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
         self.version = None
 
         self.schemas_path = None
+        self.schemas_resolver = schemas_resolver
         self.schemas_url = schemas_url
 
-        self._parse_remote_url(schemas_url)
+        self._parse_remote_url(self.schemas_url)
         self._build_local_path("schemas_remote", self.org, self.project, self.version)
 
     def _parse_remote_url(self, url):
@@ -149,10 +150,9 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
         """
 
         schema_url = urljoin(self.schemas_url, schema_name)
-        schema_resp = requests.get(schema_url)
-        schema_resp.raise_for_status()
+        schema_spec = self.schemas_resolver.resolve(schema_url)
 
-        return schema_resp.json()
+        return schema_spec
 
     def get_schema_type(self, schema_name):
         """

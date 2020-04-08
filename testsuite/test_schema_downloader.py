@@ -3,6 +3,7 @@ import os
 import pytest
 import shutil as sh
 from hepdata_validator.schema_downloader import HTTPSchemaDownloader
+from hepdata_validator.schema_resolver import DummySchemaResolver
 from requests.exceptions import HTTPError
 from mock import patch
 
@@ -18,7 +19,10 @@ def http_downloader():
     Generates a valid HTTPSchemaDownloader using example names
     """
 
-    return HTTPSchemaDownloader("https://testing.com/test-project/schemas/1.0.0/")
+    return HTTPSchemaDownloader(
+        schemas_resolver=DummySchemaResolver(),
+        schemas_url="https://testing.com/test-project/schemas/1.0.0/",
+    )
 
 
 ####################################################
@@ -69,7 +73,7 @@ def test_http_downloader_invalid_url(url):
     """
 
     with pytest.raises(ValueError):
-        HTTPSchemaDownloader(url)
+        HTTPSchemaDownloader(schemas_resolver=DummySchemaResolver(), schemas_url=url)
 
 
 @patch('requests.get', new=get_patched_valid_response)
