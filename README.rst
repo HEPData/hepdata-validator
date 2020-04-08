@@ -61,6 +61,16 @@ Via GitHub (for developers):
 Usage
 -----
 
+To resolve JSON Linked-Data schemas (JSON-LD), instantiate a ``JsonSchemaResolver``:
+
+.. code:: python
+
+    from hepdata_validator.schema_resolver import JsonSchemaResolver
+
+    schema_resolver = JsonSchemaResolver('https://scikit-hep.org/pyhf/schemas/1.0.0/')
+    schema_spec = resolver.resolve('https://scikit-hep.org/pyhf/schemas/1.0.0/workspace.json')
+
+
 To validate against remote schemas, instantiate a ``HTTPSchemaDownloader`` object.
 
 This object retrieves schemas from a remote location, and optionally save them in the local file system,
@@ -70,7 +80,10 @@ following the structure: ``schemas_remote/<org>/<project>/<version>/<schema_name
 
     from hepdata_validator.schema_downloader import HTTPSchemaDownloader
 
-    downloader = HTTPSchemaDownloader('https://scikit-hep.org/pyhf/schemas/1.0.0/')
+    schemas_url = 'https://scikit-hep.org/pyhf/schemas/1.0.0/'
+
+    resolver = JsonSchemaResolver(schemas_url)
+    downloader = HTTPSchemaDownloader(resolver, schemas_url)
 
     schema_name = 'workspace.json'
     schema_spec = downloader.get_schema_spec(schema_name)
@@ -173,8 +186,11 @@ An example may be:
     schema_path = 'https://scikit-hep.org/pyhf/schemas/1.0.0/'
     schema_name = 'workspace.json'
 
-    # Create Downloader object and save the schema
-    pyhf_downloader = HTTPSchemaDownloader(schema_path)
+    # Create Resolver and Downloader objects
+    pyhf_resolver = JsonSchemaResolver(schema_path)
+    pyhf_downloader = HTTPSchemaDownloader(pyhf_resolver, schema_path)
+
+    # Retrieve and save the schema
     pyhf_type = pyhf_downloader.get_schema_type(schema_name)
     pyhf_spec = pyhf_downloader.get_schema_spec(schema_name)
     pyhf_downloader.save_locally(schema_name, pyhf_spec)
