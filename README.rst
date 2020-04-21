@@ -61,37 +61,6 @@ Via GitHub (for developers):
 Usage
 -----
 
-To resolve JSON Linked-Data schemas (JSON-LD), instantiate a ``JsonSchemaResolver``:
-
-.. code:: python
-
-    from hepdata_validator.schema_resolver import JsonSchemaResolver
-
-    schema_resolver = JsonSchemaResolver('https://scikit-hep.org/pyhf/schemas/1.0.0/')
-    schema_spec = resolver.resolve('https://scikit-hep.org/pyhf/schemas/1.0.0/workspace.json')
-
-
-To validate against remote schemas, instantiate a ``HTTPSchemaDownloader`` object.
-
-This object retrieves schemas from a remote location, and optionally save them in the local file system,
-following the structure: ``schemas_remote/<org>/<project>/<version>/<schema_name>``
-
-.. code:: python
-
-    from hepdata_validator.schema_downloader import HTTPSchemaDownloader
-
-    schemas_url = 'https://scikit-hep.org/pyhf/schemas/1.0.0/'
-
-    resolver = JsonSchemaResolver(schemas_url)
-    downloader = HTTPSchemaDownloader(resolver, schemas_url)
-
-    schema_name = 'workspace.json'
-    schema_spec = downloader.get_schema_spec(schema_name)
-
-    # The downloader stores the remote schema in the local path
-    downloader.save_locally(schema_name, schema_spec)
-
-
 To validate submissions, instantiate a ``SubmissionFileValidator`` object:
 
 .. code:: python
@@ -201,3 +170,11 @@ An example may be:
 
     # Validate a specific schema instance
     data_validator.validate(file_path='pyhf_workspace.json', file_type=pyhf_type)
+
+
+Remotely defined schemas can come from HEP-Data itself. For instance:
+
+.. code:: python
+
+    schema_path = 'https://hepdata.net/submission/schemas/1.0.0/'
+    schema_name = 'data_schema.json'
