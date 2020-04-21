@@ -61,7 +61,7 @@ Via GitHub (for developers):
 Usage
 -----
 
-To validate submissions, instantiate a ``SubmissionFileValidator`` object:
+To validate submission files, instantiate a ``SubmissionFileValidator`` object:
 
 .. code:: python
 
@@ -70,7 +70,7 @@ To validate submissions, instantiate a ``SubmissionFileValidator`` object:
     submission_file_validator = SubmissionFileValidator()
     submission_file_path = 'submission.yaml'
     
-    # the validate method takes a string representing the file path. 
+    # the validate method takes a string representing the file path
     is_valid_submission_file = submission_file_validator.validate(file_path=submission_file_path)
     
     # if there are any error messages, they are retrievable through this call
@@ -80,10 +80,7 @@ To validate submissions, instantiate a ``SubmissionFileValidator`` object:
     submission_file_validator.print_errors(submission_file_path)
 
 
-To validate data files, you need to instantiate a ``DataFileValidator`` object.
-
-In this case, the ``DataFileValidator`` can take a ``schema_folder`` argument to specify
-the location of the schemas it is going to validate (by default ``schemas``).
+To validate data files, instantiate a ``DataFileValidator`` object:
 
 .. code:: python
     
@@ -91,7 +88,7 @@ the location of the schemas it is going to validate (by default ``schemas``).
     
     data_file_validator = DataFileValidator()
     
-    # the validate method takes a string representing the file path.
+    # the validate method takes a string representing the file path
     data_file_validator.validate(file_path='data.yaml')
     
     # if there are any error messages, they are retrievable through this call
@@ -125,13 +122,12 @@ uses the ``hepdata_validator`` package to validate the ``submission.yaml`` file 
 HEPData submission.
 
 
-Schemas
--------
+Schema Versions
+---------------
 
-When considering **native HEP JSON schemas**, there are currently 2 versions: `0.1.0
-<https://github.com/HEPData/hepdata-validator/tree/master/hepdata_validator/schemas/0.1.0>`_ and `1.0.0
-<https://github.com/HEPData/hepdata-validator/tree/master/hepdata_validator/schemas/1.0.0>`_.
-In most cases you should use **1.0.0** (the default). If you need to use a different version,
+When considering **native HEPData JSON schemas**, there are multiple `versions
+<https://github.com/HEPData/hepdata-validator/tree/master/hepdata_validator/schemas>`_.
+In most cases you should use the **latest** version (the default). If you need to use a different version,
 you can pass a keyword argument ``schema_version`` when initialising the validator:
 
 .. code:: python
@@ -141,30 +137,39 @@ you can pass a keyword argument ``schema_version`` when initialising the validat
 
 
 Remote Schemas
--------
+--------------
 
 When using **remotely defined schemas**, versions depend on the organization providing those schemas,
-and it is their responsibility to offer a way of keeping track of different schemas versions.
-An example may be:
+and it is their responsibility to offer a way of keeping track of different schema versions.
+
+The ``JsonSchemaResolver`` object resolves ``$ref`` in the JSON schema. The ``HTTPSchemaDownloader`` object retrieves
+schemas from a remote location, and optionally saves them in the local file system, following the structure:
+``schemas_remote/<org>/<project>/<version>/<schema_name>``. An example may be:
 
 .. code:: python
 
+    from hepdata_validator.data_file_validator import DataFileValidator
     data_validator = DataFileValidator()
 
     # Split remote schema path and schema name
     schema_path = 'https://scikit-hep.org/pyhf/schemas/1.0.0/'
     schema_name = 'workspace.json'
 
-    # Create Resolver and Downloader objects
+    # Create JsonSchemaResolver object to resolve $ref in JSON schema
+    from hepdata_validator.schema_resolver import JsonSchemaResolver
     pyhf_resolver = JsonSchemaResolver(schema_path)
+
+    # Create HTTPSchemaDownloader object to validate against remote schema
+    from hepdata_validator.schema_downloader import HTTPSchemaDownloader
     pyhf_downloader = HTTPSchemaDownloader(pyhf_resolver, schema_path)
 
-    # Retrieve and save the schema
+    # Retrieve and save the remote schema in the local path
     pyhf_type = pyhf_downloader.get_schema_type(schema_name)
     pyhf_spec = pyhf_downloader.get_schema_spec(schema_name)
     pyhf_downloader.save_locally(schema_name, pyhf_spec)
 
     # Load the custom schema as a custom type
+    import os
     pyhf_path = os.path.join(pyhf_downloader.schemas_path, schema_name)
     data_validator.load_custom_schema(pyhf_type, pyhf_path)
 
@@ -172,9 +177,12 @@ An example may be:
     data_validator.validate(file_path='pyhf_workspace.json', file_type=pyhf_type)
 
 
-Remotely defined schemas can come from HEP-Data itself. For instance:
+The native HEPData JSON schema are provided as part of the ``hepdata-validator`` package and it is not necessary to
+download them. However, in principle, for testing purposes, note that the same mechanism above could be used with:
 
 .. code:: python
 
-    schema_path = 'https://hepdata.net/submission/schemas/1.0.0/'
+    schema_path = 'https://hepdata.net/submission/schemas/1.0.1/'
     schema_name = 'data_schema.json'
+
+and passing a HEPData YAML data file as the ``file_path`` argument of the ``validate`` method.
