@@ -29,7 +29,7 @@ def validator_v0():
 
 @pytest.fixture(scope="module")
 def validator_v1():
-    return SubmissionFileValidator(schema_version='1.0.0')
+    return SubmissionFileValidator(schema_version='1.0.1')
 
 
 ####################################################
@@ -216,3 +216,18 @@ def test_invalid_schema_file():
         assert "Invalid schema file" in str(excinfo.value)
     finally:
         VALID_SCHEMA_VERSIONS.pop()
+
+
+def test_valid_submission_yaml_v1(validator_v1, data_path):
+    """
+    Tests the SubmissionFileValidator V1 against a valid YAML with a data_schema key
+    """
+
+    file = os.path.join(data_path, 'valid_submission_custom_remote.yaml')
+
+    with open(file, 'r') as submission:
+        yaml_obj = yaml.load_all(submission, Loader=Loader)
+        is_valid = validator_v1.validate(file_path=file, data=yaml_obj)
+        validator_v1.print_errors(file)
+
+        assert is_valid is True

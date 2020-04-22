@@ -17,7 +17,7 @@ __author__ = 'eamonnmaguire'
 
 class SubmissionFileValidator(Validator):
     """
-    Validates the Submission file YAML/JSON file
+    Validates the Submission file YAML/JSON file.
     """
     base_path = os.path.dirname(__file__)
     submission_filename = 'submission_schema.json'
@@ -30,7 +30,7 @@ class SubmissionFileValidator(Validator):
 
     def validate(self, **kwargs):
         """
-        Validates a submission file
+        Validates a submission file.
 
         :param file_path: path to file to be loaded.
         :param data: pre loaded YAML object (optional).

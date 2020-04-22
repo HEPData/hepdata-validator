@@ -23,7 +23,7 @@ def validator_v0():
 
 @pytest.fixture(scope="module")
 def validator_v1():
-    return DataFileValidator(schema_version='1.0.0')
+    return DataFileValidator(schema_version='1.0.1')
 
 
 ####################################################
@@ -168,6 +168,35 @@ def test_load_valid_custom_data_and_path_v1(validator_v1, data_path):
     assert is_valid is True
 
 
+def test_load_valid_custom_remote_data_and_path_v1(validator_v1, data_path):
+    """
+    Tests the DataFileValidator V1 against a valid remotely-defined schema
+    """
+
+    remote_schema_path = os.path.join(data_path, 'custom_remote_data_schema.json')
+    remote_schema_type = 'my_remote_schema'
+
+    validator_v1.load_custom_schema(remote_schema_type, remote_schema_path)
+
+    file = os.path.join(data_path, 'valid_file_custom_remote.json')
+    is_valid = validator_v1.validate(file_path=file, file_type=remote_schema_type)
+    validator_v1.print_errors(file)
+
+    assert is_valid is True
+
+
+def test_validate_valid_custom_data_type(validator_v1, data_path):
+    """
+    Tests the validation of a custom file type, defined at validation time
+    """
+
+    file = os.path.join(data_path, 'valid_file_custom.yaml')
+    is_valid = validator_v1.validate(file_path=file, file_type='different')
+    validator_v1.print_errors(file)
+
+    assert is_valid is True
+
+
 def test_load_invalid_custom_schema_v1(validator_v1):
     """
     Tests the DataFileValidator V1 against an unsupported schema
@@ -259,6 +288,9 @@ def test_file_with_inconsistent_values_v1(validator_v1, data_path):
 
 
 def test_invalid_schema_version():
+    """
+    Tests the DataFileValidator creation with an invalid schema version
+    """
     with pytest.raises(ValueError) as excinfo:
         validator = DataFileValidator(schema_version='0.9999.99')
 
@@ -266,7 +298,10 @@ def test_invalid_schema_version():
 
 
 def test_invalid_schema_file():
-    # Fudge the schema versions constant so we can check the file check works
+    """
+    Tests the DataFileValidator creation with an invalid schema version
+    Fudge the schema versions constant so we can check the file check works
+    """
     VALID_SCHEMA_VERSIONS.append('0.9999.9999')
     try:
         with pytest.raises(ValueError) as excinfo:

@@ -13,6 +13,7 @@ test_requirements = [
     'pytest-cov>=1.8.0',
     'pytest-pep8>=1.0.6',
     'coverage>=3.7.1',
+    'mock>=2.0.0',
 ]
 
 extras_require = {
@@ -83,7 +84,8 @@ setup(
     extras_require=extras_require,
     install_requires=[
         "pyyaml",
-        "jsonschema"
+        "jsonschema",
+        "requests",
     ],
     test_suite='hepdata_validator.testsuite',
     tests_require=test_requirements,

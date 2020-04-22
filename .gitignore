@@ -57,3 +57,6 @@ target/
 
 # PyCharm
 .idea/
+
+# Downloaded schemas
+hepdata_validator/schemas_remote/
