@@ -57,7 +57,7 @@ class SchemaDownloaderInterface(object):
     @abstractmethod
     def get_schema_type(self, schema_name):
         """
-        Builds the data type of the file given its schema name
+        Builds the data type of the file given its schema name.
 
         :param schema_name: str.
         :return: str.
@@ -68,7 +68,7 @@ class SchemaDownloaderInterface(object):
     @abstractmethod
     def save_locally(self, schema_name, schema_spec, overwrite):
         """
-        Saves the remote schema in the local file system
+        Saves the remote schema in the local file system.
 
         :param schema_name: str.
         :param schema_spec: str.
@@ -81,7 +81,7 @@ class SchemaDownloaderInterface(object):
 
 class HTTPSchemaDownloader(SchemaDownloaderInterface):
     """
-    Object to download schemas using HTTP / HTTPS
+    Object to download schemas using HTTP / HTTPS.
     Used to validate schemas available across the internet.
     """
 
@@ -132,7 +132,7 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
 
     def _build_local_path(self, *paths):
         """
-        Builds the schemas local saving path
+        Builds the schemas local saving path.
 
         :param paths: str.
         """
@@ -156,7 +156,7 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
 
     def get_schema_type(self, schema_name):
         """
-        Builds the data type of the file given its schema name
+        Builds the data type of the file given its schema name.
 
         :param schema_name: str.
         :return: str.
@@ -169,7 +169,7 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
 
     def save_locally(self, schema_name, schema_spec, overwrite=False):
         """
-        Saves the remote schema in the local file system
+        Saves the remote schema in the local file system.
 
         :param schema_name: str.
         :param schema_spec: dict.

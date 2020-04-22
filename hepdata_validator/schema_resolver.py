@@ -38,7 +38,7 @@ except ImportError:                     # pragma: no cover
 class SchemaResolverInterface(object):
     """
     Interface for the schema resolver objects.
-    Used to resolve $ref within the defined schemas
+    Used to resolve $ref within the defined schemas.
     """
 
     __metaclass__ = ABCMeta
@@ -46,7 +46,7 @@ class SchemaResolverInterface(object):
     @abstractmethod
     def resolve(self, schema_uri):
         """
-        Resolves and entire JSON-LD schema
+        Resolves an entire JSON schema.
 
         :param schema_uri: str.
         :return: dict.
@@ -56,11 +56,11 @@ class SchemaResolverInterface(object):
 
 
 class DummySchemaResolver(SchemaResolverInterface):
-    """ Dummy object to resolve schemas using `requests` as references fetcher """
+    """ Dummy object to resolve schemas using `requests` as references fetcher. """
 
     def resolve(self, schema_uri):
         """
-        Gets the schema content (dummy)
+        Gets the schema content (dummy).
 
         :param schema_uri: str.
         :return: dict.
@@ -81,7 +81,7 @@ class JsonSchemaResolver(SchemaResolverInterface):
 
     def __init__(self, schemas_uri):
         """
-        Initializes the inner $ref `jsonschema` resolver
+        Initializes the inner $ref `jsonschema` resolver.
 
         :param schemas_uri: str.
         """
@@ -94,7 +94,7 @@ class JsonSchemaResolver(SchemaResolverInterface):
 
     def _walk_dict(self, obj, ref):
         """
-        Iterates a dictionary within the schema resolving every $ref
+        Iterates a dictionary within the schema resolving every $ref.
 
         :param obj: dict.
         :param ref: str.
@@ -121,7 +121,7 @@ class JsonSchemaResolver(SchemaResolverInterface):
 
     def _walk_list(self, seq, ref):
         """
-        Iterates a sequence within the schema resolving every $ref
+        Iterates a sequence within the schema resolving every $ref.
 
         :param seq: list.
         :param ref: str.
@@ -141,7 +141,7 @@ class JsonSchemaResolver(SchemaResolverInterface):
 
     def resolve(self, schema_uri):
         """
-        Resolves a JSON-LD schema either from a remote or a local URI.
+        Resolves a JSON schema either from a remote or a local URI.
 
         :param schema_uri: str.
         :return: dict.

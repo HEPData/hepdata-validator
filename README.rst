@@ -99,7 +99,7 @@ To validate data files, instantiate a ``DataFileValidator`` object:
 
 
 Optionally, if you have already loaded the YAML object, then you can pass it through
-as a data object. You must also pass through the ``file_path`` since this is used as a key
+as a ``data`` object. You must also pass through the ``file_path`` since this is used as a key
 for the error message lookup map.
 
 .. code:: python
@@ -107,7 +107,7 @@ for the error message lookup map.
     from hepdata_validator.data_file_validator import DataFileValidator
     import yaml
     
-    file_contents = yaml.load(open('data.yaml', 'r'))
+    file_contents = yaml.safe_load(open('data.yaml', 'r'))
     data_file_validator = DataFileValidator()
     
     data_file_validator.validate(file_path='data.yaml', data=file_contents)

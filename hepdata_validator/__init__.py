@@ -37,9 +37,9 @@ RAW_SCHEMAS_URL = 'https://raw.githubusercontent.com/HEPData/hepdata-validator/'
 
 class Validator(object):
     """
-    Provides a general 'interface' for Validator in HEPdata
+    Provides a general 'interface' for Validator in HEPData
     which validates schema files created with the
-    JSONschema syntax http://json-schema.org/
+    JSON Schema syntax http://json-schema.org/
     """
     __metaclass__ = abc.ABCMeta
 
@@ -67,6 +67,7 @@ class Validator(object):
     def validate(self, **kwargs):
         """
         Validates a file.
+
         :param file_path: path to file to be loaded.
         :param data: pre loaded YAML object (optional).
         :return: true if valid, false otherwise
@@ -76,6 +77,7 @@ class Validator(object):
         """
         Returns true if the provided file name has error messages
         associated with it, false otherwise.
+
         :param file_name:
         :return: boolean
         """
@@ -85,6 +87,7 @@ class Validator(object):
         """
         Return messages for a file (if file_name provided).
         If file_name is none, returns all messages as a dict.
+
         :param file_name:
         :return: array if file_name is provided, dict otherwise.
         """
@@ -99,14 +102,16 @@ class Validator(object):
 
     def clear_messages(self):
         """
-        Removes all error messages
+        Removes all error messages.
+
         :return:
         """
         self.messages = {}
 
     def add_validation_message(self, message):
         """
-        Adds a message to the messages dict
+        Adds a message to the messages dict.
+
         :param message:
         """
         if message.file not in self.messages:
@@ -116,7 +121,7 @@ class Validator(object):
 
     def print_errors(self, file_name):
         """
-        Prints the errors observed for a file
+        Prints the errors observed for a file.
         """
         for error in self.get_messages(file_name):
             print('\t', error.__unicode__())

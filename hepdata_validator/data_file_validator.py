@@ -40,7 +40,7 @@ __author__ = 'eamonnmaguire'
 
 class DataFileValidator(Validator):
     """
-    Validates the Data file YAML/JSON file
+    Validates the YAML/JSON data file.
     """
     base_path = os.path.dirname(__file__)
     schema_name = 'data_schema.json'
@@ -52,14 +52,16 @@ class DataFileValidator(Validator):
 
     def _get_major_version(self):
         """
-        Parses the major version of the validator
+        Parses the major version of the validator.
+
         :return: integer corresponding to the validator major version
         """
         return int(self.schema_version.split('.')[0])
 
     def load_custom_schema(self, type, schema_file_path=None):
         """
-        Loads a custom schema, or will used a stored version for the given type if available
+        Loads a custom schema, or will use a stored version for the given type if available.
+
         :param type: e.g. histfactory
         :return:
         """
@@ -86,7 +88,7 @@ class DataFileValidator(Validator):
 
     def validate(self, **kwargs):
         """
-        Validates a data file
+        Validates a data file.
 
         :param file_path: path to file to be loaded.
         :param file_type: file data type (optional).
