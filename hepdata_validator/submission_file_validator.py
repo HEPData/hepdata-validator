@@ -3,6 +3,7 @@ from jsonschema import validate, ValidationError
 import os
 import yaml
 from yaml.scanner import ScannerError
+from fs.opener import fsopen
 
 # We try to load using the CSafeLoader for speed improvements.
 try:
@@ -13,6 +14,15 @@ except ImportError: #pragma: no cover
 from hepdata_validator import Validator, ValidationMessage
 
 __author__ = 'eamonnmaguire'
+
+
+def file_opener(path, mode='r'):
+    """File opener.
+
+    param path (str): the fullpath of the file
+    param mode (str): mode to open file file
+    """
+    return fsopen(path, mode=mode)
 
 
 class SubmissionFileValidator(Validator):
@@ -42,11 +52,11 @@ class SubmissionFileValidator(Validator):
         try:
             submission_file_schema = None
             additional_file_section_schema = None
-            
-            with open(self.default_schema_file, 'r') as submission_schema:
+
+            with file_opener(self.default_schema_file, 'r') as submission_schema:
                 submission_file_schema = json.load(submission_schema)
 
-            with open(self.additional_info_schema, 'r') as additional_schema:
+            with file_opener(self.additional_info_schema, 'r') as additional_schema:
                 additional_file_section_schema = json.load(additional_schema)
 
             # even though we are using the yaml package to load,
@@ -58,7 +68,7 @@ class SubmissionFileValidator(Validator):
                 raise LookupError("file_path argument must be supplied")
 
             if data is None:
-                data_file_handle = open(file_path, 'r')
+                data_file_handle = file_opener(file_path, 'r')
                 data = yaml.load_all(data_file_handle, Loader=Loader)
 
             for data_item_index, data_item in enumerate(data):

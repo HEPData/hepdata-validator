@@ -86,6 +86,7 @@ setup(
         "pyyaml",
         "jsonschema",
         "requests",
+        "fs==0.5.4",
     ],
     test_suite='hepdata_validator.testsuite',
     tests_require=test_requirements,
