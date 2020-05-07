@@ -137,6 +137,12 @@ class DataFileValidator(Validator):
                 message=ve.message + ' in ' + str(ve.instance),
             ))
 
+        except Exception as ex:
+            self.add_validation_message(ValidationMessage(
+                file=file_path,
+                message=ex.message,
+            ))
+
         if self.has_errors(file_path):
             return False
         else:
