@@ -162,10 +162,7 @@ class HTTPSchemaDownloader(SchemaDownloaderInterface):
         :return: str.
         """
 
-        name, ext = schema_name.split(".")
-        schema_type = "_".join([self.org, self.project, self.version, name])
-
-        return schema_type
+        return urljoin(self.schemas_url, schema_name)
 
     def save_locally(self, schema_name, schema_spec, overwrite=False):
         """

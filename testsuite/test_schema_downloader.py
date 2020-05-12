@@ -108,7 +108,7 @@ def test_http_downloader_get_schema_type(http_downloader):
     file_name = "custom.json"
 
     schema_type = http_downloader.get_schema_type(file_name)
-    assert schema_type == "testing.com_test-project_1.0.0_custom"
+    assert schema_type == "https://testing.com/test-project/schemas/1.0.0/custom.json"
 
 
 def test_http_downloader_save_schema(http_downloader):
