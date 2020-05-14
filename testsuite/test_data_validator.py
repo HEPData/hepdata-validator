@@ -197,9 +197,24 @@ def test_validate_valid_custom_data_type(validator_v1, data_path):
     assert is_valid is True
 
 
-def test_load_invalid_custom_schema_v1(validator_v1):
+def test_validate_undefined_data_type(validator_v1, data_path):
     """
-    Tests the DataFileValidator V1 against an unsupported schema
+    Tests the DataFileValidator V1 validation of an unsupported schema
+    """
+
+    file_path = os.path.join(data_path, 'valid_file_custom.yaml')
+    file_type = 'undefined'
+
+    is_valid = validator_v1.validate(file_path=file_path, file_type=file_type)
+    errors = validator_v1.get_messages(file_name=file_path)
+
+    assert is_valid is False
+    assert len(errors) == 1
+
+
+def test_load_undefined_custom_schema_v1(validator_v1):
+    """
+    Tests the DataFileValidator V1 loading of an unsupported schema
     """
 
     validator_v1.custom_data_schemas = {}
