@@ -137,7 +137,7 @@ class DataFileValidator(Validator):
                 message=ve.message + ' in ' + str(ve.instance),
             ))
 
-        except Exception as ex:
+        except UnsupportedDataSchemaException as ex:
             self.add_validation_message(ValidationMessage(
                 file=file_path,
                 message=ex.message,
