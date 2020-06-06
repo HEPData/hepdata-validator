@@ -1,6 +1,7 @@
 import json
 from jsonschema import validate, ValidationError
 import os
+import re
 import yaml
 from yaml.scanner import ScannerError
 
@@ -69,6 +70,8 @@ class SubmissionFileValidator(Validator):
                         validate(data_item, additional_file_section_schema)
                     else:
                         validate(data_item, submission_file_schema)
+                        if self._get_major_version() > 0:
+                            check_cmenergies(data_item)
 
                 except ValidationError as ve:
                     self.add_validation_message(
@@ -99,3 +102,23 @@ class SubmissionFileValidator(Validator):
                 data_file_handle.close()
 
         return return_value
+
+
+def check_cmenergies(data_item):
+    """
+    Check that 'cmenergies' values are numeric unless a range like 1.7-4.7.
+
+    :param data_item: YAML document from submission.yaml
+    :return: raise ValidationError if not numeric
+    """
+    for keyword in data_item['keywords']:
+        if keyword['name'] == 'cmenergies':
+            cmenergies = keyword['values']
+            for cmenergy in cmenergies:
+                try:
+                    cmenergy = float(cmenergy)
+                except ValueError:
+                    m = re.match(r'^\d+\.?\d?-\d+\.?\d?$', cmenergy)
+                    if not m or len(cmenergies) > 1:
+                        raise ValidationError("Invalid value (in GeV) for cmenergies: %s" % cmenergy,
+                                              instance=data_item)

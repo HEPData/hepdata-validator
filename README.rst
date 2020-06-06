@@ -116,6 +116,20 @@ for the error message lookup map.
 
     data_file_validator.print_errors('data.yaml')
 
+For the analogous case of the ``SubmissionFileValidator``:
+
+.. code:: python
+
+    from hepdata_validator.submission_file_validator import SubmissionFileValidator
+    import yaml
+    submission_file_path = 'submission.yaml'
+
+    # convert a generator returned by yaml.safe_load_all into a list
+    docs = list(yaml.safe_load_all(open(submission_file_path, 'r')))
+
+    submission_file_validator = SubmissionFileValidator()
+    is_valid_submission_file = submission_file_validator.validate(file_path=submission_file_path, data=docs)
+    submission_file_validator.print_errors(submission_file_path)
 
 An example `offline validation script <https://github.com/HEPData/hepdata-submission/blob/master/scripts/check.py>`_
 uses the ``hepdata_validator`` package to validate the ``submission.yaml`` file and all YAML data files of a

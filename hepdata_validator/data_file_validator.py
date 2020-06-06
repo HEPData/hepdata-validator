@@ -50,14 +50,6 @@ class DataFileValidator(Validator):
         super(DataFileValidator, self).__init__(*args, **kwargs)
         self.default_schema_file = self._get_schema_filepath(self.schema_name)
 
-    def _get_major_version(self):
-        """
-        Parses the major version of the validator.
-
-        :return: integer corresponding to the validator major version
-        """
-        return int(self.schema_version.split('.')[0])
-
     def load_custom_schema(self, type, schema_file_path=None):
         """
         Loads a custom schema, or will use a stored version for the given type if available.

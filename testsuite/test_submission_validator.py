@@ -218,7 +218,7 @@ def test_invalid_schema_file():
         VALID_SCHEMA_VERSIONS.pop()
 
 
-def test_valid_submission_yaml_v1(validator_v1, data_path):
+def test_data_schema_submission_yaml_v1(validator_v1, data_path):
     """
     Tests the SubmissionFileValidator V1 against a valid YAML with a data_schema key
     """
@@ -231,3 +231,18 @@ def test_valid_submission_yaml_v1(validator_v1, data_path):
         validator_v1.print_errors(file)
 
         assert is_valid is True
+
+
+def test_invalid_cmenergies_submission_yaml_v1(validator_v1, data_path):
+    """
+    Tests the SubmissionFileValidator V1 against an invalid cmenergies value
+    """
+
+    file = os.path.join(data_path, 'invalid_cmenergies.yaml')
+
+    with open(file, 'r') as submission:
+        yaml_obj = yaml.load_all(submission, Loader=Loader)
+        is_valid = validator_v1.validate(file_path=file, data=yaml_obj)
+        validator_v1.print_errors(file)
+
+        assert is_valid is False

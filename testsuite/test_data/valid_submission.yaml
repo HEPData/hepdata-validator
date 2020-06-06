@@ -56,5 +56,5 @@ description: The measured total cross sections.  The first systematic uncertaint
 keywords: # used for searching, possibly multiple values for each keyword
   - { name: reactions, values: [P P --> Z0 Z0 X]}
   - { name: observables, values: [SIG]}
-  - { name: cmenergies, values: [7000]}
+  - { name: cmenergies, values: [7000.0-8000.0]}
 data_file: data2.yaml

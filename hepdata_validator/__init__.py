@@ -52,6 +52,14 @@ class Validator(object):
         if self.schema_version not in VALID_SCHEMA_VERSIONS:
             raise ValueError('Invalid schema version ' + self.schema_version)
 
+    def _get_major_version(self):
+        """
+        Parses the major version of the validator.
+
+        :return: integer corresponding to the validator major version
+        """
+        return int(self.schema_version.split('.')[0])
+
     def _get_schema_filepath(self, schema_filename):
         full_filepath = os.path.join(self.base_path,
                                      self.schema_folder,
