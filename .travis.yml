@@ -44,7 +44,7 @@ before_install:
   - "travis_retry pip install --upgrade pip setuptools wheel coveralls"
 
 install:
-  - "travis_retry pip install -e .[tests]"
+  - "travis_retry pip install --ignore-installed -e .[tests]"
 
 script:
   - "pytest testsuite"
