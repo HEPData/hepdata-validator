@@ -27,12 +27,19 @@ from abc import ABCMeta
 from abc import abstractmethod
 from copy import deepcopy
 from jsonschema import RefResolver
+from jsonschema import RefResolutionError
 
 # This is compatible both with Python2 and Python3
 try:
     from urllib.parse import urljoin
 except ImportError:                     # pragma: no cover
     from urlparse import urljoin        # pragma: no cover
+
+# This is compatible both with Python2 and Python3
+try:
+    FileNotFoundError
+except NameError:                       # pragma: no cover
+    FileNotFoundError = IOError         # pragma: no cover
 
 
 class SchemaResolverInterface(object):
@@ -147,7 +154,10 @@ class JsonSchemaResolver(SchemaResolverInterface):
         :return: dict.
         """
 
-        top_ref, top_obj = self.ref_fetcher.resolve(schema_uri)
-        resolved_schema = self._walk_dict(top_obj, top_ref)
+        try:
+            top_ref, top_obj = self.ref_fetcher.resolve(schema_uri)
+            resolved_schema = self._walk_dict(top_obj, top_ref)
+        except RefResolutionError:
+            raise FileNotFoundError("Unable to find the desired schema")
 
         return resolved_schema
