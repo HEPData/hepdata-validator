@@ -2,7 +2,12 @@ import json
 import os
 import pytest
 from hepdata_validator.schema_resolver import JsonSchemaResolver
-from jsonschema.exceptions import RefResolutionError
+
+# This is compatible both with Python2 and Python3
+try:
+    FileNotFoundError
+except NameError:                       # pragma: no cover
+    FileNotFoundError = IOError         # pragma: no cover
 
 
 ####################################################
@@ -71,5 +76,5 @@ def test_json_resolver_non_existing_schema(json_resolver):
 
     file_name = "random_name.json"
 
-    with pytest.raises(RefResolutionError):
+    with pytest.raises(FileNotFoundError):
         json_resolver.resolve(file_name)
