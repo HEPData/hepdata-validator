@@ -2,9 +2,9 @@
  HEPData Validator
 ==================
 
-.. image:: https://img.shields.io/travis/HEPData/hepdata-validator.svg
-   :target: https://travis-ci.org/HEPData/hepdata-validator
-   :alt: Travis Status
+.. image:: https://github.com/HEPData/hepdata-validator/workflows/Continuous%20Integration/badge.svg?branch=master
+   :target: https://github.com/HEPData/hepdata-validator/actions?query=branch%3Amaster
+   :alt: GitHub Actions Build Status
 
 .. image:: https://coveralls.io/repos/github/HEPData/hepdata-validator/badge.svg?branch=master
    :target: https://coveralls.io/github/HEPData/hepdata-validator?branch=master
