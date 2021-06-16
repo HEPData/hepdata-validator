@@ -60,7 +60,8 @@
                             "required": [
                               "lo_data",
                               "hi_data"
-                            ]
+                            ],
+                            "additionalProperties": false
                           }
                         },
                         "required": [
@@ -132,7 +133,8 @@
                             "required": [
                               "lo",
                               "hi"
-                            ]
+                            ],
+                            "additionalProperties": false
                           }
                         },
                         "required": [
