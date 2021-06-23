@@ -77,7 +77,7 @@ class SubmissionFileValidator(Validator):
                     location = ''
                     for part in ve.path:
                         if type(part) == int:
-                            location += f'[{part}]'
+                            location += '[{0}]'.format(part)
                         elif not location:
                             location = part
                         else:

@@ -198,10 +198,10 @@ def test_invalid_parser_submission_yaml_v1(validator_v1, data_path, capsys):
 
     assert is_valid is False
     out, err = capsys.readouterr()
-    assert out.strip() == f"""error - while parsing a flow mapping
-  in "{file}", line 6, column 5
+    assert out.strip() == """error - while parsing a flow mapping
+  in "{0}", line 6, column 5
 expected ',' or '}}', but got '-'
-  in "{file}", line 7, column 3"""
+  in "{0}", line 7, column 3""".format(file)
 
 
 def test_io_error_submission_yaml_v1(validator_v1, data_path, capsys):
