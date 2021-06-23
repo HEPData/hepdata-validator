@@ -131,7 +131,6 @@ def test_valid_submission_yaml_with_records_v1(validator_v1, data_path):
 
     file = os.path.join(data_path, 'valid_submission_with_associated_record.yaml')
     is_valid = validator_v1.validate(file_path=file)
-    validator_v1.print_errors(file)
 
     assert is_valid is True
     assert validator_v1.has_errors(file) is False
@@ -144,9 +143,8 @@ def test_valid_submission_yaml_with_empty_section_v1(validator_v1, data_path):
 
     file = os.path.join(data_path, 'valid_submission_empty.yaml')
     is_valid = validator_v1.validate(file_path=file)
-    validator_v1.print_errors(file)
-
     assert is_valid is True
+    assert not validator_v1.has_errors(file)
 
 
 def test_valid_submission_yaml_with_license_v1(validator_v1, data_path):
@@ -156,12 +154,12 @@ def test_valid_submission_yaml_with_license_v1(validator_v1, data_path):
 
     file = os.path.join(data_path, 'valid_submission_license.yaml')
     is_valid = validator_v1.validate(file_path=file)
-    validator_v1.print_errors(file)
-
     assert is_valid is True
+    assert not validator_v1.has_errors(file)
 
 
-def test_invalid_submission_yaml_v1(validator_v1, data_path):
+
+def test_invalid_submission_yaml_v1(validator_v1, data_path, capsys):
     """
     Tests the SubmissionFileValidator V1 against an invalid YAML
     """
@@ -171,9 +169,25 @@ def test_invalid_submission_yaml_v1(validator_v1, data_path):
     validator_v1.print_errors(file)
 
     assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - 12321 is not of type 'string' in 'data_file' (expected: {'type': 'string'})"
 
 
-def test_invalid_parser_submission_yaml_v1(validator_v1, data_path):
+def test_invalid_license_submission_yaml_v1(validator_v1, data_path, capsys):
+    """
+    Tests the SubmissionFileValidator V1 against an invalid YAML
+    """
+
+    file = os.path.join(data_path, 'invalid_submission_license.yaml')
+    is_valid = validator_v1.validate(file_path=file)
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - None is not of type 'string' in 'data_license.name' (expected: {'type': 'string', 'maxLength': 256})"
+
+
+def test_invalid_parser_submission_yaml_v1(validator_v1, data_path, capsys):
     """
     Tests the SubmissionFileValidator V1 against an invalid parser YAML
     """
@@ -183,9 +197,14 @@ def test_invalid_parser_submission_yaml_v1(validator_v1, data_path):
     validator_v1.print_errors(file)
 
     assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == f"""error - while parsing a flow mapping
+  in "{file}", line 6, column 5
+expected ',' or '}}', but got '-'
+  in "{file}", line 7, column 3"""
 
 
-def test_io_error_submission_yaml_v1(validator_v1, data_path):
+def test_io_error_submission_yaml_v1(validator_v1, data_path, capsys):
     """
     Tests the SubmissionFileValidator V1 against a non-found file
     """
@@ -197,6 +216,8 @@ def test_io_error_submission_yaml_v1(validator_v1, data_path):
     validator_v1.print_errors(file)
 
     assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - [Errno 2] No such file or directory: '%s'" % file
 
 
 def test_invalid_schema_version():
@@ -228,12 +249,11 @@ def test_data_schema_submission_yaml_v1(validator_v1, data_path):
     with open(file, 'r') as submission:
         yaml_obj = yaml.load_all(submission, Loader=Loader)
         is_valid = validator_v1.validate(file_path=file, data=yaml_obj)
-        validator_v1.print_errors(file)
-
         assert is_valid is True
+        assert not validator_v1.has_errors(file)
 
 
-def test_invalid_cmenergies_submission_yaml_v1(validator_v1, data_path):
+def test_invalid_cmenergies_submission_yaml_v1(validator_v1, data_path, capsys):
     """
     Tests the SubmissionFileValidator V1 against an invalid cmenergies value
     """
@@ -246,3 +266,5 @@ def test_invalid_cmenergies_submission_yaml_v1(validator_v1, data_path):
         validator_v1.print_errors(file)
 
         assert is_valid is False
+        out, err = capsys.readouterr()
+        assert out.strip() == "error - Invalid value (in GeV) for cmenergies: '7000 GeV' in 'keywords[2].name.cmenergies' (expected: {'type': 'number or hyphen-separated range of numbers e.g. 1.7-4.7'})"

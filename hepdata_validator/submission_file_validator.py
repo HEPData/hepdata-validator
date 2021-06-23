@@ -43,7 +43,7 @@ class SubmissionFileValidator(Validator):
         try:
             submission_file_schema = None
             additional_file_section_schema = None
-            
+
             with open(self.default_schema_file, 'r') as submission_schema:
                 submission_file_schema = json.load(submission_schema)
 
@@ -74,9 +74,17 @@ class SubmissionFileValidator(Validator):
                             check_cmenergies(data_item)
 
                 except ValidationError as ve:
-                    self.add_validation_message(
-                            ValidationMessage(file=file_path,
-                                                message=ve.message + ' in ' + str(ve.instance)))
+                    location = ''
+                    for part in ve.path:
+                        if type(part) == int:
+                            location += f'[{part}]'
+                        elif not location:
+                            location = part
+                        else:
+                            location += '.' + part
+                    message = "{0} in '{1}' (expected: {2})".format(ve.message, location, ve.schema)
+                    self.add_validation_message(ValidationMessage(file=file_path,
+                                                                  message=message))
 
             if not self.has_errors(file_path):
                 return_value = True
@@ -111,7 +119,7 @@ def check_cmenergies(data_item):
     :param data_item: YAML document from submission.yaml
     :return: raise ValidationError if not numeric
     """
-    for keyword in data_item['keywords']:
+    for i, keyword in enumerate(data_item['keywords']):
         if keyword['name'] == 'cmenergies':
             cmenergies = keyword['values']
             for cmenergy in cmenergies:
@@ -120,5 +128,7 @@ def check_cmenergies(data_item):
                 except ValueError:
                     m = re.match(r'^\d+\.?\d?-\d+\.?\d?$', cmenergy)
                     if not m or len(cmenergies) > 1:
-                        raise ValidationError("Invalid value (in GeV) for cmenergies: %s" % cmenergy,
-                                              instance=data_item)
+                        raise ValidationError("Invalid value (in GeV) for cmenergies: '%s'" % cmenergy,
+                                              path=['keywords', i, 'name', 'cmenergies'],
+                                              instance=data_item['keywords'],
+                                              schema={ "type": "number or hyphen-separated range of numbers e.g. 1.7-4.7"})
