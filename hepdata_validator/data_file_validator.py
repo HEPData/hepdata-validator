@@ -34,6 +34,8 @@ except ImportError: #pragma: no cover
 
 from hepdata_validator import Validator, ValidationMessage
 from jsonschema import validate as json_validate, ValidationError
+from jsonschema.validators import validator_for
+from jsonschema.exceptions import by_relevance
 
 __author__ = 'eamonnmaguire'
 
@@ -117,8 +119,16 @@ class DataFileValidator(Validator):
                 json_validate(data, custom_schema)
             else:
                 with open(self.default_schema_file, 'r') as f:
-                    default_data_schema = json.load(f)
-                    json_validate(data, default_data_schema)
+                    data_schema = json.load(f)
+                    # Create validator ourselves so we can tweak the errors
+                    cls = validator_for(data_schema)
+                    v = cls(data_schema)
+                    # Make 'oneOf' errors more relevant to give better error
+                    # messages about 'low' without 'high' etc
+                    sort_fn = by_relevance(strong='oneOf')
+                    for error in sorted(v.iter_errors(data), key=sort_fn):
+                        raise error
+
                 if self._get_major_version() > 0:
                     check_for_zero_uncertainty(data)
                     check_length_values(data)
