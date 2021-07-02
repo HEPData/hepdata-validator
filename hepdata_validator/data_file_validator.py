@@ -124,10 +124,7 @@ class DataFileValidator(Validator):
                     check_length_values(data)
 
         except ValidationError as ve:
-            self.add_validation_message(ValidationMessage(
-                file=file_path,
-                message=ve.message + ' in ' + str(ve.instance),
-            ))
+            self.add_validation_error(file_path, ve)
 
         except UnsupportedDataSchemaException as ex:
             self.add_validation_message(ValidationMessage(
@@ -155,14 +152,14 @@ class UnsupportedDataSchemaException(Exception):
 def check_for_zero_uncertainty(data):
     """
     Check that uncertainties are not all zero.
-    
+
     :param data: data table in YAML format
     :return: raise ValidationError if uncertainties are all zero
     """
     for dependent_variable in data['dependent_variables']:
 
         if 'values' in dependent_variable:
-            for value in dependent_variable['values']:
+            for i, value in enumerate(dependent_variable['values']):
 
                 if 'errors' in value:
                     zero_uncertainties = []
@@ -183,7 +180,9 @@ def check_for_zero_uncertainty(data):
                             zero_uncertainties.append(False)
 
                     if len(zero_uncertainties) > 0 and all(zero_uncertainties):
-                        raise ValidationError('Uncertainties should not all be zero', instance=value)
+                        raise ValidationError("Uncertainties should not all be zero",
+                                              path=['dependent_variables', 'values', i, 'errors'],
+                                              instance=data['dependent_variables'])
 
 
 def convert_to_float(error):
@@ -207,13 +206,13 @@ def check_length_values(data):
     """
     Check that the length of the 'values' list is consistent for
     each of the independent_variables and dependent_variables.
-    
+
     :param data: data table in YAML format
     :return: raise ValidationError if inconsistent
     """
     indep_count = [len(indep['values']) for indep in data['independent_variables']]
     dep_count = [len(dep['values']) for dep in data['dependent_variables']]
     if len(set(indep_count + dep_count)) > 1:  # if more than one unique count
-        raise ValidationError("Inconsistent length of 'values' list: " + 
-                              "independent_variables%s, dependent_variables%s" % (str(indep_count), str(dep_count)),
+        raise ValidationError("Inconsistent length of 'values' list: " +
+                              "independent_variables %s, dependent_variables %s" % (str(indep_count), str(dep_count)),
                               instance=data)

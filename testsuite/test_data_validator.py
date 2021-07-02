@@ -80,12 +80,12 @@ def test_valid_yaml_file_v1(validator_v1, data_path):
 
     file = os.path.join(data_path, 'valid_file.yaml')
     is_valid = validator_v1.validate(file_path=file)
-    validator_v1.print_errors(file)
 
     assert is_valid is True
+    assert not validator_v1.has_errors(file)
 
 
-def test_invalid_yaml_file_v1(validator_v1, data_path):
+def test_invalid_yaml_file_v1(validator_v1, data_path, capsys):
     """
     Tests the DataFileValidator V1 against an invalid YAML
     """
@@ -95,6 +95,8 @@ def test_invalid_yaml_file_v1(validator_v1, data_path):
     validator_v1.print_errors(file)
 
     assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - 0.443 is not of type 'string' in 'dependent_variables[0].values[1].errors[0].label' (expected: {'type': 'string'})"
 
 
 def test_valid_yaml_file_with_percent_uncertainty_v1(validator_v1, data_path):
@@ -107,6 +109,7 @@ def test_valid_yaml_file_with_percent_uncertainty_v1(validator_v1, data_path):
     validator_v1.print_errors(file)
 
     assert is_valid is True
+    assert not validator_v1.has_errors(file)
 
 
 def test_valid_json_file_v1(validator_v1, data_path):
@@ -116,12 +119,12 @@ def test_valid_json_file_v1(validator_v1, data_path):
 
     file = os.path.join(data_path, 'valid_file.json')
     is_valid = validator_v1.validate(file_path=file)
-    validator_v1.print_errors(file)
 
     assert is_valid is True
+    assert not validator_v1.has_errors(file)
 
 
-def test_invalid_json_file_v1(validator_v1, data_path):
+def test_invalid_json_file_v1(validator_v1, data_path, capsys):
     """
     Tests the DataFileValidator V1 against an invalid JSON
     """
@@ -131,6 +134,8 @@ def test_invalid_json_file_v1(validator_v1, data_path):
     validator_v1.print_errors(file)
 
     assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - 'independent_variables' is a required property"
 
 
 def test_load_valid_custom_data_v1(validator_v1, data_path):
@@ -146,9 +151,9 @@ def test_load_valid_custom_data_v1(validator_v1, data_path):
 
     file = os.path.join(data_path, 'valid_file.json')
     is_valid = validator_v1.validate(file_path=file)
-    validator_v1.print_errors(file)
 
     assert is_valid is True
+    assert not validator_v1.has_errors(file)
 
 
 def test_load_valid_custom_data_and_path_v1(validator_v1, data_path):
@@ -163,9 +168,9 @@ def test_load_valid_custom_data_and_path_v1(validator_v1, data_path):
 
     file = os.path.join(data_path, 'valid_file_custom.yaml')
     is_valid = validator_v1.validate(file_path=file)
-    validator_v1.print_errors(file)
 
     assert is_valid is True
+    assert not validator_v1.has_errors(file)
 
 
 def test_load_valid_custom_remote_data_and_path_v1(validator_v1, data_path):
@@ -180,9 +185,9 @@ def test_load_valid_custom_remote_data_and_path_v1(validator_v1, data_path):
 
     file = os.path.join(data_path, 'valid_file_custom_remote.json')
     is_valid = validator_v1.validate(file_path=file, file_type=remote_schema_type)
-    validator_v1.print_errors(file)
 
     assert is_valid is True
+    assert not validator_v1.has_errors(file)
 
 
 def test_validate_valid_custom_data_type(validator_v1, data_path):
@@ -192,9 +197,9 @@ def test_validate_valid_custom_data_type(validator_v1, data_path):
 
     file = os.path.join(data_path, 'valid_file_custom.yaml')
     is_valid = validator_v1.validate(file_path=file, file_type='different')
-    validator_v1.print_errors(file)
 
     assert is_valid is True
+    assert not validator_v1.has_errors(file)
 
 
 def test_validate_undefined_data_type(validator_v1, data_path):
@@ -237,13 +242,11 @@ def test_invalid_syntax_data_file_v1(validator_v1, data_path):
     assert validator_v1.has_errors(file) is True
     assert len(validator_v1.get_messages(file_name=file)) == 1
 
-    validator_v1.print_errors(file)
-
     for msg in validator_v1.get_messages(file_name=file):
         assert msg.message.index("There was a problem parsing the file.") == 0
 
 
-def test_invalid_parser_yaml_file_v1(validator_v1, data_path):
+def test_invalid_parser_yaml_file_v1(validator_v1, data_path, capsys):
     """
     Tests the DataFileValidator V1 against an invalid parser file
     """
@@ -253,9 +256,15 @@ def test_invalid_parser_yaml_file_v1(validator_v1, data_path):
     validator_v1.print_errors(file)
 
     assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == f"""error - There was a problem parsing the file.
+while parsing a flow mapping
+  in "{file}", line 9, column 9
+did not find expected ',' or '}}'
+  in "{file}", line 10, column 5"""
 
 
-def test_io_error_yaml_file_v1(validator_v1, data_path):
+def test_io_error_yaml_file_v1(validator_v1, data_path, capsys):
     """
     Tests the DataFileValidator V1 against a non-found file
     """
@@ -267,9 +276,11 @@ def test_io_error_yaml_file_v1(validator_v1, data_path):
     validator_v1.print_errors(file)
 
     assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == f"error - There was a problem parsing the file.\n[Errno 2] No such file or directory: '{file}'"
 
 
-def test_file_with_zero_uncertainty_v1(validator_v1, data_path):
+def test_file_with_zero_uncertainty_v1(validator_v1, data_path, capsys):
     """
     Tests the DataFileValidator V1 against a file with zero uncertainties
     """
@@ -278,9 +289,11 @@ def test_file_with_zero_uncertainty_v1(validator_v1, data_path):
     validator_v1.print_errors(file)
 
     assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - Uncertainties should not all be zero in 'dependent_variables.values[1].errors'"
 
 
-def test_file_with_zero_percent_v1(validator_v1, data_path):
+def test_file_with_zero_percent_v1(validator_v1, data_path, capsys):
     """
     Tests the DataFileValidator V1 against a file with zero percentage uncertainties
     """
@@ -289,9 +302,11 @@ def test_file_with_zero_percent_v1(validator_v1, data_path):
     validator_v1.print_errors(file)
 
     assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - Uncertainties should not all be zero in 'dependent_variables.values[0].errors'"
 
 
-def test_file_with_inconsistent_values_v1(validator_v1, data_path):
+def test_file_with_inconsistent_values_v1(validator_v1, data_path, capsys):
     """
     Tests the DataFileValidator V1 against a file with an inconsistent values list
     """
@@ -300,6 +315,8 @@ def test_file_with_inconsistent_values_v1(validator_v1, data_path):
     validator_v1.print_errors(file)
 
     assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - Inconsistent length of 'values' list: independent_variables [1], dependent_variables [2]"
 
 
 def test_invalid_schema_version():

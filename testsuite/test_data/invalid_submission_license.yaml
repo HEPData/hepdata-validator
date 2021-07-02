@@ -48,9 +48,7 @@ keywords: # used for searching, possibly multiple values for each keyword
   - { name: observables, values: [SIG]}
   - { name: cmenergies, values: [7000]}
 data_file: data1.yaml
-data_license:
-  name: 'GPL 2'
-  url: 'some url'
+data_license: {description: null, name: null, url: null}
 additional_resources:
   - location: "https://github.com/HEPData/hepdata"
     description: "Full source code for creating this data"

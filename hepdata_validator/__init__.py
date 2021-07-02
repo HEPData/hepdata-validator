@@ -116,6 +116,31 @@ class Validator(object):
         """
         self.messages = {}
 
+    def add_validation_error(self, file_path, ve):
+        """
+        Formats a validation error into a readable error message and adds it to
+        the messages dict
+        """
+        location = ''
+        if ve.path:
+            for part in ve.path:
+                if type(part) == int:
+                    location += '[{0}]'.format(part)
+                elif not location:
+                    location = part
+                else:
+                    location += '.' + part
+
+        message = ve.message
+        if location:
+            message += f" in '{location}'"
+        # Add expected schema section if it it's present and isn't the full schema
+        if isinstance(ve.schema, dict) and '$schema' not in ve.schema.keys():
+            message += f" (expected: {ve.schema})"
+
+        self.add_validation_message(ValidationMessage(file=file_path,
+                                                      message=message))
+
     def add_validation_message(self, message):
         """
         Adds a message to the messages dict.
