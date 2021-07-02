@@ -1,9 +1,9 @@
 ---
 
 additional_resources:
-  - location: "http:github.com/HEPData/hepdata"
+  - location: "https://github.com/HEPData/hepdata"
     description: "Full source code for creating this data"
-  - location: "http:github.com/HEPData/hepdata"
+  - location: "https://github.com/HEPData/hepdata"
     description: "Full source code for creating this data"
     license:
       name: 'GPL 2'
@@ -52,9 +52,9 @@ data_license:
   name: 'GPL 2'
   url: 'some url'
 additional_resources:
-  - location: "http:github.com/HEPData/hepdata"
+  - location: "https://github.com/HEPData/hepdata"
     description: "Full source code for creating this data"
-  - location: "http:github.com/HEPData/hepdata"
+  - location: "https://github.com/HEPData/hepdata"
     description: "Full source code for creating this data"
     license:
       name: 'GPL 2'

@@ -8,7 +8,7 @@ keywords: # used for searching, possibly multiple values for each keyword
   - { name: cmenergies, value: [7000]}
 data_file:'12321'
 additional_resources:
-  - location: "http:github.com/HEPData/hepdata"
+  - location: "https://github.com/HEPData/hepdata"
     description: "Full source code for creating this data"
-  - location: "http:github.com/HEPData/hepdata"
+  - location: "https://github.com/HEPData/hepdata"
     description: "Full source code for creating this data"
