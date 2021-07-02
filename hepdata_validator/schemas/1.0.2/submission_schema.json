@@ -16,7 +16,7 @@
           "name": { "type": "string", "maxLength": 128, "enum": ["cmenergies", "observables", "reactions", "phrases"] },
           "values": {
             "type": "array",
-            "items": { "type": [ "string", "number" ] }
+            "items": { "type": [ "string", "number" ], "maxLength": 128 }
           }
         },
         "required": [ "name", "values" ],

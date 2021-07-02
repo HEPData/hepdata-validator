@@ -29,7 +29,7 @@ def validator_v0():
 
 @pytest.fixture(scope="module")
 def validator_v1():
-    return SubmissionFileValidator(schema_version='1.0.1')
+    return SubmissionFileValidator(schema_version='1.0.2')
 
 
 ####################################################
@@ -185,6 +185,20 @@ def test_invalid_license_submission_yaml_v1(validator_v1, data_path, capsys):
     assert is_valid is False
     out, err = capsys.readouterr()
     assert out.strip() == "error - None is not of type 'string' in 'data_license.name' (expected: {'type': 'string', 'maxLength': 256})"
+
+
+def test_invalid_keyword_submission_yaml_v1(validator_v1, data_path, capsys):
+    """
+    Tests the SubmissionFileValidator V1 against an invalid YAML
+    """
+
+    file = os.path.join(data_path, 'invalid_submission_keyword.yaml')
+    is_valid = validator_v1.validate(file_path=file)
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - 'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz' is too long in 'keywords[3].values[0]' (expected: {'type': ['string', 'number'], 'maxLength': 128})"
 
 
 def test_invalid_parser_submission_yaml_v1(validator_v1, data_path, capsys):
