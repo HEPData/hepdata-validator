@@ -277,7 +277,7 @@ def test_io_error_yaml_file_v1(validator_v1, data_path, capsys):
 
     assert is_valid is False
     out, err = capsys.readouterr()
-    assert out.strip() == "error - There was a problem parsing the file.\n[Errno 2] No such file or directory: '/Users/ksvf48/Documents/dev/HEPData/hepdata-validator/testsuite/test_data/valid_file.yam'"
+    assert out.strip() == f"error - There was a problem parsing the file.\n[Errno 2] No such file or directory: '{file}'"
 
 
 def test_file_with_zero_uncertainty_v1(validator_v1, data_path, capsys):
