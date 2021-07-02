@@ -332,6 +332,19 @@ def test_file_with_invalid_independent_variables_v1(validator_v1, data_path, cap
     assert out.strip() == "error - {'low': 6000} is not valid under any of the given schemas in 'independent_variables[0].values[0]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'type': ['string', 'number']}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
 
 
+def test_file_with_missing_dependent_values_v1(validator_v1, data_path, capsys):
+    """
+    Tests the DataFileValidator V1 against a file with missing dependent values
+    """
+    file = os.path.join(data_path, 'invalid_missing_values.yaml')
+    is_valid = validator_v1.validate(file_path=file)
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - 'values' is a required property in 'dependent_variables[0]' (expected: {'type': 'object', 'properties': {'header': {'type': 'object', 'properties': {'name': {'type': 'string'}, 'units': {'type': 'string'}}, 'required': ['name'], 'additionalProperties': False}, 'qualifiers': {'type': 'array', 'items': {'type': 'object', 'properties': {'name': {'type': 'string'}, 'value': {'type': ['string', 'number']}, 'units': {'type': 'string'}}, 'required': ['name', 'value'], 'additionalProperties': False}}, 'values': {'type': 'array', 'items': {'type': 'object', 'properties': {'value': {'type': ['string', 'number']}, 'errors': {'type': 'array', 'items': {'type': 'object', 'properties': {'symerror': {'type': ['number', 'string']}, 'asymerror': {'type': 'object', 'properties': {'minus': {'type': ['number', 'string']}, 'plus': {'type': ['number', 'string']}}, 'required': ['minus', 'plus'], 'additionalProperties': False}, 'label': {'type': 'string'}}, 'oneOf': [{'required': ['symerror']}, {'required': ['asymerror']}], 'additionalProperties': False}}}, 'required': ['value'], 'additionalProperties': False}}}, 'required': ['header', 'values'], 'additionalProperties': False})"
+
+
 def test_invalid_schema_version():
     """
     Tests the DataFileValidator creation with an invalid schema version

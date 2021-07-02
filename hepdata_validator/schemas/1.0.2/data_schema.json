@@ -110,6 +110,7 @@
             }
           }
         },
+        "required": [ "header", "values" ],
         "additionalProperties": false
       }
     }
