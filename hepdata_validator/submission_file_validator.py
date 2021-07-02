@@ -74,17 +74,7 @@ class SubmissionFileValidator(Validator):
                             check_cmenergies(data_item)
 
                 except ValidationError as ve:
-                    location = ''
-                    for part in ve.path:
-                        if type(part) == int:
-                            location += '[{0}]'.format(part)
-                        elif not location:
-                            location = part
-                        else:
-                            location += '.' + part
-                    message = "{0} in '{1}' (expected: {2})".format(ve.message, location, ve.schema)
-                    self.add_validation_message(ValidationMessage(file=file_path,
-                                                                  message=message))
+                    self.add_validation_error(file_path, ve)
 
             if not self.has_errors(file_path):
                 return_value = True
