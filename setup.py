@@ -83,11 +83,12 @@ setup(
     platforms='any',
     extras_require=extras_require,
     install_requires=[
-        "pyyaml",
+        "pyyaml>=5.4.1",
         "jsonschema",
         "requests",
     ],
     test_suite='hepdata_validator.testsuite',
     tests_require=test_requirements,
-    cmdclass={'test': PyTest}
+    cmdclass={'test': PyTest},
+    python_requires='>=3.6'
 )

@@ -30,7 +30,7 @@
    :target: http://hepdata-validator.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
-JSON schema and validation code for HEPData submissions
+JSON schema and validation code (in Python 3) for HEPData submissions
 
 * Documentation: http://hepdata-validator.readthedocs.io
 
