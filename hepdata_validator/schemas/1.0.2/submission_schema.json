@@ -57,7 +57,7 @@
             "additionalProperties": false
           }
         },
-        "required": [ "location" ],
+        "required": [ "location", "description" ],
         "additionalProperties": false
       }
     },

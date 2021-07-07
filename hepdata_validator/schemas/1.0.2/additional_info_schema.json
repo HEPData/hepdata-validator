@@ -51,20 +51,22 @@
       "items": {
         "type": "object",
         "properties": {
-          "location": { "type": "string" },
+          "location": { "type": "string", "maxLength": 256 },
           "description": { "type": "string" },
+          "type": { "type": "string", "maxLength": 64 },
           "license": {
             "type": "object",
             "properties": {
-              "name": { "type": "string" },
-              "url": { "type": "string" },
+              "name": { "type": "string", "maxLength": 256 },
+              "url": { "type": "string", "maxLength": 256 },
               "description": { "type": "string" }
             },
             "required": [ "name", "url" ],
             "additionalProperties": false
           }
         },
-        "required": [ "location", "description" ]
+        "required": [ "location", "description" ],
+        "additionalProperties": false
       }
     },
     "comment": {
