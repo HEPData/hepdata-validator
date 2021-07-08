@@ -61,18 +61,74 @@ Via GitHub (for developers):
 Usage
 -----
 
+Command line
+============
+
+Installing ``hepdata-validator`` adds the command ``hepdata-validate`` to your path, which allows you to validate a
+`HEPData submission <https://hepdata-submission.readthedocs.io/en/latest/introduction.html>`_ offline. You can
+validate a directory of submission and data files, a zipped archive file containing all of the files (as would be
+uploaded to `HEPData.net <https://hepdata.net>`_), or a
+`single submission file <https://hepdata-submission.readthedocs.io/en/latest/single_yaml.html>`_.
+
+Examples
+^^^^^^^^
+
+To validate a submission in the current directory:
+
+.. code:: bash
+
+    $ hepdata-validate
+
+e.g. To validate a submission in another directory:
+
+.. code:: bash
+
+    $ hepdata-validate -d ../TestHEPSubmission
+
+e.g. To validate a zip file in the current directory:
+
+.. code:: bash
+
+    $ hepdata-validate -z TestHEPSubmission.zip
+
+Usage options
+^^^^^^^^^^^^^
+
+.. code:: bash
+
+    $ hepdata-validate --help
+    Usage: hepdata-validate [OPTIONS]
+
+      Offline validation of submission.yaml and YAML data files. Can check either
+      a single file or a directory
+
+    Options:
+      -d, --directory TEXT  Directory to check (defaults to current working
+                            directory)
+      -f, --file TEXT       Single submission yaml file to check - see
+                            https://hepdata-
+                            submission.readthedocs.io/en/latest/single_yaml.html.
+                            (Overrides directory)
+      -z, --zipfile TEXT    Zipped file (e.g. .zip, .tar.gz, .gzip) to check.
+                            (Overrides directory and file)
+      --help                Show this message and exit.
+
+
+Python
+======
+
 To validate submission files, instantiate a ``SubmissionFileValidator`` object:
 
 .. code:: python
 
     from hepdata_validator.submission_file_validator import SubmissionFileValidator
-    
+
     submission_file_validator = SubmissionFileValidator()
     submission_file_path = 'submission.yaml'
-    
+
     # the validate method takes a string representing the file path
     is_valid_submission_file = submission_file_validator.validate(file_path=submission_file_path)
-    
+
     # if there are any error messages, they are retrievable through this call
     submission_file_validator.get_messages()
 
@@ -83,14 +139,14 @@ To validate submission files, instantiate a ``SubmissionFileValidator`` object:
 To validate data files, instantiate a ``DataFileValidator`` object:
 
 .. code:: python
-    
+
     from hepdata_validator.data_file_validator import DataFileValidator
-    
+
     data_file_validator = DataFileValidator()
-    
+
     # the validate method takes a string representing the file path
     data_file_validator.validate(file_path='data.yaml')
-    
+
     # if there are any error messages, they are retrievable through this call
     data_file_validator.get_messages()
 
@@ -106,12 +162,12 @@ for the error message lookup map.
 
     from hepdata_validator.data_file_validator import DataFileValidator
     import yaml
-    
+
     file_contents = yaml.safe_load(open('data.yaml', 'r'))
     data_file_validator = DataFileValidator()
-    
+
     data_file_validator.validate(file_path='data.yaml', data=file_contents)
-    
+
     data_file_validator.get_messages('data.yaml')
 
     data_file_validator.print_errors('data.yaml')
@@ -130,10 +186,6 @@ For the analogous case of the ``SubmissionFileValidator``:
     submission_file_validator = SubmissionFileValidator()
     is_valid_submission_file = submission_file_validator.validate(file_path=submission_file_path, data=docs)
     submission_file_validator.print_errors(submission_file_path)
-
-An example `offline validation script <https://github.com/HEPData/hepdata-submission/blob/master/scripts/check.py>`_
-uses the ``hepdata_validator`` package to validate the ``submission.yaml`` file and all YAML data files of a
-HEPData submission.
 
 
 Schema Versions

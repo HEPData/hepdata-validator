@@ -83,13 +83,17 @@ setup(
     platforms='any',
     extras_require=extras_require,
     install_requires=[
-        "pyyaml>=5.4.1",
+        "click",
         "jsonschema",
         "packaging",
+        "pyyaml>=5.4.1",
         "requests",
     ],
     test_suite='hepdata_validator.testsuite',
     tests_require=test_requirements,
     cmdclass={'test': PyTest},
-    python_requires='>=3.6'
+    python_requires='>=3.6',
+    entry_points={
+        'console_scripts': ['hepdata-validate=hepdata_validator.cli:validate'],
+    }
 )
