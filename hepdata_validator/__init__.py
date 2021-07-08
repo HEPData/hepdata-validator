@@ -24,6 +24,7 @@
 
 import abc
 import os
+from packaging import version as packaging_version
 
 from .version import __version__
 
@@ -48,22 +49,16 @@ class Validator(object):
         self.default_schema_file = ''
         self.schemas = kwargs.get('schemas', {})
         self.schema_folder = kwargs.get('schema_folder', 'schemas')
-        self.schema_version = kwargs.get('schema_version', LATEST_SCHEMA_VERSION)
-        if self.schema_version not in VALID_SCHEMA_VERSIONS:
-            raise ValueError('Invalid schema version ' + self.schema_version)
+        self.schema_version_string = kwargs.get('schema_version', LATEST_SCHEMA_VERSION)
+        if self.schema_version_string not in VALID_SCHEMA_VERSIONS:
+            raise ValueError('Invalid schema version ' + self.schema_version_string)
+        self.schema_version = packaging_version.parse(self.schema_version_string)
 
-    def _get_major_version(self):
-        """
-        Parses the major version of the validator.
-
-        :return: integer corresponding to the validator major version
-        """
-        return int(self.schema_version.split('.')[0])
 
     def _get_schema_filepath(self, schema_filename):
         full_filepath = os.path.join(self.base_path,
                                      self.schema_folder,
-                                     self.schema_version,
+                                     self.schema_version_string,
                                      schema_filename)
 
         if not os.path.isfile(full_filepath):

@@ -1,6 +1,7 @@
 import json
 from jsonschema import validate, ValidationError
 import os
+from packaging import version as packaging_version
 import re
 import yaml
 from yaml.scanner import ScannerError
@@ -62,6 +63,8 @@ class SubmissionFileValidator(Validator):
                 data_file_handle = open(file_path, 'r')
                 data = yaml.load_all(data_file_handle, Loader=Loader)
 
+            table_names = []
+            table_data_files = []
             for data_item_index, data_item in enumerate(data):
                 if data_item is None:
                     continue
@@ -70,11 +73,16 @@ class SubmissionFileValidator(Validator):
                         validate(data_item, additional_file_section_schema)
                     else:
                         validate(data_item, submission_file_schema)
-                        if self._get_major_version() > 0:
+                        if self.schema_version.major > 0:
                             check_cmenergies(data_item)
+                            table_names.append(data_item['name'])
+                            table_data_files.append(data_item['data_file'])
 
                 except ValidationError as ve:
                     self.add_validation_error(file_path, ve)
+
+            if self.schema_version >= packaging_version.parse("1.0.2"):
+                self.check_for_duplicates(file_path, table_names, table_data_files)
 
             if not self.has_errors(file_path):
                 return_value = True
@@ -100,6 +108,24 @@ class SubmissionFileValidator(Validator):
                 data_file_handle.close()
 
         return return_value
+
+    def check_for_duplicates(self, file_path, table_names, table_data_files):
+        for (key, items) in [('name', table_names), ('data_file', table_data_files)]:
+            seen = set()
+            duplicates = []
+
+            for x in items:
+                if x not in seen:
+                    seen.add(x)
+                elif x not in duplicates:
+                    duplicates.append(x)
+
+            if duplicates:
+                for d in duplicates:
+                    self.add_validation_message(ValidationMessage(
+                        file=file_path,
+                        message=f"Duplicate table {key}: {d}"
+                    ))
 
 
 def check_cmenergies(data_item):

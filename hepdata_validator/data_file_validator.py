@@ -68,7 +68,7 @@ class DataFileValidator(Validator):
             else:
                 _schema_file = os.path.join(self.base_path,
                                             self.schema_folder,
-                                            self.schema_version,
+                                            self.schema_version_string,
                                             "{0}_schema.json".format(type))
 
             with open(_schema_file, 'r') as f:
@@ -129,7 +129,7 @@ class DataFileValidator(Validator):
                     for error in sorted(v.iter_errors(data), key=sort_fn):
                         raise error
 
-                if self._get_major_version() > 0:
+                if self.schema_version.major > 0:
                     check_for_zero_uncertainty(data)
                     check_length_values(data)
 

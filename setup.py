@@ -85,6 +85,7 @@ setup(
     install_requires=[
         "pyyaml>=5.4.1",
         "jsonschema",
+        "packaging",
         "requests",
     ],
     test_suite='hepdata_validator.testsuite',
