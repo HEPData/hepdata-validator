@@ -61,14 +61,18 @@ Via GitHub (for developers):
 Usage
 -----
 
+``hepdata-validator`` allows you to validate (via the command line or python):
+
+   * A full directory of submission and data files
+   * A zipped archive file containing all of the files (`full details <https://hepdata-submission.readthedocs.io/en/latest/introduction.html>`_)
+   * A `single submission file <https://hepdata-submission.readthedocs.io/en/latest/single_yaml.html>`_
+   * Individual data and submission files (via python only)
+
 Command line
 ============
 
 Installing ``hepdata-validator`` adds the command ``hepdata-validate`` to your path, which allows you to validate a
-`HEPData submission <https://hepdata-submission.readthedocs.io/en/latest/introduction.html>`_ offline. You can
-validate a directory of submission and data files, a zipped archive file containing all of the files (as would be
-uploaded to `HEPData.net <https://hepdata.net>`_), or a
-`single submission file <https://hepdata-submission.readthedocs.io/en/latest/single_yaml.html>`_.
+`HEPData submission <https://hepdata-submission.readthedocs.io/en/latest/introduction.html>`_ offline.
 
 Examples
 ^^^^^^^^
@@ -79,17 +83,23 @@ To validate a submission in the current directory:
 
     $ hepdata-validate
 
-e.g. To validate a submission in another directory:
+To validate a submission in another directory:
 
 .. code:: bash
 
     $ hepdata-validate -d ../TestHEPSubmission
 
-e.g. To validate a zip file in the current directory:
+To validate a zip file in the current directory:
 
 .. code:: bash
 
     $ hepdata-validate -z TestHEPSubmission.zip
+
+To validate a single yaml file in the current directory:
+
+.. code:: bash
+
+    $ hepdata-validate -f hep_submission.yaml
 
 Usage options
 ^^^^^^^^^^^^^
@@ -116,6 +126,28 @@ Usage options
 
 Python
 ======
+
+Validating a full submission
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To validate a full submission, use the `validate` method in `full_submission_validator`:
+
+.. code:: python
+
+    from hepdata_validator.full_submission_validator import validate
+
+    # validate a directory
+    is_dir_valid = validate(directory='TestHEPSubmission')
+
+    # validate a zipped archive
+    is_zip_valid = validate(zipfile='TestHEPSubmission.zip')
+
+    # validate a single file
+    is_file_valid = validate(file='hep_submission.yaml')
+
+
+Validating individual files
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To validate submission files, instantiate a ``SubmissionFileValidator`` object:
 
