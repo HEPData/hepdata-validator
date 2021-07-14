@@ -1,5 +1,5 @@
 import json
-from jsonschema import validate, ValidationError
+from jsonschema import validate, ValidationError, RefResolver
 import os
 from packaging import version as packaging_version
 import re
@@ -24,11 +24,14 @@ class SubmissionFileValidator(Validator):
     base_path = os.path.dirname(__file__)
     submission_filename = 'submission_schema.json'
     additional_info_filename = 'additional_info_schema.json'
+    additional_resources_filename = 'additional_resources_schema.json'
 
     def __init__(self, *args, **kwargs):
         super(SubmissionFileValidator, self).__init__(*args, **kwargs)
         self.default_schema_file = self._get_schema_filepath(self.submission_filename)
         self.additional_info_schema = self._get_schema_filepath(self.additional_info_filename)
+        if self.schema_version >= packaging_version.parse("1.0.2"):
+            self.additional_resources_schema = self._get_schema_filepath(self.additional_resources_filename)
 
     def validate(self, **kwargs):
         """
@@ -51,6 +54,13 @@ class SubmissionFileValidator(Validator):
             with open(self.additional_info_schema, 'r') as additional_schema:
                 additional_file_section_schema = json.load(additional_schema)
 
+            resolver = None
+            if self.schema_version >= packaging_version.parse("1.0.2"):
+                with open(self.additional_resources_schema, 'r') as additional_schema:
+                    additional_resources_schema = json.load(additional_schema)
+
+                resolver = RefResolver.from_schema(additional_resources_schema)
+
             # even though we are using the yaml package to load,
             # it supports JSON and YAML
             data = kwargs.pop("data", None)
@@ -70,9 +80,9 @@ class SubmissionFileValidator(Validator):
                     continue
                 try:
                     if not data_item_index and 'data_file' not in data_item:
-                        validate(data_item, additional_file_section_schema)
+                        validate(data_item, additional_file_section_schema, resolver=resolver)
                     else:
-                        validate(data_item, submission_file_schema)
+                        validate(data_item, submission_file_schema, resolver=resolver)
                         if self.schema_version.major > 0:
                             check_cmenergies(data_item)
                             table_names.append(data_item['name'])

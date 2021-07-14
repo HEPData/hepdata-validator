@@ -39,27 +39,7 @@
       "additionalProperties": false
     },
     "additional_resources": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "location": { "type": "string", "maxLength": 256 },
-          "description": { "type": "string" },
-          "type": { "type": "string", "maxLength": 64 },
-          "license": {
-            "type": "object",
-            "properties": {
-              "name": { "type": "string", "maxLength": 256 },
-              "url": { "type": "string", "maxLength": 256 },
-              "description": { "type": "string" }
-            },
-            "required": [ "name", "url" ],
-            "additionalProperties": false
-          }
-        },
-        "required": [ "location", "description" ],
-        "additionalProperties": false
-      }
+      "$ref": "https://hepdata.net/submission/schemas/1.0.2/additional_resources_schema.json"
     },
     "table_doi": {
       "type": "string",
