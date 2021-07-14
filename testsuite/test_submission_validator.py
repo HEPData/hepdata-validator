@@ -29,7 +29,7 @@ def validator_v0():
 
 @pytest.fixture(scope="module")
 def validator_v1():
-    return SubmissionFileValidator(schema_version='1.0.2')
+    return SubmissionFileValidator(schema_version='1.1.0')
 
 
 ####################################################

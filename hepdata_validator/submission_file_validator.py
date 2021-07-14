@@ -30,7 +30,7 @@ class SubmissionFileValidator(Validator):
         super(SubmissionFileValidator, self).__init__(*args, **kwargs)
         self.default_schema_file = self._get_schema_filepath(self.submission_filename)
         self.additional_info_schema = self._get_schema_filepath(self.additional_info_filename)
-        if self.schema_version >= packaging_version.parse("1.0.2"):
+        if self.schema_version >= packaging_version.parse("1.1.0"):
             self.additional_resources_schema = self._get_schema_filepath(self.additional_resources_filename)
 
     def validate(self, **kwargs):
@@ -55,7 +55,7 @@ class SubmissionFileValidator(Validator):
                 additional_file_section_schema = json.load(additional_schema)
 
             resolver = None
-            if self.schema_version >= packaging_version.parse("1.0.2"):
+            if self.schema_version >= packaging_version.parse("1.1.0"):
                 with open(self.additional_resources_schema, 'r') as additional_schema:
                     additional_resources_schema = json.load(additional_schema)
 
@@ -91,7 +91,7 @@ class SubmissionFileValidator(Validator):
                 except ValidationError as ve:
                     self.add_validation_error(file_path, ve)
 
-            if self.schema_version >= packaging_version.parse("1.0.2"):
+            if self.schema_version >= packaging_version.parse("1.1.0"):
                 self.check_for_duplicates(file_path, table_names, table_data_files)
 
             if not self.has_errors(file_path):

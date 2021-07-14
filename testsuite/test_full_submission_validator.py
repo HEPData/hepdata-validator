@@ -18,7 +18,7 @@ def validator_v0():
 
 @pytest.fixture()
 def validator_v1():
-    return FullSubmissionValidator(schema_version='1.0.2')
+    return FullSubmissionValidator(schema_version='1.1.0')
 
 
 def test_valid_submission_dir(validator_v1, data_path, capsys):
