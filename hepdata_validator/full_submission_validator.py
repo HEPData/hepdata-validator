@@ -43,6 +43,7 @@ class FullSubmissionValidator(Validator):
         """
         self.single_yaml_file = False
         temp_directory = None
+        self.directory = directory
 
         try:
             # Check input file/directory exists and is valid
