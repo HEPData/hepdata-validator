@@ -2,7 +2,7 @@ import sys
 
 import click
 
-from . import full_submission_validator
+from .full_submission_validator import FullSubmissionValidator
 
 
 @click.command()
@@ -14,13 +14,17 @@ def validate(directory, file, zipfile):  # pragma: no cover
     Offline validation of submission.yaml and YAML data files.
     Can check either a single file or a directory
     """
-    try:
-        is_valid = full_submission_validator.validate(directory, file, zipfile)
-        if not is_valid:
-            sys.exit(1)
-    except ValueError as e:
-        import traceback
+    file_or_dir_checked = zipfile if zipfile else (file if file else directory)
+    validator = FullSubmissionValidator()
+    is_valid = validator.validate(directory, file, zipfile)
+    if is_valid:
+        click.echo(f"{file_or_dir_checked} is valid.")
+    else:
+        click.echo(f"ERROR: {file_or_dir_checked} is invalid.")
 
-        print(''.join(traceback.format_exception(None, e, e.__traceback__)))
-        click.echo(f"ERROR: {e}")
-        sys.exit(2)
+    validator.print_valid_files()
+    for f in validator.messages.keys():
+        validator.print_errors(f)
+
+    if not is_valid:
+        sys.exit(1)

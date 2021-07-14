@@ -130,20 +130,33 @@ Python
 Validating a full submission
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To validate a full submission, use the `validate` method in `full_submission_validator`:
+To validate a full submission, instantiate a ``FullSubmissionValidator`` object:
 
 .. code:: python
 
-    from hepdata_validator.full_submission_validator import validate
+    from hepdata_validator.full_submission_validator import FullSubmissionValidator
+    full_submission_validator = FullSubmissionValidator()
 
     # validate a directory
-    is_dir_valid = validate(directory='TestHEPSubmission')
+    is_dir_valid = full_submission_validator.validate(directory='TestHEPSubmission')
 
-    # validate a zipped archive
-    is_zip_valid = validate(zipfile='TestHEPSubmission.zip')
+    # or uncomment to validate a zipped archive
+    # is_zip_valid = full_submission_validator.validate(zipfile='TestHEPSubmission.zip')
 
-    # validate a single file
-    is_file_valid = validate(file='hep_submission.yaml')
+    # or uncomment to validate a single file
+    # is_file_valid = full_submission_validator.validate(file='hep_submission.yaml')
+
+    # if there are any error messages, they are retrievable through this call
+    full_submission_validator.get_messages()
+
+    # the error messages can be printed
+    full_submission_validator.print_errors(submission_file_path)
+
+    # the list of valid files can be retrieved via the `valid_files` property
+    full_submission_validator.valid_files
+
+    # the list of valid files can be printed
+    full_submission_validator.print_valid_files()
 
 
 Validating individual files

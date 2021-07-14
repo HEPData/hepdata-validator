@@ -5,7 +5,7 @@ independent_variables:
   - {low: 250, high: 300}
   - {low: 300, high: 400}
 dependent_variables:
-- header: {name: 10**6 * 1/SIG(fiducial) * D(SIG(fiducial))/DMT(ZZ), units: GEV**-1}
+-header: {name: 10**6 * 1/SIG(fiducial) * D(SIG(fiducial))/DMT(ZZ), units: GEV**-1}
   qualifiers:
   - {name: RE, value: P P --> Z0 < LEPTON+ LEPTON- > Z0 < NU NUBAR > X}
   - {name: SQRT(S), units: GEV, value: 7000}
