@@ -1,11 +1,14 @@
+from enum import Enum
 import os.path
 import shutil
-import sys
 import tempfile
+from urllib.parse import urlparse, urlunsplit
 
 import yaml
 
 from hepdata_validator import Validator, ValidationMessage
+from .schema_resolver import JsonSchemaResolver
+from .schema_downloader import HTTPSchemaDownloader
 from .submission_file_validator import SubmissionFileValidator
 from .data_file_validator import DataFileValidator
 
@@ -18,17 +21,31 @@ except ImportError:  # pragma: no cover
     from yaml import SafeDumper as Dumper
 
 
+class SchemaType(Enum):
+    SUBMISSION = 'submission'
+    SINGLE_YAML = 'single file'
+    DATA = 'data'
+    REMOTE = 'remote'
+
+
 class FullSubmissionValidator(Validator):
 
     def __init__(self, *args, **kwargs):
         super(FullSubmissionValidator, self).__init__(*args, **kwargs)
         self.submission_file_validator = SubmissionFileValidator(args, kwargs)
         self.data_file_validator = DataFileValidator(args, kwargs)
-        self.valid_files = []
+        self.valid_files = {}
 
     def print_valid_files(self):
-        for file in self.valid_files:
-            print(f'\t {file} is valid HEPData YAML.')
+        for type in SchemaType:
+            if type in self.valid_files:
+                if type == SchemaType.REMOTE:
+                    for schema, file in self.valid_files[type]:
+                        print(f'\t {file} is valid against schema {schema}.')
+                else:
+                    for file in self.valid_files[type]:
+                        print(f'\t {file} is valid HEPData {type.value} YAML.')
+
 
     def validate(self, directory=None, file=None, zipfile=None):
         """
@@ -136,7 +153,8 @@ class FullSubmissionValidator(Validator):
                         is_valid_submission_file = False
 
                 if is_valid_submission_file:
-                    self.valid_files.insert(0, self.submission_file_path)
+                    type = SchemaType.SINGLE_YAML if self.single_yaml_file else SchemaType.SUBMISSION
+                    self.valid_files[type] = [self.submission_file_path]
 
             return len(self.messages) == 0
         finally:
@@ -196,6 +214,18 @@ class FullSubmissionValidator(Validator):
 
             user_data_file_path = self.submission_file_path if self.single_yaml_file else data_file_path
 
+            # Check the remote schema (if defined)
+            file_type = None
+            if 'data_schema' in doc:
+                try:
+                    file_type = doc['data_schema']
+                    self._load_remote_schema(file_type)
+                except FileNotFoundError:
+                    self.add_validation_message(ValidationMessage(
+                        file=self.submission_file_path, message=f"Remote schema {doc['data_schema']} not found."
+                    ))
+                    return False
+
             # Just try to load YAML data file without validating schema.
             try:
                 contents = yaml.load(open(data_file_path, 'r'), Loader=Loader)
@@ -206,11 +236,14 @@ class FullSubmissionValidator(Validator):
                 return is_valid_submission_doc
 
             # Validate the YAML data file
-            is_valid_data_file = self.data_file_validator.validate(file_path=data_file_path, data=contents)
+            is_valid_data_file = self.data_file_validator.validate(
+                file_path=data_file_path, file_type=file_type, data=contents
+            )
             if not is_valid_data_file:
                 table_msg = f" ({doc['name']})" if self.single_yaml_file else ''
+                invalid_msg = f"against schema {doc['data_schema']}" if 'data_schema' in doc else "HEPData YAML"
                 self.add_validation_message(ValidationMessage(
-                    file=user_data_file_path, message=f'{user_data_file_path}{table_msg} is invalid HEPData YAML.'
+                    file=user_data_file_path, message=f'{user_data_file_path}{table_msg} is invalid {invalid_msg}.'
                 ))
                 if self.single_yaml_file:
                     is_valid_submission_doc = False
@@ -221,10 +254,36 @@ class FullSubmissionValidator(Validator):
                         file=user_data_file_path, message=message.message
                     ))
             elif not self.single_yaml_file:
-                self.valid_files.append(user_data_file_path)
+                type = SchemaType.REMOTE if 'data_schema' in doc else SchemaType.DATA
+
+                if type not in self.valid_files:
+                    self.valid_files[type] = []
+
+                if 'data_schema' in doc:
+                    self.valid_files[type].append((doc['data_schema'], user_data_file_path))
+                else:
+                    self.valid_files[type].append(user_data_file_path)
 
             # For single YAML file, clean up by removing temporary data_file created above.
             if self.single_yaml_file:
                 os.remove(doc['data_file'])
 
         return is_valid_submission_doc
+
+    def _load_remote_schema(self, schema_url):
+        # Load the schema with the given URL into self.data_file_validator
+        url = urlparse(schema_url)
+        schema_path, schema_name = os.path.split(url.path)
+
+        base_url = urlunsplit((url.scheme, url.netloc, schema_path, '', ''))
+
+        resolver = JsonSchemaResolver(base_url)
+        downloader = HTTPSchemaDownloader(resolver, base_url)
+
+        # Retrieve and save the remote schema in the local path
+        schema_spec = downloader.get_schema_spec(schema_name)
+        downloader.save_locally(schema_name, schema_spec)
+
+        # Load the custom schema as a custom type
+        local_path = os.path.join(downloader.schemas_path, schema_name)
+        self.data_file_validator.load_custom_schema(schema_url, local_path)

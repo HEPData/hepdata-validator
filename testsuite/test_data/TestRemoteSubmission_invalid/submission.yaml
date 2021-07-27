@@ -1,0 +1,58 @@
+---
+additional_resources:
+- description: Web page with auxiliary material
+  location: https://atlas.web.cern.ch/Atlas/GROUPS/PHYSICS/PAPERS/SUSY-2018-31/
+- description: Truth code to compute acceptance for all signal regions using the SimpleAnalysis
+    framework
+  location: Sbottom_MB2018.cxx
+- description: Archive of full likelihoods in the HistFactory JSON format described
+    in ATL-PHYS-PUB-2019-029 Provided are 3 statiscal models labeled RegionA RegionB
+    and RegionC respectively each in their own sub-directory. For each model the background-only
+    model is found i the file named 'BkgOnly.json' For each model a set of patches
+    for various signal points is provided
+  location: HEPData_workspaces.tar.gz
+- description: slha files for the 3 baseline signal points used in the analysis for
+    regions A,B,C
+  location: SbMB_SLHAs.tar.gz
+comment: ''
+data_license:
+  description: The content can be shared and adapted but you must             give
+    appropriate credit and cannot restrict access to others.
+  name: cc-by-4.0
+  url: https://creativecommons.org/licenses/by/4.0/
+---
+data_file: valid_file_custom_remote.json
+data_schema: https://hepdata.net/notarealproject/schemas/v0.0.0/thisisnotarealfile.json
+description: Background-only workspace for RegionA in pyhf JSON format.
+keywords:
+- name: reactions
+  values:
+  - P P --> SBOTTOM SBOTTOM X
+- name: observables
+  values:
+  - N
+- name: phrases
+  values:
+  - SUSY
+  - Supersymmetry
+  - 3rd Generation
+  - Likelihood
+name: RegionA/BkgOnly.json
+---
+data_file: invalid_file_custom_remote.json
+data_schema: https://scikit-hep.org/pyhf/schemas/1.0.0/workspace.json
+description: Background-only workspace for RegionA in pyhf JSON format.
+keywords:
+- name: reactions
+  values:
+  - P P --> SBOTTOM SBOTTOM X
+- name: observables
+  values:
+  - N
+- name: phrases
+  values:
+  - SUSY
+  - Supersymmetry
+  - 3rd Generation
+  - Likelihood
+name: RegionB/BkgOnly.json

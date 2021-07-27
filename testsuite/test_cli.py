@@ -21,15 +21,15 @@ def test_valid_submission_dir(data_path, cli_runner):
     result = cli_runner.invoke(validate, ['-d', submission_dir])
     assert result.exit_code == 0
     assert result.output == """{0} is valid.
-	 {0}/submission.yaml is valid HEPData YAML.
-	 {0}/data1.yaml is valid HEPData YAML.
-	 {0}/data2.yaml is valid HEPData YAML.
-	 {0}/data3.yaml is valid HEPData YAML.
-	 {0}/data4.yaml is valid HEPData YAML.
-	 {0}/data5.yaml is valid HEPData YAML.
-	 {0}/data6.yaml is valid HEPData YAML.
-	 {0}/data7.yaml is valid HEPData YAML.
-	 {0}/data8.yaml is valid HEPData YAML.
+	 {0}/submission.yaml is valid HEPData submission YAML.
+	 {0}/data1.yaml is valid HEPData data YAML.
+	 {0}/data2.yaml is valid HEPData data YAML.
+	 {0}/data3.yaml is valid HEPData data YAML.
+	 {0}/data4.yaml is valid HEPData data YAML.
+	 {0}/data5.yaml is valid HEPData data YAML.
+	 {0}/data6.yaml is valid HEPData data YAML.
+	 {0}/data7.yaml is valid HEPData data YAML.
+	 {0}/data8.yaml is valid HEPData data YAML.
 """.format(submission_dir)
 
 
@@ -39,9 +39,9 @@ def test_valid_submission_zip(data_path, cli_runner):
     assert result.exit_code == 0
     lines = result.output.splitlines()
     assert lines[0] == f"{submission_zip} is valid."
-    assert lines[1].endswith("/submission.yaml is valid HEPData YAML.")
+    assert lines[1].endswith("/submission.yaml is valid HEPData submission YAML.")
     for i in list(range(1, 8)):
-        assert lines[i+1].endswith(f'data{i}.yaml is valid HEPData YAML.')
+        assert lines[i+1].endswith(f'data{i}.yaml is valid HEPData data YAML.')
 
 
 def test_valid_single_yaml(data_path, cli_runner):
@@ -49,7 +49,7 @@ def test_valid_single_yaml(data_path, cli_runner):
     result = cli_runner.invoke(validate, ['-f', submission_file])
     assert result.exit_code == 0
     assert result.output == f"""{submission_file} is valid.
-	 {submission_file} is valid HEPData YAML.
+	 {submission_file} is valid HEPData single file YAML.
 """
 
 
