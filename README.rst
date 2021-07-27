@@ -134,7 +134,7 @@ To validate a full submission, instantiate a ``FullSubmissionValidator`` object:
 
 .. code:: python
 
-    from hepdata_validator.full_submission_validator import FullSubmissionValidator
+    from hepdata_validator.full_submission_validator import FullSubmissionValidator, SchemaType
     full_submission_validator = FullSubmissionValidator()
 
     # validate a directory
@@ -152,8 +152,15 @@ To validate a full submission, instantiate a ``FullSubmissionValidator`` object:
     # the error messages can be printed
     full_submission_validator.print_errors(submission_file_path)
 
-    # the list of valid files can be retrieved via the `valid_files` property
-    full_submission_validator.valid_files
+    # the list of valid files can be retrieved via the valid_files property, which is a
+    # dict mapping SchemaType (e.g. submission, data, single file, remote) to lists of
+    # valid files
+    full_submission_validator.valid_files[SchemaType.SINGLE_YAML]
+    full_submission_validator.valid_files[SchemaType.SUBMISSION]
+    full_submission_validator.valid_files[SchemaType.DATA]
+
+    # if a remote schema is used, valid_files is a list of tuples (schema, file)
+    full_submission_validator.valid_files[SchemaType.REMOTE]
 
     # the list of valid files can be printed
     full_submission_validator.print_valid_files()
@@ -293,7 +300,7 @@ download them. However, in principle, for testing purposes, note that the same m
 
 .. code:: python
 
-    schema_path = 'https://hepdata.net/submission/schemas/1.0.1/'
+    schema_path = 'https://hepdata.net/submission/schemas/1.1.0/'
     schema_name = 'data_schema.json'
 
 and passing a HEPData YAML data file as the ``file_path`` argument of the ``validate`` method.
