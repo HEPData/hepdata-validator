@@ -120,6 +120,8 @@ class FullSubmissionValidator(Validator):
                     ))
                     return False
 
+            self.included_files = [self.submission_file_path]
+
             # Open the submission.yaml file and load all YAML documents.
             with open(self.submission_file_path, 'r') as stream:
                 try:
@@ -156,6 +158,15 @@ class FullSubmissionValidator(Validator):
                     type = SchemaType.SINGLE_YAML if self.single_yaml_file else SchemaType.SUBMISSION
                     self.valid_files[type] = [self.submission_file_path]
 
+            # Check all files in directory are in included_files
+            if not self.single_yaml_file:
+                for f in os.listdir(self.directory):
+                    file_path = os.path.join(self.directory, f)
+                    if file_path not in self.included_files:
+                        self.add_validation_message(ValidationMessage(
+                            file=file_path, message='%s is not referenced in the submission.' % file_path
+                        ))
+
             return len(self.messages) == 0
         finally:
             if temp_directory:
@@ -183,6 +194,7 @@ class FullSubmissionValidator(Validator):
             for resource in doc['additional_resources']:
                 if not resource['location'].startswith('http'):
                     location = os.path.join(self.directory, resource['location'])
+                    self.included_files.append(location)
                     if not os.path.isfile(location):
                         self.add_validation_message(ValidationMessage(
                             file=self.submission_file_path, message='%s is missing.' % location
@@ -205,7 +217,14 @@ class FullSubmissionValidator(Validator):
                 return False
 
             # Extract data file from YAML document.
-            data_file_path = self.directory + '/' + doc['data_file'] if self.directory else doc['data_file']
+            if self.directory:
+                data_file_path = os.path.join(self.directory, doc['data_file'])
+            else:
+                data_file_path = doc['data_file']
+
+            if not self.single_yaml_file:
+                self.included_files.append(data_file_path)
+
             if not os.path.isfile(data_file_path):
                 self.add_validation_message(ValidationMessage(
                     file=data_file_path, message='%s is missing.' % data_file_path

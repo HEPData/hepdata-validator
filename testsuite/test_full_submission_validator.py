@@ -173,7 +173,8 @@ def test_invalid_data_directory(validator_v1, data_path, capsys):
     expected_file_names = [
         os.path.join(dir, 'submission.yaml'),
         os.path.join(dir, 'data3.yaml'),
-        os.path.join(dir, 'data8.yaml')
+        os.path.join(dir, 'data8.yaml'),
+        os.path.join(dir, 'figFigure8B.png')
     ]
     assert set(errors.keys()) == set(expected_file_names)
     assert errors[expected_file_names[0]][0].message == 'mydirectory/data2.yaml should not contain "/".'
@@ -184,7 +185,7 @@ def test_invalid_data_directory(validator_v1, data_path, capsys):
   in "{dir}/data8.yaml", line 1, column 1
 did not find expected key
   in "{dir}/data8.yaml", line 9, column 3"""
-
+    assert errors[expected_file_names[3]][0].message == f"{dir}/figFigure8B.png is not referenced in the submission."
 
 def test_invalid_syntax_submission(validator_v1, data_path, capsys):
     file = os.path.join(data_path, 'invalid_syntax_submission.yaml')
