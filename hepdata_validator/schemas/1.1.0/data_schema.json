@@ -34,6 +34,7 @@
                 {
                   "type": "object",
                   "properties": {
+                    "value": { "type": "number" },
                     "low": { "type": "number" },
                     "high": { "type": "number" }
                   },

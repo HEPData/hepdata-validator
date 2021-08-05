@@ -329,7 +329,7 @@ def test_file_with_invalid_independent_variables_v1(validator_v1, data_path, cap
 
     assert is_valid is False
     out, err = capsys.readouterr()
-    assert out.strip() == "error - {'low': 6000} is not valid under any of the given schemas in 'independent_variables[0].values[0]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'type': ['string', 'number']}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
+    assert out.strip() == "error - {'low': 6000} is not valid under any of the given schemas in 'independent_variables[0].values[0]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'type': ['string', 'number']}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
 
 
 def test_file_with_missing_dependent_values_v1(validator_v1, data_path, capsys):
