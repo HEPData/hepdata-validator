@@ -29,12 +29,20 @@ class SchemaType(Enum):
 
 
 class FullSubmissionValidator(Validator):
+    """Class to validate a full submission.
+
+    :attr dict valid_files: map of SchemaType (e.g. submission, data, single
+                            file, remote) to lists of valid files
+    :attr list submission_docs: List of parsed YAML (represented as `dicts`)
+                                from the submission file
+    """
 
     def __init__(self, *args, **kwargs):
         super(FullSubmissionValidator, self).__init__(*args, **kwargs)
-        self.submission_file_validator = SubmissionFileValidator(args, kwargs)
-        self.data_file_validator = DataFileValidator(args, kwargs)
+        self._submission_file_validator = SubmissionFileValidator(*args, **kwargs)
+        self._data_file_validator = DataFileValidator(*args, **kwargs)
         self.valid_files = {}
+        self.submission_docs = None
 
     def print_valid_files(self):
         for type in SchemaType:
@@ -123,9 +131,9 @@ class FullSubmissionValidator(Validator):
             self.included_files = [self.submission_file_path]
 
             # Open the submission.yaml file and load all YAML documents.
-            with open(self.submission_file_path, 'r') as stream:
+            with open(self.submission_file_path, 'r') as submission_file:
                 try:
-                    docs = list(yaml.load_all(stream, Loader=Loader))
+                    self.submission_docs = list(yaml.load_all(submission_file, Loader=Loader))
                 except yaml.YAMLError as e:
                     self.add_validation_message(ValidationMessage(
                         file=self.submission_file_path,
@@ -135,22 +143,22 @@ class FullSubmissionValidator(Validator):
 
                 # Need to remove independent_variables and dependent_variables from single YAML file.
                 if self.single_yaml_file:
-                    self._create_data_files(docs)
+                    self._create_data_files(self.submission_docs)
 
                 # Validate the submission.yaml file
-                is_valid_submission_file = self.submission_file_validator.validate(file_path=self.submission_file_path, data=docs)
+                is_valid_submission_file = self._submission_file_validator.validate(file_path=self.submission_file_path, data=self.submission_docs)
                 if not is_valid_submission_file:
                     self.add_validation_message(ValidationMessage(
                         file=self.submission_file_path, message=f'{self.submission_file_path} is invalid HEPData YAML.'
                     ))
-                    for message in self.submission_file_validator.get_messages(self.submission_file_path):
+                    for message in self._submission_file_validator.get_messages(self.submission_file_path):
                         self.add_validation_message(ValidationMessage(
                             file=self.submission_file_path, message=message.message
                         ))
                     return False
 
                 # Loop over all YAML documents in the submission.yaml file.
-                for doc in docs:
+                for doc in self.submission_docs:
                     is_valid_doc_in_submission_file = self._check_doc(doc)
                     if not is_valid_doc_in_submission_file:
                         is_valid_submission_file = False
@@ -258,7 +266,7 @@ class FullSubmissionValidator(Validator):
                 return is_valid_submission_doc
 
             # Validate the YAML data file
-            is_valid_data_file = self.data_file_validator.validate(
+            is_valid_data_file = self._data_file_validator.validate(
                 file_path=data_file_path, file_type=file_type, data=contents
             )
             if not is_valid_data_file:
@@ -271,7 +279,7 @@ class FullSubmissionValidator(Validator):
                     is_valid_submission_doc = False
 
                 is_valid_data_file = False
-                for message in self.data_file_validator.get_messages(data_file_path):
+                for message in self._data_file_validator.get_messages(data_file_path):
                     self.add_validation_message(ValidationMessage(
                         file=user_data_file_path, message=message.message
                     ))
@@ -293,7 +301,7 @@ class FullSubmissionValidator(Validator):
         return is_valid_submission_doc
 
     def _load_remote_schema(self, schema_url):
-        # Load the schema with the given URL into self.data_file_validator
+        # Load the schema with the given URL into self._data_file_validator
         url = urlparse(schema_url)
         schema_path, schema_name = os.path.split(url.path)
 
@@ -308,4 +316,4 @@ class FullSubmissionValidator(Validator):
 
         # Load the custom schema as a custom type
         local_path = os.path.join(downloader.schemas_path, schema_name)
-        self.data_file_validator.load_custom_schema(schema_url, local_path)
+        self._data_file_validator.load_custom_schema(schema_url, local_path)

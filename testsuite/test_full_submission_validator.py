@@ -223,3 +223,14 @@ def test_invalid_remote_schema(validator_v1, data_path, capsys):
     out, err = capsys.readouterr()
     assert out == """	 error - Remote schema https://hepdata.net/notarealproject/schemas/v0.0.0/thisisnotarealfile.json not found.
 """
+
+def test_old_schema(validator_v1, validator_v0, data_path, capsys):
+    submission_dir = os.path.join(data_path, 'TestHEPSubmission_v0')
+
+    # Should be invalid with v1 validator
+    is_valid = validator_v1.validate(directory=submission_dir)
+    assert not is_valid
+
+    # Should be valid with v0 validator
+    is_valid = validator_v0.validate(directory=submission_dir)
+    assert is_valid
