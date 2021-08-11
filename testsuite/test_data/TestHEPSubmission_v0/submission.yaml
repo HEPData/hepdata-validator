@@ -20,3 +20,6 @@ keywords:
   values: [1.383-1.481]
 name: Table 1
 table_doi: 10.17182/hepdata.21754.v1/t1
+additional_resources:
+  - location: "/resource/753951/fnh5101_I753951.tab.gz"
+    description: "Old style resource link"

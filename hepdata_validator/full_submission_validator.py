@@ -201,7 +201,13 @@ class FullSubmissionValidator(Validator):
         # Check for presence of local files given as additional_resources.
         if 'additional_resources' in doc:
             for resource in doc['additional_resources']:
-                if not resource['location'].startswith('http'):
+                # For v0 schemas, allow resource locations that start with '/resource/'
+                if self.schema_version.major == 0:
+                    unchecked_prefixes = ('http', '/resource/')
+                else:
+                    unchecked_prefixes = 'http'
+
+                if not resource['location'].startswith(unchecked_prefixes):
                     location = os.path.join(self.directory, resource['location'])
                     self.included_files.append(location)
                     if not os.path.isfile(location):

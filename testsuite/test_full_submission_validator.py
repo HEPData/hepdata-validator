@@ -224,7 +224,7 @@ def test_invalid_remote_schema(validator_v1, data_path, capsys):
     assert out == """	 error - Remote schema https://hepdata.net/notarealproject/schemas/v0.0.0/thisisnotarealfile.json not found.
 """
 
-def test_old_schema(validator_v1, validator_v0, data_path, capsys):
+def test_v0_schema(validator_v1, validator_v0, data_path, capsys):
     submission_dir = os.path.join(data_path, 'TestHEPSubmission_v0')
 
     # Should be invalid with v1 validator
