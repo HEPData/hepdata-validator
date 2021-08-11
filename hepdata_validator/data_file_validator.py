@@ -103,6 +103,12 @@ class DataFileValidator(Validator):
                 # The yaml package support both JSON and YAML
                 with open(file_path, 'r') as df:
                     data = yaml.load(df, Loader=Loader)
+                    if data is None:
+                        self.add_validation_message(ValidationMessage(
+                            file=file_path,
+                            message='No data found in file.'
+                        ))
+                        return False
             except Exception as e:
                 self.add_validation_message(ValidationMessage(
                     file=file_path,

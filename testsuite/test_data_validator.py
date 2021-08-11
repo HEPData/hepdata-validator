@@ -99,6 +99,20 @@ def test_invalid_yaml_file_v1(validator_v1, data_path, capsys):
     assert out.strip() == "error - 0.443 is not of type 'string' in 'dependent_variables[0].values[1].errors[0].label' (expected: {'type': 'string'})"
 
 
+def test_empty_yaml_file_v1(validator_v1, data_path, capsys):
+    """
+    Tests the DataFileValidator V1 against an empty file
+    """
+
+    file = os.path.join(data_path, 'empty_file.yaml')
+    is_valid = validator_v1.validate(file_path=file)
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - No data found in file."
+
+
 def test_valid_yaml_file_with_percent_uncertainty_v1(validator_v1, data_path):
     """
     Tests the DataFileValidator V1 against a valid YAML with percentage uncertainties
