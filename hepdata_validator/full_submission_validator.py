@@ -89,7 +89,7 @@ class FullSubmissionValidator(Validator):
 
                 if not self.directory:
                     self.add_validation_message(ValidationMessage(
-                        file=zipfile, message=f"submission.yaml not found in {zipfile}."
+                        file=zipfile, message="No submission.yaml file found in submission."
                     ))
                     return False
 
@@ -116,7 +116,7 @@ class FullSubmissionValidator(Validator):
                 self.submission_file_path = os.path.join(self.directory, 'submission.yaml')
                 if not os.path.isfile(self.submission_file_path):
                     self.add_validation_message(ValidationMessage(
-                        file=self.submission_file_path, message=f"No such file {self.submission_file_path}"
+                        file=self.submission_file_path, message="No submission.yaml file found in submission."
                     ))
                     return False
 
@@ -128,7 +128,8 @@ class FullSubmissionValidator(Validator):
                     docs = list(yaml.load_all(stream, Loader=Loader))
                 except yaml.YAMLError as e:
                     self.add_validation_message(ValidationMessage(
-                        file=self.submission_file_path, message=f'{self.submission_file_path} is invalid YAML: {str(e)}'
+                        file=self.submission_file_path,
+                        message="There was a problem parsing the file:\n\t\t" + str(e).replace('\n', '\n\t\t')
                     ))
                     return False
 
@@ -164,7 +165,7 @@ class FullSubmissionValidator(Validator):
                     file_path = os.path.join(self.directory, f)
                     if file_path not in self.included_files:
                         self.add_validation_message(ValidationMessage(
-                            file=file_path, message='%s is not referenced in the submission.' % file_path
+                            file=file_path, message='%s is not referenced in the submission.' % f
                         ))
 
             return len(self.messages) == 0
@@ -197,12 +198,12 @@ class FullSubmissionValidator(Validator):
                     self.included_files.append(location)
                     if not os.path.isfile(location):
                         self.add_validation_message(ValidationMessage(
-                            file=self.submission_file_path, message='%s is missing.' % location
+                            file=self.submission_file_path, message=f"Missing 'additional_resources' file '{resource['location']}'."
                         ))
                         is_valid_submission_doc = False
                     elif '/' in resource['location']:
                         self.add_validation_message(ValidationMessage(
-                            file=self.submission_file_path, message='%s should not contain "/".' % resource['location']
+                            file=self.submission_file_path, message=f"Location of 'additional_resources' file '{resource['location']}' should not contain '/'."
                         ))
                         is_valid_submission_doc = False
 
@@ -212,7 +213,7 @@ class FullSubmissionValidator(Validator):
             # Check for presence of '/' in data_file value.
             if '/' in doc['data_file']:
                 self.add_validation_message(ValidationMessage(
-                    file=self.submission_file_path, message='%s should not contain "/".' % doc['data_file']
+                    file=self.submission_file_path, message=f"Name of data_file '{doc['data_file']}' should not contain '/'."
                 ))
                 return False
 
@@ -227,7 +228,7 @@ class FullSubmissionValidator(Validator):
 
             if not os.path.isfile(data_file_path):
                 self.add_validation_message(ValidationMessage(
-                    file=data_file_path, message='%s is missing.' % data_file_path
+                    file=data_file_path, message="Missing data_file '%s'." % doc['data_file']
                 ))
                 return is_valid_submission_doc
 
@@ -248,9 +249,11 @@ class FullSubmissionValidator(Validator):
             # Just try to load YAML data file without validating schema.
             try:
                 contents = yaml.load(open(data_file_path, 'r'), Loader=Loader)
-            except yaml.YAMLError as e:
+            except (OSError, yaml.YAMLError) as e:
+                problem_type = 'reading' if isinstance(e, OSError) else 'parsing'
                 self.add_validation_message(ValidationMessage(
-                    file=user_data_file_path, message=f'{user_data_file_path} is invalid YAML: {str(e)}'
+                    file=user_data_file_path,
+                    message=f"There was a problem {problem_type} the file:\n\t\t" + str(e).replace('\n', '\n\t\t')
                 ))
                 return is_valid_submission_doc
 

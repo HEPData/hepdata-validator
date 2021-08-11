@@ -122,7 +122,7 @@ def test_missing_submission(validator_v1, data_path, capsys):
     validator_v1.print_errors('./submission.yaml')
     out, err = capsys.readouterr()
     lines = out.splitlines()
-    assert lines[0].strip() == "error - No such file ./submission.yaml"
+    assert lines[0].strip() == "error - No submission.yaml file found in submission."
 
     # Zip without submission.yaml
     file = os.path.join(data_path, 'valid_submission.zip')
@@ -132,7 +132,7 @@ def test_missing_submission(validator_v1, data_path, capsys):
     validator_v1.print_errors(file)
     out, err = capsys.readouterr()
     lines = out.splitlines()
-    assert lines[0].strip() == f"error - submission.yaml not found in {file}."
+    assert lines[0].strip() == "error - No submission.yaml file found in submission."
 
 
 def test_invalid_submission(validator_v1, data_path, capsys):
@@ -177,15 +177,17 @@ def test_invalid_data_directory(validator_v1, data_path, capsys):
         os.path.join(dir, 'figFigure8B.png')
     ]
     assert set(errors.keys()) == set(expected_file_names)
-    assert errors[expected_file_names[0]][0].message == 'mydirectory/data2.yaml should not contain "/".'
-    assert errors[expected_file_names[0]][1].message == '../TestHEPSubmission/figFigure8B.png should not contain "/".'
-    assert errors[expected_file_names[0]][2].message == f"{dir}/figFigure9A.png is missing."
-    assert errors[expected_file_names[1]][0].message == f"{dir}/data3.yaml is missing."
-    assert errors[expected_file_names[2]][0].message == f"""{dir}/data8.yaml is invalid YAML: while parsing a block mapping
-  in "{dir}/data8.yaml", line 1, column 1
-did not find expected key
-  in "{dir}/data8.yaml", line 9, column 3"""
-    assert errors[expected_file_names[3]][0].message == f"{dir}/figFigure8B.png is not referenced in the submission."
+    assert errors[expected_file_names[0]][0].message == "Name of data_file 'mydirectory/data2.yaml' should not contain '/'."
+    assert errors[expected_file_names[0]][1].message == "Location of 'additional_resources' file '../TestHEPSubmission/figFigure8B.png' should not contain '/'."
+    assert errors[expected_file_names[0]][2].message == f"Missing 'additional_resources' file 'figFigure9A.png'."
+    assert errors[expected_file_names[1]][0].message == f"Missing data_file 'data3.yaml'."
+    assert errors[expected_file_names[2]][0].message == f"""There was a problem parsing the file:
+		while parsing a block mapping
+		  in "{dir}/data8.yaml", line 1, column 1
+		did not find expected key
+		  in "{dir}/data8.yaml", line 9, column 3"""
+    assert errors[expected_file_names[3]][0].message == f"figFigure8B.png is not referenced in the submission."
+
 
 def test_invalid_syntax_submission(validator_v1, data_path, capsys):
     file = os.path.join(data_path, 'invalid_syntax_submission.yaml')
@@ -194,10 +196,11 @@ def test_invalid_syntax_submission(validator_v1, data_path, capsys):
     assert validator_v1.valid_files == {}
     validator_v1.print_errors(file)
     out, err = capsys.readouterr()
-    assert out.strip() == f"""error - {file} is invalid YAML: while scanning a simple key
-  in "{file}", line 9, column 1
-could not find expected ':'
-  in "{file}", line 10, column 1"""
+    assert out.strip() == f"""error - There was a problem parsing the file:
+		while scanning a simple key
+		  in "{file}", line 9, column 1
+		could not find expected ':'
+		  in "{file}", line 10, column 1"""
 
 
 def test_invalid_remote_schema(validator_v1, data_path, capsys):
