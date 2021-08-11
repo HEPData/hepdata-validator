@@ -11,7 +11,7 @@ def data_path():
     return os.path.join(base_dir, 'test_data')
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def validator_v0():
     return FullSubmissionValidator(schema_version='0.1.0')
 
@@ -223,6 +223,26 @@ def test_invalid_remote_schema(validator_v1, data_path, capsys):
     out, err = capsys.readouterr()
     assert out == """	 error - Remote schema https://hepdata.net/notarealproject/schemas/v0.0.0/thisisnotarealfile.json not found.
 """
+
+
+def test_clear_all(validator_v1):
+    """
+    Tests the SubmissionFileValidator V1 clear messages function
+    """
+
+    validator_v1.messages = {'full': 'non-empty'}
+    validator_v1.submission_docs = ['doc1', 'doc2']
+    validator_v1.valid_files = {'a': ['valid_file']}
+    validator_v1._submission_file_validator.messages = {'submission': 'non-empty'}
+    validator_v1._data_file_validator.messages = {'data': 'non-empty'}
+    validator_v1.clear_all()
+
+    assert len(validator_v1.get_messages()) == 0
+    assert len(validator_v1._submission_file_validator.get_messages()) == 0
+    assert len(validator_v1._data_file_validator.get_messages()) == 0
+    assert len(validator_v1.valid_files) == 0
+    assert validator_v1.submission_docs is None
+
 
 def test_v0_schema(validator_v1, validator_v0, data_path, capsys):
     submission_dir = os.path.join(data_path, 'TestHEPSubmission_v0')

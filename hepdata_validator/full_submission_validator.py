@@ -54,6 +54,18 @@ class FullSubmissionValidator(Validator):
                     for file in self.valid_files[type]:
                         print(f'\t {file} is valid HEPData {type.value} YAML.')
 
+    def clear_messages(self):
+        super().clear_messages()
+        self._submission_file_validator.clear_messages()
+        self._data_file_validator.clear_messages()
+
+    def clear_all(self):
+        """
+        Removes all `messages`, `valid_files` and `submission_docs`
+        """
+        self.clear_messages()
+        self.valid_files = {}
+        self.submission_docs = None
 
     def validate(self, directory=None, file=None, zipfile=None):
         """
