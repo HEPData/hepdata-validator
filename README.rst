@@ -149,15 +149,15 @@ To validate a full submission, instantiate a ``FullSubmissionValidator`` object:
     # if there are any error messages, they are retrievable through this call
     full_submission_validator.get_messages()
 
-    # the error messages can be printed
-    full_submission_validator.print_errors(submission_file_path)
+    # the error messages can be printed for each file
+    full_submission_validator.print_errors('submission.yaml')
 
     # the list of valid files can be retrieved via the valid_files property, which is a
     # dict mapping SchemaType (e.g. submission, data, single file, remote) to lists of
     # valid files
-    full_submission_validator.valid_files[SchemaType.SINGLE_YAML]
     full_submission_validator.valid_files[SchemaType.SUBMISSION]
     full_submission_validator.valid_files[SchemaType.DATA]
+    # full_submission_validator.valid_files[SchemaType.SINGLE_YAML]
 
     # if a remote schema is used, valid_files is a list of tuples (schema, file)
     full_submission_validator.valid_files[SchemaType.REMOTE]
