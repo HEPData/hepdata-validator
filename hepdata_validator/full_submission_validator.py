@@ -43,6 +43,10 @@ class FullSubmissionValidator(Validator):
         self._data_file_validator = DataFileValidator(*args, **kwargs)
         self.valid_files = {}
         self.submission_docs = None
+        if 'autoload_remote_schemas' in kwargs:
+            self.autoload_remote_schemas = kwargs['autoload_remote_schemas']
+        else:
+            self.autoload_remote_schemas = True
 
     def print_valid_files(self):
         for type in SchemaType:
@@ -265,7 +269,14 @@ class FullSubmissionValidator(Validator):
             if 'data_schema' in doc:
                 try:
                     file_type = doc['data_schema']
-                    self._load_remote_schema(file_type)
+                    if self.autoload_remote_schemas:
+                        self.load_remote_schema(file_type)
+                    elif doc['data_schema'] not in self._data_file_validator.custom_data_schemas:
+                        self.add_validation_message(ValidationMessage(
+                            file=self.submission_file_path,
+                            message=f"Autoloading of remote schema {doc['data_schema']} is not allowed."
+                        ))
+                        return False
                 except FileNotFoundError:
                     self.add_validation_message(ValidationMessage(
                         file=self.submission_file_path, message=f"Remote schema {doc['data_schema']} not found."
@@ -318,15 +329,25 @@ class FullSubmissionValidator(Validator):
 
         return is_valid_submission_doc
 
-    def _load_remote_schema(self, schema_url):
-        # Load the schema with the given URL into self._data_file_validator
-        url = urlparse(schema_url)
-        schema_path, schema_name = os.path.split(url.path)
-
-        base_url = urlunsplit((url.scheme, url.netloc, schema_path, '', ''))
+    def load_remote_schema(self, schema_url=None, base_url=None, schema_name=None):
+        """
+        Loads the given schema into the validator's DataSubmissionValidator.
+        """
+        if schema_url:
+            url = urlparse(schema_url)
+            schema_path, schema_name = os.path.split(url.path)
+            base_url = urlunsplit((url.scheme, url.netloc, schema_path, '', ''))
+        elif not base_url or not schema_name:
+            raise ValueError("Must provide EITHER schema_url OR both base_url and schema_name")
 
         resolver = JsonSchemaResolver(base_url)
         downloader = HTTPSchemaDownloader(resolver, base_url)
+        if not schema_url:
+            schema_url = downloader.get_schema_type(schema_name)
+
+        # Don't download again if already loaded
+        if schema_url in self._data_file_validator.custom_data_schemas:
+            return
 
         # Retrieve and save the remote schema in the local path
         schema_spec = downloader.get_schema_spec(schema_name)

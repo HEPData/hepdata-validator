@@ -46,11 +46,11 @@ class DataFileValidator(Validator):
     """
     base_path = os.path.dirname(__file__)
     schema_name = 'data_schema.json'
-    custom_data_schemas = {}
 
     def __init__(self, *args, **kwargs):
         super(DataFileValidator, self).__init__(*args, **kwargs)
         self.default_schema_file = self._get_schema_filepath(self.schema_name)
+        self.custom_data_schemas = {}
 
     def load_custom_schema(self, type, schema_file_path=None):
         """

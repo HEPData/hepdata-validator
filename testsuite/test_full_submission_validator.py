@@ -75,6 +75,39 @@ def test_valid_submission_dir_remote_schema(validator_v1, data_path, capsys):
 """.format(submission_dir)
 
 
+def test_valid_submission_dir_remote_schema_no_autoloading(data_path):
+    validator = FullSubmissionValidator(schema_version='1.1.0', autoload_remote_schemas=False)
+    submission_dir = os.path.join(data_path, 'TestRemoteSubmission')
+
+    # Validate without pre-loading schemas - should get an error
+    is_valid = validator.validate(directory=submission_dir)
+    assert not is_valid
+    messages = validator.get_messages(os.path.join(submission_dir, 'submission.yaml'))
+    assert len(messages) == 1
+    assert messages[0].message == \
+        "Autoloading of remote schema https://scikit-hep.org/pyhf/schemas/1.0.0/workspace.json is not allowed."
+
+    # Load remote schema and try again
+    validator.clear_all()
+    validator.load_remote_schema(schema_url='https://scikit-hep.org/pyhf/schemas/1.0.0/workspace.json')
+    is_valid = validator.validate(directory=submission_dir)
+    assert is_valid
+
+
+def test_valid_submission_dir_remote_schema_multiple_loads():
+    validator = FullSubmissionValidator(schema_version='1.1.0', autoload_remote_schemas=False)
+
+    # Load schema once - should be fine
+    validator.load_remote_schema(base_url="https://scikit-hep.org/pyhf/schemas/1.0.0", schema_name="workspace.json")
+    assert len(validator._data_file_validator.custom_data_schemas) == 1
+    assert "https://scikit-hep.org/pyhf/schemas/1.0.0/workspace.json" in validator._data_file_validator.custom_data_schemas
+
+    # Load same schema again (via URL this time) - should not add anything to custom_data_schemas
+    validator.load_remote_schema(schema_url='https://scikit-hep.org/pyhf/schemas/1.0.0/workspace.json')
+    assert len(validator._data_file_validator.custom_data_schemas) == 1
+    assert "https://scikit-hep.org/pyhf/schemas/1.0.0/workspace.json" in validator._data_file_validator.custom_data_schemas
+
+
 def test_invalid_input(validator_v1, data_path, capsys):
     # Invalid file
     is_valid = validator_v1.validate(file='notafile')
@@ -201,6 +234,18 @@ def test_invalid_syntax_submission(validator_v1, data_path, capsys):
 		  in "{file}", line 9, column 1
 		could not find expected ':'
 		  in "{file}", line 10, column 1"""
+
+
+def test_invalid_remote_schema_load(validator_v1):
+    with pytest.raises(ValueError) as excinfo:
+        validator_v1.load_remote_schema()
+
+    assert str(excinfo.value) == "Must provide EITHER schema_url OR both base_url and schema_name"
+
+    with pytest.raises(ValueError) as excinfo:
+        validator_v1.load_remote_schema(schema_name="my_schema_name")
+
+    assert str(excinfo.value) == "Must provide EITHER schema_url OR both base_url and schema_name"
 
 
 def test_invalid_remote_schema(validator_v1, data_path, capsys):
