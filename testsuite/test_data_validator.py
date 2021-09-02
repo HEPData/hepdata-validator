@@ -96,7 +96,9 @@ def test_invalid_yaml_file_v1(validator_v1, data_path, capsys):
 
     assert is_valid is False
     out, err = capsys.readouterr()
-    assert out.strip() == "error - 0.443 is not of type 'string' in 'dependent_variables[0].values[1].errors[0].label' (expected: {'type': 'string'})"
+    lines = out.splitlines()
+    assert lines[0].strip() == "error - 0.443 is not of type 'string' in 'dependent_variables[0].values[1].errors[0].label' (expected: {'type': 'string'})"
+    assert lines[1].strip() == "error - Inconsistent length of 'values' list: independent_variables [1], dependent_variables [2]"
 
 
 def test_empty_yaml_file_v1(validator_v1, data_path, capsys):
@@ -348,11 +350,14 @@ def test_file_with_invalid_independent_variables_v1(validator_v1, data_path, cap
     assert is_valid is False
     out, err = capsys.readouterr()
     lines = out.splitlines()
-    assert len(lines) == 4
-    assert lines[0].strip() == "error - {'low': 6000} is not valid under any of the given schemas in 'independent_variables[0].values[0]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'oneOf': [{'allOf': [{'type': 'string'}, {'not': {'pattern': '^[0-9.]+([eE]-?[0-9]+)? *- *[0-9.]+([eE]-?[0-9]+)?$'}}]}, {'type': 'number'}]}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
-    assert lines[1].strip() == "error - {'value': '2.3-5'} is not valid under any of the given schemas in 'independent_variables[0].values[2]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'oneOf': [{'allOf': [{'type': 'string'}, {'not': {'pattern': '^[0-9.]+([eE]-?[0-9]+)? *- *[0-9.]+([eE]-?[0-9]+)?$'}}]}, {'type': 'number'}]}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
-    assert lines[2].strip() == "error - {'value': '2.3E5 -  5E12'} is not valid under any of the given schemas in 'independent_variables[0].values[3]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'oneOf': [{'allOf': [{'type': 'string'}, {'not': {'pattern': '^[0-9.]+([eE]-?[0-9]+)? *- *[0-9.]+([eE]-?[0-9]+)?$'}}]}, {'type': 'number'}]}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
-    assert lines[3].strip() == "error - {'value': '1e-9 - 3.5e-8'} is not valid under any of the given schemas in 'independent_variables[0].values[4]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'oneOf': [{'allOf': [{'type': 'string'}, {'not': {'pattern': '^[0-9.]+([eE]-?[0-9]+)? *- *[0-9.]+([eE]-?[0-9]+)?$'}}]}, {'type': 'number'}]}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
+    assert len(lines) == 7
+    assert lines[0].strip() == "error - {'low': 6000} is not valid under any of the given schemas in 'independent_variables[0].values[0]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'type': ['string', 'number']}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
+    assert lines[1].strip() == "error - {'high': 7000} is not valid under any of the given schemas in 'independent_variables[0].values[1]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'type': ['string', 'number']}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
+    assert lines[2].strip() == "error - {'high': '7.0.0', 'low': '2.0.0'} is not valid under any of the given schemas in 'independent_variables[0].values[2]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'type': ['string', 'number']}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
+    assert lines[3].strip() == "error - independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '800 - 1000' in 'independent_variables[0].values[3].value' (expected: {'type': 'number or string (not a range)'})"
+    assert lines[4].strip() == "error - independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '-5.3--2' in 'independent_variables[0].values[4].value' (expected: {'type': 'number or string (not a range)'})"
+    assert lines[5].strip() == "error - independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '+2.3E5 -  +5E12' in 'independent_variables[0].values[5].value' (expected: {'type': 'number or string (not a range)'})"
+    assert lines[6].strip() == "error - independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '-1e-09 - -3.5e-08' in 'independent_variables[0].values[6].value' (expected: {'type': 'number or string (not a range)'})"
 
 
 def test_file_with_missing_dependent_values_v1(validator_v1, data_path, capsys):

@@ -4,10 +4,12 @@ independent_variables:
     values:
       - low: 6000
       - high: 7000
-        low: 2000
-      - value: '2.3-5'
-      - value: '2.3E5 -  5E12'
-      - value: '1e-9 - 3.5e-8'
+      - high: 7.0.0
+        low: 2.0.0
+      - value: '800 - 1000'
+      - value: '-5.3--2'
+      - value: '+2.3E5 -  +5E12'
+      - value: '-1e-09 - -3.5e-08'
 dependent_variables:
   - header: {name: SIG(total), units: FB}
     qualifiers:
@@ -29,6 +31,21 @@ dependent_variables:
           - {asymerror: {plus: 0.4, minus: -0.3}, label: sys}
           - {symerror: 0.34, label: "sys,lumi"}
       - value: 8.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 9.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 10.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 11.7
         errors:
           - {symerror: 0.4, label: stat}
           - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
