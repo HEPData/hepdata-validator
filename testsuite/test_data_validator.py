@@ -149,7 +149,11 @@ def test_invalid_json_file_v1(validator_v1, data_path, capsys):
 
     assert is_valid is False
     out, err = capsys.readouterr()
-    assert out.strip() == "error - 'independent_variables' is a required property"
+    lines = out.splitlines()
+    assert len(lines) == 3
+    assert lines[0].strip() == "error - 'independent_variables' is a required property"
+    assert lines[1].strip() == "error - 'dependent_variables' is a required property"
+    assert lines[2].strip().startswith("error - Additional properties are not allowed")
 
 
 def test_load_valid_custom_data_v1(validator_v1, data_path):
@@ -343,7 +347,12 @@ def test_file_with_invalid_independent_variables_v1(validator_v1, data_path, cap
 
     assert is_valid is False
     out, err = capsys.readouterr()
-    assert out.strip() == "error - {'low': 6000} is not valid under any of the given schemas in 'independent_variables[0].values[0]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'type': ['string', 'number']}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
+    lines = out.splitlines()
+    assert len(lines) == 4
+    assert lines[0].strip() == "error - {'low': 6000} is not valid under any of the given schemas in 'independent_variables[0].values[0]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'oneOf': [{'allOf': [{'type': 'string'}, {'not': {'pattern': '^[0-9.]+([eE]-?[0-9]+)? *- *[0-9.]+([eE]-?[0-9]+)?$'}}]}, {'type': 'number'}]}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
+    assert lines[1].strip() == "error - {'value': '2.3-5'} is not valid under any of the given schemas in 'independent_variables[0].values[2]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'oneOf': [{'allOf': [{'type': 'string'}, {'not': {'pattern': '^[0-9.]+([eE]-?[0-9]+)? *- *[0-9.]+([eE]-?[0-9]+)?$'}}]}, {'type': 'number'}]}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
+    assert lines[2].strip() == "error - {'value': '2.3E5 -  5E12'} is not valid under any of the given schemas in 'independent_variables[0].values[3]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'oneOf': [{'allOf': [{'type': 'string'}, {'not': {'pattern': '^[0-9.]+([eE]-?[0-9]+)? *- *[0-9.]+([eE]-?[0-9]+)?$'}}]}, {'type': 'number'}]}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
+    assert lines[3].strip() == "error - {'value': '1e-9 - 3.5e-8'} is not valid under any of the given schemas in 'independent_variables[0].values[4]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'oneOf': [{'allOf': [{'type': 'string'}, {'not': {'pattern': '^[0-9.]+([eE]-?[0-9]+)? *- *[0-9.]+([eE]-?[0-9]+)?$'}}]}, {'type': 'number'}]}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
 
 
 def test_file_with_missing_dependent_values_v1(validator_v1, data_path, capsys):

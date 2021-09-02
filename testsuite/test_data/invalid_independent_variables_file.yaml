@@ -5,17 +5,30 @@ independent_variables:
       - low: 6000
       - high: 7000
         low: 2000
+      - value: '2.3-5'
+      - value: '2.3E5 -  5E12'
+      - value: '1e-9 - 3.5e-8'
 dependent_variables:
   - header: {name: SIG(total), units: FB}
     qualifiers:
       - {name: RE, value: P P --> Z0 Z0 X}
     values:
-      - value: 6.7
+      - value: 5.7
         errors:
           - {symerror: 0.45, label: stat}
           - {asymerror: {plus: 0.4, minus: -0.3}, label: sys}
           - {symerror: 0.34, label: "sys,lumi"}
-      - value: 5.7
+      - value: 6.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 7.7
+        errors:
+          - {symerror: 0.45, label: stat}
+          - {asymerror: {plus: 0.4, minus: -0.3}, label: sys}
+          - {symerror: 0.34, label: "sys,lumi"}
+      - value: 8.7
         errors:
           - {symerror: 0.4, label: stat}
           - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}

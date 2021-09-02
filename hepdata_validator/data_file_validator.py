@@ -128,14 +128,18 @@ class DataFileValidator(Validator):
                     data_schema = json.load(f)
                     # Create validator ourselves so we can tweak the errors
                     cls = validator_for(data_schema)
+                    cls.check_schema(data_schema)
                     v = cls(data_schema)
                     # Make 'oneOf' errors more relevant to give better error
                     # messages about 'low' without 'high' etc
-                    sort_fn = by_relevance(strong='oneOf')
-                    for error in sorted(v.iter_errors(data), key=sort_fn):
-                        raise error
+                    sort_fn = by_relevance(strong='oneOf', weak=[])
 
-                if self.schema_version.major > 0:
+                    # Show all errors found, using best error in context for each
+                    for error in v.iter_errors(data):
+                        best = sorted([error] + error.context, key=sort_fn)[0]
+                        self.add_validation_error(file_path, best)
+
+                if not self.has_errors(file_path) and self.schema_version.major > 0:
                     check_for_zero_uncertainty(data)
                     check_length_values(data)
 
