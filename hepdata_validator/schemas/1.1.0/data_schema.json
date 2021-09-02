@@ -26,7 +26,17 @@
                 {
                   "type": "object",
                   "properties": {
-                    "value": { "type": [ "string", "number" ] }
+                    "value": {
+                      "oneOf": [
+                        {
+                          "allOf": [
+                            { "type": "string" },
+                            { "not": { "pattern": "^[0-9.]+([eE]-?[0-9]+)? *- *[0-9.]+([eE]-?[0-9]+)?$" } }
+                          ]
+                        },
+                        { "type": "number" }
+                      ]
+                    }
                   },
                   "required": ["value"],
                   "additionalProperties": false
