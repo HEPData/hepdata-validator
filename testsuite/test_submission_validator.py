@@ -158,7 +158,6 @@ def test_valid_submission_yaml_with_license_v1(validator_v1, data_path):
     assert not validator_v1.has_errors(file)
 
 
-
 def test_invalid_submission_yaml_v1(validator_v1, data_path, capsys):
     """
     Tests the SubmissionFileValidator V1 against an invalid YAML
@@ -170,7 +169,11 @@ def test_invalid_submission_yaml_v1(validator_v1, data_path, capsys):
 
     assert is_valid is False
     out, err = capsys.readouterr()
-    assert out.strip() == "error - 12321 is not of type 'string' in 'data_file' (expected: {'type': 'string'})"
+    lines = out.splitlines()
+    assert len(lines) == 3
+    assert lines[0].strip() == "error - 'values' is a required property in 'keywords[0]' (expected: {'type': 'object', 'properties': {'name': {'type': 'string', 'maxLength': 128, 'enum': ['cmenergies', 'observables', 'reactions', 'phrases']}, 'values': {'type': 'array', 'items': {'type': ['string', 'number'], 'maxLength': 128}}}, 'required': ['name', 'values'], 'additionalProperties': False})"
+    assert lines[1].strip() == "error - Additional properties are not allowed ('value' was unexpected) in 'keywords[0]' (expected: {'type': 'object', 'properties': {'name': {'type': 'string', 'maxLength': 128, 'enum': ['cmenergies', 'observables', 'reactions', 'phrases']}, 'values': {'type': 'array', 'items': {'type': ['string', 'number'], 'maxLength': 128}}}, 'required': ['name', 'values'], 'additionalProperties': False})"
+    assert lines[2].strip() == "error - 12321 is not of type 'string' in 'data_file' (expected: {'type': 'string'})"
 
 
 def test_invalid_license_submission_yaml_v1(validator_v1, data_path, capsys):
@@ -184,7 +187,11 @@ def test_invalid_license_submission_yaml_v1(validator_v1, data_path, capsys):
 
     assert is_valid is False
     out, err = capsys.readouterr()
-    assert out.strip() == "error - None is not of type 'string' in 'data_license.name' (expected: {'type': 'string', 'maxLength': 256})"
+    lines = out.splitlines()
+    assert len(lines) == 3
+    assert lines[0].strip() == "error - None is not of type 'string' in 'data_license.name' (expected: {'type': 'string', 'maxLength': 256})"
+    assert lines[1].strip() == "error - None is not of type 'string' in 'data_license.url' (expected: {'type': 'string', 'maxLength': 256})"
+    assert lines[2].strip() == "error - None is not of type 'string' in 'data_license.description' (expected: {'type': 'string'})"
 
 
 def test_invalid_keyword_submission_yaml_v1(validator_v1, data_path, capsys):

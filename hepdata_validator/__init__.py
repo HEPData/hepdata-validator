@@ -24,6 +24,10 @@
 
 import abc
 import os
+
+from jsonschema import validate as json_validate, ValidationError
+from jsonschema.validators import validator_for
+from jsonschema.exceptions import by_relevance
 from packaging import version as packaging_version
 
 from .version import __version__
@@ -75,6 +79,33 @@ class Validator(object):
         :param data: pre loaded YAML object (optional).
         :return: true if valid, false otherwise
         """
+
+    def _validate_json_against_schema(self, file_path, data, schema, sort_fn=None, **kwargs):
+        """
+        Validates json_data against the given schema.
+        Roughly follows the pattern of jsonschema.validate but adds errors to
+        self.messages, and will add multiple errors if they exist.
+
+        :param type file_path: path to file being checked
+        :param type data: JSON/YAML data to validate
+        :param type schema: schema to validate data against
+        :param type sort_fn: Function to sort error messages to get most
+            relevant (see docs for `jsonschema.exceptions.by_relevance`).
+        :param type **kwargs: Other kwargs to use when creating the
+            `jsonschema.IValidator` instance.
+        """
+        # Create validator ourselves so we can tweak the errors
+        cls = validator_for(schema)
+        cls.check_schema(schema)
+        v = cls(schema, **kwargs)
+
+        if not sort_fn:
+            sort_fn = by_relevance()
+
+        # Show all errors found, using best error in context for each
+        for error in v.iter_errors(data):
+            best = sorted([error] + error.context, key=sort_fn)[0]
+            self.add_validation_error(file_path, best)
 
     def has_errors(self, file_name):
         """

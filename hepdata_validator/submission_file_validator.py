@@ -1,5 +1,5 @@
 import json
-from jsonschema import validate, ValidationError, RefResolver
+from jsonschema import ValidationError, RefResolver
 import os
 from packaging import version as packaging_version
 import re
@@ -80,10 +80,20 @@ class SubmissionFileValidator(Validator):
                     continue
                 try:
                     if not data_item_index and 'data_file' not in data_item:
-                        validate(data_item, additional_file_section_schema, resolver=resolver)
+                        self._validate_json_against_schema(
+                            file_path,
+                            data_item,
+                            additional_file_section_schema,
+                            resolver=resolver
+                        )
                     else:
-                        validate(data_item, submission_file_schema, resolver=resolver)
-                        if self.schema_version.major > 0:
+                        self._validate_json_against_schema(
+                            file_path,
+                            data_item,
+                            submission_file_schema,
+                            resolver=resolver
+                        )
+                        if not self.has_errors(file_path) and self.schema_version.major > 0:
                             check_cmenergies(data_item)
                             table_names.append(data_item['name'])
                             table_data_files.append(data_item['data_file'])

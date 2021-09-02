@@ -33,8 +33,7 @@ except ImportError: #pragma: no cover
     from yaml import SafeLoader as Loader #pragma: no cover
 
 from hepdata_validator import Validator, ValidationMessage
-from jsonschema import validate as json_validate, ValidationError
-from jsonschema.validators import validator_for
+from jsonschema import ValidationError
 from jsonschema.exceptions import by_relevance
 
 __author__ = 'eamonnmaguire'
@@ -117,31 +116,29 @@ class DataFileValidator(Validator):
                 return False
 
         try:
+            is_custom_schema = False
+            sort_fn = None
+
             if file_type:
-                custom_schema = self.load_custom_schema(file_type)
-                json_validate(data, custom_schema)
+                is_custom_schema = True
+                data_schema = self.load_custom_schema(file_type)
             elif 'type' in data:
-                custom_schema = self.load_custom_schema(data['type'])
-                json_validate(data, custom_schema)
+                is_custom_schema = True
+                data_schema = self.load_custom_schema(data['type'])
             else:
                 with open(self.default_schema_file, 'r') as f:
                     data_schema = json.load(f)
-                    # Create validator ourselves so we can tweak the errors
-                    cls = validator_for(data_schema)
-                    cls.check_schema(data_schema)
-                    v = cls(data_schema)
-                    # Make 'oneOf' errors more relevant to give better error
-                    # messages about 'low' without 'high' etc
-                    sort_fn = by_relevance(strong='oneOf', weak=[])
 
-                    # Show all errors found, using best error in context for each
-                    for error in v.iter_errors(data):
-                        best = sorted([error] + error.context, key=sort_fn)[0]
-                        self.add_validation_error(file_path, best)
+                # Make 'oneOf' errors more relevant to give better error
+                # messages about 'low' without 'high' etc
+                sort_fn = by_relevance(strong='oneOf', weak=[])
 
-                if not self.has_errors(file_path) and self.schema_version.major > 0:
-                    check_for_zero_uncertainty(data)
-                    check_length_values(data)
+            self._validate_json_against_schema(file_path, data, data_schema, sort_fn)
+
+            if not is_custom_schema and not self.has_errors(file_path) and \
+               self.schema_version.major > 0:
+                check_for_zero_uncertainty(data)
+                check_length_values(data)
 
         except ValidationError as ve:
             self.add_validation_error(file_path, ve)
