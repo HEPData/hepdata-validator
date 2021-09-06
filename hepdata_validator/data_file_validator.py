@@ -168,8 +168,8 @@ class DataFileValidator(Validator):
                 if 'values' in var:
                     for j, v in enumerate(var['values']):
                         if 'value' in v and isinstance(v['value'], str) and '-' in v['value']:
-                            m = re.match(r'^[+-]\d+\.?\d?([eE][+-]\d+)?-\d+\.?\d?([eE][+-]\d+)?$', v['value'])
-                            if not m:
+                            m = re.match(r'^[+-]?\d+(\.\d*)?([eE][+-]?\d+)?\s*-\s*[+-]?\d+(\.\d*)?([eE][+-]?\d+)?$', v['value'])
+                            if m:
                                 error = ValidationError(
                                     "independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '%s'" % v['value'],
                                     path=['independent_variables', i, 'values', j, 'value'],
