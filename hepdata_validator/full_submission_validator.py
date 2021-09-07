@@ -1,4 +1,5 @@
 from enum import Enum
+import gzip
 import os.path
 import shutil
 import tempfile
@@ -71,49 +72,49 @@ class FullSubmissionValidator(Validator):
         self.valid_files = {}
         self.submission_docs = None
 
-    def validate(self, directory=None, file=None, zipfile=None):
+    def validate(self, directory=None, file=None, archive=None):
         """
         Offline validation of submission.yaml and YAML data files.
         Can check either a single file or a directory.
 
         :param type directory: Directory to check (defaults to current working directory).
         :param type file: Single submission yaml file to check (overrides directory if both are given)
-        :param type zipfile: Zipped file (e.g. .zip, .tar.gz, .gzip) to check (overrides directory and file if both are given)
+        :param type archive: Archive file (e.g. .zip, .tar.gz, .gzip) to check (overrides directory and file if both are given)
         :return: Bool showing whether the submission is valid
         :rtype: type
         """
         self.single_yaml_file = False
-        temp_directory = None
+        self.temp_directory = None
         self.directory = directory
 
         try:
             # Check input file/directory exists and is valid
-            if zipfile:
-                if not os.path.isfile(zipfile):
+            if archive:
+                if not os.path.isfile(archive):
                     self.add_validation_message(ValidationMessage(
-                        file=zipfile, message=f"File {zipfile} does not exist."
+                        file=archive, message=f"File {archive} does not exist."
                     ))
                     return False
 
                 # Try extracting file to a temp dir
-                temp_directory = tempfile.mkdtemp()
+                self.temp_directory = tempfile.mkdtemp()
                 try:
-                    shutil.unpack_archive(zipfile, temp_directory)
+                    shutil.unpack_archive(archive, self.temp_directory)
                 except Exception as e:
                     self.add_validation_message(ValidationMessage(
-                        file=zipfile, message=f"Unable to extract file {zipfile}. Error was: {e}"
+                        file=archive, message=f"Unable to extract file {archive}. Error was: {e}"
                     ))
                     return False
 
                 # Find submission.yaml in extracted directory
-                for dir_name, _, files in os.walk(temp_directory):
+                for dir_name, _, files in os.walk(self.temp_directory):
                     for filename in files:
                         if filename == 'submission.yaml':
                             self.directory = dir_name
 
                 if not self.directory:
                     self.add_validation_message(ValidationMessage(
-                        file=zipfile, message="No submission.yaml file found in submission."
+                        file=archive, message="No submission.yaml file found in submission."
                     ))
                     return False
 
@@ -125,6 +126,26 @@ class FullSubmissionValidator(Validator):
                     return False
                 self.single_yaml_file = True
                 self.directory = None
+
+                if file.endswith('.yaml.gz'):
+                    # Try extracting file to a temp dir
+                    self.temp_directory = tempfile.mkdtemp()
+                    unzipped_path = os.path.join(self.temp_directory, os.path.basename(file[:-3]))
+                    try:
+                        with gzip.GzipFile(file, 'rb') as gzip_file:
+                            with open(unzipped_path, 'wb') as unzipped_file:
+                                unzipped_file.write(gzip_file.read())
+                    except Exception as e:
+                        self.add_validation_message(ValidationMessage(
+                            file=file, message=f"Unable to extract file {file}. Error was: {e}"
+                        ))
+                        return False
+
+                    self.submission_file_path = unzipped_path
+                    self.directory = self.temp_directory
+                else:
+                    self.submission_file_path = file
+
             else:
                 self.directory = directory if directory else '.'
                 if not os.path.isdir(self.directory):
@@ -133,10 +154,8 @@ class FullSubmissionValidator(Validator):
                     ))
                     return False
 
-            # Get location of the submission.yaml file or the single YAML file.
-            if self.single_yaml_file:
-                self.submission_file_path = file
-            else:
+            # Get location of the submission.yaml file
+            if not self.single_yaml_file:
                 self.submission_file_path = os.path.join(self.directory, 'submission.yaml')
                 if not os.path.isfile(self.submission_file_path):
                     self.add_validation_message(ValidationMessage(
@@ -194,15 +213,17 @@ class FullSubmissionValidator(Validator):
 
             return len(self.messages) == 0
         finally:
-            if temp_directory:
+            if self.temp_directory:
                 # Delete temporary Directory
-                shutil.rmtree(temp_directory)
+                shutil.rmtree(self.temp_directory)
 
     def _create_data_files(self, docs):
         for doc in docs:
             if 'name' in doc:
                 file_name = doc['name'].replace(' ', '_').replace('/', '-') + '.yaml'
                 doc['data_file'] = file_name
+                if self.directory:
+                    file_name = os.path.join(self.directory, file_name)
                 with open(file_name, 'w') as data_file:
                     yaml.dump({'independent_variables': doc.pop('independent_variables', None),
                                'dependent_variables': doc.pop('dependent_variables', None)}, data_file, Dumper=Dumper)
@@ -324,7 +345,7 @@ class FullSubmissionValidator(Validator):
                     self.valid_files[type].append(user_data_file_path)
 
             # For single YAML file, clean up by removing temporary data_file created above.
-            if self.single_yaml_file:
+            if self.single_yaml_file and not self.temp_directory:
                 os.remove(doc['data_file'])
 
         return is_valid_submission_doc

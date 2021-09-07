@@ -42,7 +42,7 @@ def test_valid_submission_dir(validator_v1, data_path, capsys):
 
 def test_valid_submission_zip(validator_v1, data_path, capsys):
     submission_zip = os.path.join(data_path, 'TestHEPSubmission.zip')
-    is_valid = validator_v1.validate(zipfile=submission_zip)
+    is_valid = validator_v1.validate(archive=submission_zip)
     assert is_valid
 
     validator_v1.print_valid_files()
@@ -61,6 +61,17 @@ def test_valid_single_yaml(validator_v1, data_path, capsys):
     validator_v1.print_valid_files()
     out, err = capsys.readouterr()
     assert out.strip() == f"{submission_file} is valid HEPData single file YAML."
+
+
+def test_valid_single_yaml_gzip(validator_v1, data_path, capsys):
+    submission_file = os.path.join(data_path, '1512299.yaml.gz')
+    is_valid = validator_v1.validate(file=submission_file)
+    assert is_valid
+    assert SchemaType.SINGLE_YAML in validator_v1.valid_files
+    assert validator_v1.valid_files[SchemaType.SINGLE_YAML][0].endswith('1512299.yaml')
+    validator_v1.print_valid_files()
+    out, err = capsys.readouterr()
+    assert out.strip().endswith("1512299.yaml is valid HEPData single file YAML.")
 
 
 def test_valid_submission_dir_remote_schema(validator_v1, data_path, capsys):
@@ -128,17 +139,17 @@ def test_invalid_input(validator_v1, data_path, capsys):
     assert lines[0].strip() == "error - Directory notadirectory does not exist."
 
     # Invalid zip (does not exist)
-    is_valid = validator_v1.validate(zipfile='notazipfile')
+    is_valid = validator_v1.validate(archive='notanarchive')
     assert not is_valid
     assert validator_v1.valid_files == {}
-    validator_v1.print_errors('notazipfile')
+    validator_v1.print_errors('notanarchive')
     out, err = capsys.readouterr()
     lines = out.splitlines()
-    assert lines[0].strip() == "error - File notazipfile does not exist."
+    assert lines[0].strip() == "error - File notanarchive does not exist."
 
     # Invalid zip (not a zip)
     file = os.path.join(data_path, 'valid_submission.yaml')
-    is_valid = validator_v1.validate(zipfile=file)
+    is_valid = validator_v1.validate(archive=file)
     assert not is_valid
     assert validator_v1.valid_files == {}
     validator_v1.print_errors(file)
@@ -159,7 +170,7 @@ def test_missing_submission(validator_v1, data_path, capsys):
 
     # Zip without submission.yaml
     file = os.path.join(data_path, 'valid_submission.zip')
-    validator_v1.validate(zipfile=file)
+    validator_v1.validate(archive=file)
     assert not is_valid
     assert validator_v1.valid_files == {}
     validator_v1.print_errors(file)
@@ -190,6 +201,17 @@ def test_invalid_data_single_file(validator_v1, data_path, capsys):
     lines = out.splitlines()
     assert lines[0].strip() == f"error - {file} (Table 1) is invalid HEPData YAML."
     assert lines[1].strip().startswith("error - Additional properties are not allowed ('errorss' was unexpected) in 'dependent_variables[0].values[0]'")
+
+
+def test_invalid_data_single_file_gzip(validator_v1, data_path, capsys):
+    file = os.path.join(data_path, '1512299_invalid.yaml.gz')
+    is_valid = validator_v1.validate(file=file)
+    assert not is_valid
+    assert validator_v1.valid_files == {}
+    validator_v1.print_errors(file)
+    out, err = capsys.readouterr()
+    lines = out.splitlines()
+    assert lines[0].strip().startswith(f"error - Unable to extract file {file}. Error was: Not a gzipped file")
 
 
 def test_invalid_data_directory(validator_v1, data_path, capsys):

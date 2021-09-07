@@ -35,7 +35,7 @@ def test_valid_submission_dir(data_path, cli_runner):
 
 def test_valid_submission_zip(data_path, cli_runner):
     submission_zip = os.path.join(data_path, 'TestHEPSubmission.zip')
-    result = cli_runner.invoke(validate, ['-z', submission_zip])
+    result = cli_runner.invoke(validate, ['-a', submission_zip])
     assert result.exit_code == 0
     lines = result.output.splitlines()
     assert lines[0] == f"{submission_zip} is valid."

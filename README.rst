@@ -89,11 +89,11 @@ To validate a submission in another directory:
 
     $ hepdata-validate -d ../TestHEPSubmission
 
-To validate a zip file in the current directory:
+To validate a zipped or archive file in the current directory:
 
 .. code:: bash
 
-    $ hepdata-validate -z TestHEPSubmission.zip
+    $ hepdata-validate -a TestHEPSubmission.zip
 
 To validate a single yaml file in the current directory:
 
@@ -119,7 +119,7 @@ Usage options
                             https://hepdata-
                             submission.readthedocs.io/en/latest/single_yaml.html.
                             (Overrides directory)
-      -z, --zipfile TEXT    Zipped file (e.g. .zip, .tar.gz, .gzip) to check.
+      -a, --archive TEXT    Archive file (e.g. .zip, .tar.gz, .gzip) to check.
                             (Overrides directory and file)
       --help                Show this message and exit.
 
@@ -141,7 +141,7 @@ To validate a full submission, instantiate a ``FullSubmissionValidator`` object:
     is_dir_valid = full_submission_validator.validate(directory='TestHEPSubmission')
 
     # or uncomment to validate a zipped archive
-    # is_zip_valid = full_submission_validator.validate(zipfile='TestHEPSubmission.zip')
+    # is_archive_valid = full_submission_validator.validate(archive='TestHEPSubmission.zip')
 
     # or uncomment to validate a single file
     # is_file_valid = full_submission_validator.validate(file='hep_submission.yaml')
