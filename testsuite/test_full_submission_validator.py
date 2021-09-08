@@ -48,9 +48,9 @@ def test_valid_submission_zip(validator_v1, data_path, capsys):
     validator_v1.print_valid_files()
     out, err = capsys.readouterr()
     lines = out.splitlines()
-    assert lines[0].endswith("/submission.yaml is valid HEPData submission YAML.")
+    assert lines[0].strip() == "TestHEPSubmission/submission.yaml is valid HEPData submission YAML."
     for i in list(range(1, 8)):
-        assert lines[i].endswith(f'data{i}.yaml is valid HEPData data YAML.')
+        assert lines[i].strip() == f'TestHEPSubmission/data{i}.yaml is valid HEPData data YAML.'
 
 
 def test_valid_single_yaml(validator_v1, data_path, capsys):
@@ -68,10 +68,10 @@ def test_valid_single_yaml_gzip(validator_v1, data_path, capsys):
     is_valid = validator_v1.validate(file=submission_file)
     assert is_valid
     assert SchemaType.SINGLE_YAML in validator_v1.valid_files
-    assert validator_v1.valid_files[SchemaType.SINGLE_YAML][0].endswith('1512299.yaml')
+    assert validator_v1.valid_files[SchemaType.SINGLE_YAML][0] == '1512299.yaml'
     validator_v1.print_valid_files()
     out, err = capsys.readouterr()
-    assert out.strip().endswith("1512299.yaml is valid HEPData single file YAML.")
+    assert out.strip() == "1512299.yaml is valid HEPData single file YAML."
 
 
 def test_valid_submission_dir_remote_schema(validator_v1, data_path, capsys):
@@ -214,9 +214,55 @@ def test_invalid_data_single_file_gzip(validator_v1, data_path, capsys):
     assert lines[0].strip().startswith(f"error - Unable to extract file {file}. Error was: Not a gzipped file")
 
 
+def test_invalid_yaml_single_file_gzip(validator_v1, data_path, capsys):
+    # Check error messages don't contain temp dir
+    file = os.path.join(data_path, '1512299_invalid_yaml.yaml.gz')
+    is_valid = validator_v1.validate(file=file)
+    assert not is_valid
+    assert validator_v1.valid_files == {}
+    validator_v1.print_errors('1512299_invalid_yaml.yaml')
+    out, err = capsys.readouterr()
+    assert out.strip() == """error - There was a problem parsing the file:
+		while parsing a flow mapping
+		  in "1512299_invalid_yaml.yaml", line 7, column 11
+		did not find expected ',' or '}'
+		  in "1512299_invalid_yaml.yaml", line 8, column 3"""
+
+
 def test_invalid_data_directory(validator_v1, data_path, capsys):
     dir = os.path.join(data_path, 'TestHEPSubmission_invalid')
     is_valid = validator_v1.validate(directory=dir)
+    assert not is_valid
+    expected_valid_files = [os.path.join(dir, f) for f in [
+        'data1.yaml', 'data4.yaml', 'data5.yaml', 'data6.yaml', 'data7.yaml'
+    ]]
+    assert validator_v1.valid_files == {SchemaType.DATA: expected_valid_files}
+    assert validator_v1.has_errors
+    # Check errors directly rather than with print so we can check they're allocated to the right file
+    errors = validator_v1.get_messages()
+    expected_file_names = [
+        os.path.join(dir, 'submission.yaml'),
+        os.path.join(dir, 'data3.yaml'),
+        os.path.join(dir, 'data8.yaml'),
+        os.path.join(dir, 'figFigure8B.png')
+    ]
+    assert set(errors.keys()) == set(expected_file_names)
+    assert errors[expected_file_names[0]][0].message == "Name of data_file 'mydirectory/data2.yaml' should not contain '/'."
+    assert errors[expected_file_names[0]][1].message == "Location of 'additional_resources' file '../TestHEPSubmission/figFigure8B.png' should not contain '/'."
+    assert errors[expected_file_names[0]][2].message == f"Missing 'additional_resources' file 'figFigure9A.png'."
+    assert errors[expected_file_names[1]][0].message == f"Missing data_file 'data3.yaml'."
+    assert errors[expected_file_names[2]][0].message == f"""There was a problem parsing the file:
+		while parsing a block mapping
+		  in "{dir}/data8.yaml", line 1, column 1
+		did not find expected key
+		  in "{dir}/data8.yaml", line 9, column 3"""
+    assert errors[expected_file_names[3]][0].message == f"figFigure8B.png is not referenced in the submission."
+
+
+def test_invalid_archive(validator_v1, data_path):#, capsys):
+    archive = os.path.join(data_path, 'TestHEPSubmission_invalid.zip')
+    dir = 'TestHEPSubmission_invalid'
+    is_valid = validator_v1.validate(archive=archive)
     assert not is_valid
     expected_valid_files = [os.path.join(dir, f) for f in [
         'data1.yaml', 'data4.yaml', 'data5.yaml', 'data6.yaml', 'data7.yaml'

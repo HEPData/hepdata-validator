@@ -91,9 +91,9 @@ class FullSubmissionValidator(Validator):
             # Check input file/directory exists and is valid
             if archive:
                 if not os.path.isfile(archive):
-                    self.add_validation_message(ValidationMessage(
+                    self._add_validation_message(
                         file=archive, message=f"File {archive} does not exist."
-                    ))
+                    )
                     return False
 
                 # Try extracting file to a temp dir
@@ -101,9 +101,9 @@ class FullSubmissionValidator(Validator):
                 try:
                     shutil.unpack_archive(archive, self.temp_directory)
                 except Exception as e:
-                    self.add_validation_message(ValidationMessage(
+                    self._add_validation_message(
                         file=archive, message=f"Unable to extract file {archive}. Error was: {e}"
-                    ))
+                    )
                     return False
 
                 # Find submission.yaml in extracted directory
@@ -113,16 +113,16 @@ class FullSubmissionValidator(Validator):
                             self.directory = dir_name
 
                 if not self.directory:
-                    self.add_validation_message(ValidationMessage(
+                    self._add_validation_message(
                         file=archive, message="No submission.yaml file found in submission."
-                    ))
+                    )
                     return False
 
             elif file:
                 if not os.path.isfile(file):
-                    self.add_validation_message(ValidationMessage(
+                    self._add_validation_message(
                         file=file, message=f"File {file} does not exist."
-                    ))
+                    )
                     return False
                 self.single_yaml_file = True
                 self.directory = None
@@ -136,9 +136,9 @@ class FullSubmissionValidator(Validator):
                             with open(unzipped_path, 'wb') as unzipped_file:
                                 unzipped_file.write(gzip_file.read())
                     except Exception as e:
-                        self.add_validation_message(ValidationMessage(
+                        self._add_validation_message(
                             file=file, message=f"Unable to extract file {file}. Error was: {e}"
-                        ))
+                        )
                         return False
 
                     self.submission_file_path = unzipped_path
@@ -149,18 +149,18 @@ class FullSubmissionValidator(Validator):
             else:
                 self.directory = directory if directory else '.'
                 if not os.path.isdir(self.directory):
-                    self.add_validation_message(ValidationMessage(
+                    self._add_validation_message(
                         file=self.directory, message=f"Directory {self.directory} does not exist."
-                    ))
+                    )
                     return False
 
             # Get location of the submission.yaml file
             if not self.single_yaml_file:
                 self.submission_file_path = os.path.join(self.directory, 'submission.yaml')
                 if not os.path.isfile(self.submission_file_path):
-                    self.add_validation_message(ValidationMessage(
+                    self._add_validation_message(
                         file=self.submission_file_path, message="No submission.yaml file found in submission."
-                    ))
+                    )
                     return False
 
             self.included_files = [self.submission_file_path]
@@ -170,10 +170,10 @@ class FullSubmissionValidator(Validator):
                 try:
                     self.submission_docs = list(yaml.load_all(submission_file, Loader=Loader))
                 except yaml.YAMLError as e:
-                    self.add_validation_message(ValidationMessage(
+                    self._add_validation_message(
                         file=self.submission_file_path,
                         message="There was a problem parsing the file:\n\t\t" + str(e).replace('\n', '\n\t\t')
-                    ))
+                    )
                     return False
 
                 # Need to remove independent_variables and dependent_variables from single YAML file.
@@ -183,13 +183,13 @@ class FullSubmissionValidator(Validator):
                 # Validate the submission.yaml file
                 is_valid_submission_file = self._submission_file_validator.validate(file_path=self.submission_file_path, data=self.submission_docs)
                 if not is_valid_submission_file:
-                    self.add_validation_message(ValidationMessage(
+                    self._add_validation_message(
                         file=self.submission_file_path, message=f'{self.submission_file_path} is invalid HEPData YAML.'
-                    ))
+                    )
                     for message in self._submission_file_validator.get_messages(self.submission_file_path):
-                        self.add_validation_message(ValidationMessage(
+                        self._add_validation_message(
                             file=self.submission_file_path, message=message.message
-                        ))
+                        )
                     return False
 
                 # Loop over all YAML documents in the submission.yaml file.
@@ -200,22 +200,38 @@ class FullSubmissionValidator(Validator):
 
                 if is_valid_submission_file:
                     type = SchemaType.SINGLE_YAML if self.single_yaml_file else SchemaType.SUBMISSION
-                    self.valid_files[type] = [self.submission_file_path]
+                    self.valid_files[type] = [self._remove_temp_directory(self.submission_file_path)]
 
             # Check all files in directory are in included_files
             if not self.single_yaml_file:
                 for f in os.listdir(self.directory):
                     file_path = os.path.join(self.directory, f)
                     if file_path not in self.included_files:
-                        self.add_validation_message(ValidationMessage(
+                        self._add_validation_message(
                             file=file_path, message='%s is not referenced in the submission.' % f
-                        ))
+                        )
 
             return len(self.messages) == 0
         finally:
             if self.temp_directory:
                 # Delete temporary Directory
                 shutil.rmtree(self.temp_directory)
+
+    def _add_validation_message(self, file, message):
+        if self.temp_directory:
+            # Remove temp directory from filename and message
+            file = self._remove_temp_directory(file)
+            message = self._remove_temp_directory(message)
+
+        self.add_validation_message(ValidationMessage(
+            file=file, message=message
+        ))
+
+    def _remove_temp_directory(self, s):
+        if self.temp_directory:
+            return s.replace(self.temp_directory + '/', '')
+        else:
+            return s
 
     def _create_data_files(self, docs):
         for doc in docs:
@@ -247,15 +263,15 @@ class FullSubmissionValidator(Validator):
                 if not resource['location'].startswith(unchecked_prefixes):
                     location = os.path.join(self.directory, resource['location'])
                     self.included_files.append(location)
-                    if not os.path.isfile(location):
-                        self.add_validation_message(ValidationMessage(
-                            file=self.submission_file_path, message=f"Missing 'additional_resources' file '{resource['location']}'."
-                        ))
-                        is_valid_submission_doc = False
-                    elif '/' in resource['location']:
-                        self.add_validation_message(ValidationMessage(
+                    if '/' in resource['location']:
+                        self._add_validation_message(
                             file=self.submission_file_path, message=f"Location of 'additional_resources' file '{resource['location']}' should not contain '/'."
-                        ))
+                        )
+                        is_valid_submission_doc = False
+                    elif not os.path.isfile(location):
+                        self._add_validation_message(
+                            file=self.submission_file_path, message=f"Missing 'additional_resources' file '{resource['location']}'."
+                        )
                         is_valid_submission_doc = False
 
         # Check for non-empty YAML documents with a 'data_file' key.
@@ -263,9 +279,9 @@ class FullSubmissionValidator(Validator):
 
             # Check for presence of '/' in data_file value.
             if '/' in doc['data_file']:
-                self.add_validation_message(ValidationMessage(
+                self._add_validation_message(
                     file=self.submission_file_path, message=f"Name of data_file '{doc['data_file']}' should not contain '/'."
-                ))
+                )
                 return False
 
             # Extract data file from YAML document.
@@ -278,12 +294,13 @@ class FullSubmissionValidator(Validator):
                 self.included_files.append(data_file_path)
 
             if not os.path.isfile(data_file_path):
-                self.add_validation_message(ValidationMessage(
+                self._add_validation_message(
                     file=data_file_path, message="Missing data_file '%s'." % doc['data_file']
-                ))
+                )
                 return is_valid_submission_doc
 
             user_data_file_path = self.submission_file_path if self.single_yaml_file else data_file_path
+            user_data_file_path = self._remove_temp_directory(user_data_file_path)
 
             # Check the remote schema (if defined)
             file_type = None
@@ -293,15 +310,15 @@ class FullSubmissionValidator(Validator):
                     if self.autoload_remote_schemas:
                         self.load_remote_schema(file_type)
                     elif doc['data_schema'] not in self._data_file_validator.custom_data_schemas:
-                        self.add_validation_message(ValidationMessage(
+                        self._add_validation_message(
                             file=self.submission_file_path,
                             message=f"Autoloading of remote schema {doc['data_schema']} is not allowed."
-                        ))
+                        )
                         return False
                 except FileNotFoundError:
-                    self.add_validation_message(ValidationMessage(
+                    self._add_validation_message(
                         file=self.submission_file_path, message=f"Remote schema {doc['data_schema']} not found."
-                    ))
+                    )
                     return False
 
             # Just try to load YAML data file without validating schema.
@@ -309,10 +326,10 @@ class FullSubmissionValidator(Validator):
                 contents = yaml.load(open(data_file_path, 'r'), Loader=Loader)
             except (OSError, yaml.YAMLError) as e:
                 problem_type = 'reading' if isinstance(e, OSError) else 'parsing'
-                self.add_validation_message(ValidationMessage(
+                self._add_validation_message(
                     file=user_data_file_path,
                     message=f"There was a problem {problem_type} the file:\n\t\t" + str(e).replace('\n', '\n\t\t')
-                ))
+                )
                 return is_valid_submission_doc
 
             # Validate the YAML data file
@@ -322,17 +339,17 @@ class FullSubmissionValidator(Validator):
             if not is_valid_data_file:
                 table_msg = f" ({doc['name']})" if self.single_yaml_file else ''
                 invalid_msg = f"against schema {doc['data_schema']}" if 'data_schema' in doc else "HEPData YAML"
-                self.add_validation_message(ValidationMessage(
+                self._add_validation_message(
                     file=user_data_file_path, message=f'{user_data_file_path}{table_msg} is invalid {invalid_msg}.'
-                ))
+                )
                 if self.single_yaml_file:
                     is_valid_submission_doc = False
 
                 is_valid_data_file = False
                 for message in self._data_file_validator.get_messages(data_file_path):
-                    self.add_validation_message(ValidationMessage(
+                    self._add_validation_message(
                         file=user_data_file_path, message=message.message
-                    ))
+                    )
             elif not self.single_yaml_file:
                 type = SchemaType.REMOTE if 'data_schema' in doc else SchemaType.DATA
 
