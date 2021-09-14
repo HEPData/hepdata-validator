@@ -163,7 +163,7 @@ class DataFileValidator(Validator):
         :param data_item: YAML document from submission.yaml
         :return: raise ValidationError if not numeric
         """
-        if 'independent_variables' in data_item:
+        if 'independent_variables' in data_item and data_item['independent_variables'] is not None:
             for i, var in enumerate(data_item['independent_variables']):
                 if 'values' in var:
                     for j, v in enumerate(var['values']):
@@ -185,7 +185,7 @@ class DataFileValidator(Validator):
 
         :param data: data table in YAML format
         """
-        if 'dependent_variables' in data:
+        if 'dependent_variables' in data and data['dependent_variables'] is not None:
             for dependent_variable in data['dependent_variables']:
                 if 'values' in dependent_variable:
                     for i, value in enumerate(dependent_variable['values']):
@@ -223,7 +223,8 @@ class DataFileValidator(Validator):
 
         :param data: data table in YAML format
         """
-        if 'independent_variables' in data and 'dependent_variables' in data:
+        if 'independent_variables' in data and 'dependent_variables' in data and \
+              data['independent_variables'] is not None and data['dependent_variables'] is not None:
             indep_count = [len(indep['values']) for indep in data['independent_variables'] if 'values' in indep]
             dep_count = [len(dep['values']) for dep in data['dependent_variables'] if 'values' in dep]
             if len(set(indep_count + dep_count)) > 1:  # if more than one unique count
