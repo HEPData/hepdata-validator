@@ -229,6 +229,19 @@ def test_invalid_yaml_single_file_gzip(validator_v1, data_path, capsys):
 		  in "1512299_invalid_yaml.yaml", line 8, column 3"""
 
 
+def test_invalid_single_file_data_file(validator_v1, data_path, capsys):
+    # Check that passing a data file as a single file does not validate
+    file = os.path.join(data_path, 'valid_file.yaml')
+    is_valid = validator_v1.validate(file=file)
+    assert not is_valid
+    assert validator_v1.valid_files == {}
+    validator_v1.print_errors(file)
+    out, err = capsys.readouterr()
+    lines = out.splitlines()
+    assert lines[0].strip() == f"error - {file} is invalid HEPData YAML."
+    assert lines[1].strip().startswith("error - There should be at least one document matching the submission schema.")
+
+
 def test_invalid_data_directory(validator_v1, data_path, capsys):
     dir = os.path.join(data_path, 'TestHEPSubmission_invalid')
     is_valid = validator_v1.validate(directory=dir)

@@ -75,6 +75,7 @@ class SubmissionFileValidator(Validator):
 
             table_names = []
             table_data_files = []
+            has_submission_doc = False
             for data_item_index, data_item in enumerate(data):
                 if data_item is None:
                     continue
@@ -93,6 +94,7 @@ class SubmissionFileValidator(Validator):
                             submission_file_schema,
                             resolver=resolver
                         )
+                        has_submission_doc = True
                         if not self.has_errors(file_path) and self.schema_version.major > 0:
                             check_cmenergies(data_item)
                             table_names.append(data_item['name'])
@@ -100,6 +102,18 @@ class SubmissionFileValidator(Validator):
 
                 except ValidationError as ve:
                     self.add_validation_error(file_path, ve)
+
+            if not has_submission_doc:
+                # It's possible that all data items match the additional_file_section_schema
+                # just by having properties that don't match any items in there. So we need
+                # to make sure that we have at least one valid submission doc.
+                self.add_validation_message(
+                    ValidationMessage(
+                        file=file_path,
+                        message='There should be at least one document matching the submission schema.'
+                    )
+                )
+
 
             if self.schema_version >= packaging_version.parse("1.1.0"):
                 self.check_for_duplicates(file_path, table_names, table_data_files)
