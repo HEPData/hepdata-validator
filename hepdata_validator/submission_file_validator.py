@@ -103,7 +103,7 @@ class SubmissionFileValidator(Validator):
                 except ValidationError as ve:
                     self.add_validation_error(file_path, ve)
 
-            if not has_submission_doc:
+            if self.schema_version.major > 0 and not has_submission_doc:
                 # It's possible that all data items match the additional_file_section_schema
                 # just by having properties that don't match any items in there. So we need
                 # to make sure that we have at least one valid submission doc.

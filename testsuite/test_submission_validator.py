@@ -327,3 +327,18 @@ def test_check_for_duplicates(validator_v1):
     assert messages[0].message == 'Duplicate table name: a'
     assert messages[1].message == 'Duplicate table name: b'
     assert messages[2].message == 'Duplicate table data_file: d'
+
+
+def test_submission_with_no_data_tables(validator_v0, validator_v1, data_path, capsys):
+    file = os.path.join(data_path, 'valid_file.yaml')
+    with open(file, 'r') as submission:
+        yaml_obj = yaml.load_all(submission, Loader=Loader)
+        is_valid = validator_v1.validate(file_path=file, data=yaml_obj)
+        validator_v1.print_errors(file)
+
+        assert is_valid is False
+        out, err = capsys.readouterr()
+        assert out.strip() == "error - There should be at least one document matching the submission schema."
+
+        is_valid_v0 = validator_v0.validate(file_path=file, data=yaml_obj)
+        assert is_valid_v0
