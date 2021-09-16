@@ -158,6 +158,6 @@ class JsonSchemaResolver(SchemaResolverInterface):
             top_ref, top_obj = self.ref_fetcher.resolve(schema_uri)
             resolved_schema = self._walk_dict(top_obj, top_ref)
         except RefResolutionError:
-            raise FileNotFoundError("Unable to find the desired schema")
+            raise FileNotFoundError(f"Unable to find the desired schema {schema_uri}")
 
         return resolved_schema
