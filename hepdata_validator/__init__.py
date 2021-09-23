@@ -25,11 +25,16 @@
 import abc
 import os
 
+from jsonschema import validate as json_validate, ValidationError
+from jsonschema.validators import validator_for
+from jsonschema.exceptions import by_relevance
+from packaging import version as packaging_version
+
 from .version import __version__
 
 __all__ = ('__version__', )
 
-VALID_SCHEMA_VERSIONS = ['1.0.1', '1.0.0', '0.1.0']
+VALID_SCHEMA_VERSIONS = ['1.1.0', '1.0.1', '1.0.0', '0.1.0']
 LATEST_SCHEMA_VERSION = VALID_SCHEMA_VERSIONS[0]
 
 RAW_SCHEMAS_URL = 'https://raw.githubusercontent.com/HEPData/hepdata-validator/' \
@@ -48,22 +53,16 @@ class Validator(object):
         self.default_schema_file = ''
         self.schemas = kwargs.get('schemas', {})
         self.schema_folder = kwargs.get('schema_folder', 'schemas')
-        self.schema_version = kwargs.get('schema_version', LATEST_SCHEMA_VERSION)
-        if self.schema_version not in VALID_SCHEMA_VERSIONS:
-            raise ValueError('Invalid schema version ' + self.schema_version)
+        self.schema_version_string = kwargs.get('schema_version', LATEST_SCHEMA_VERSION)
+        if self.schema_version_string not in VALID_SCHEMA_VERSIONS:
+            raise ValueError('Invalid schema version ' + self.schema_version_string)
+        self.schema_version = packaging_version.parse(self.schema_version_string)
 
-    def _get_major_version(self):
-        """
-        Parses the major version of the validator.
-
-        :return: integer corresponding to the validator major version
-        """
-        return int(self.schema_version.split('.')[0])
 
     def _get_schema_filepath(self, schema_filename):
         full_filepath = os.path.join(self.base_path,
                                      self.schema_folder,
-                                     self.schema_version,
+                                     self.schema_version_string,
                                      schema_filename)
 
         if not os.path.isfile(full_filepath):
@@ -80,6 +79,33 @@ class Validator(object):
         :param data: pre loaded YAML object (optional).
         :return: true if valid, false otherwise
         """
+
+    def _validate_json_against_schema(self, file_path, data, schema, sort_fn=None, **kwargs):
+        """
+        Validates json_data against the given schema.
+        Roughly follows the pattern of jsonschema.validate but adds errors to
+        self.messages, and will add multiple errors if they exist.
+
+        :param type file_path: path to file being checked
+        :param type data: JSON/YAML data to validate
+        :param type schema: schema to validate data against
+        :param type sort_fn: Function to sort error messages to get most
+            relevant (see docs for `jsonschema.exceptions.by_relevance`).
+        :param type **kwargs: Other kwargs to use when creating the
+            `jsonschema.IValidator` instance.
+        """
+        # Create validator ourselves so we can tweak the errors
+        cls = validator_for(schema)
+        cls.check_schema(schema)
+        v = cls(schema, **kwargs)
+
+        if not sort_fn:
+            sort_fn = by_relevance()
+
+        # Show all errors found, using best error in context for each
+        for error in v.iter_errors(data):
+            best = sorted([error] + error.context, key=sort_fn)[0]
+            self.add_validation_error(file_path, best)
 
     def has_errors(self, file_name):
         """

@@ -12,7 +12,12 @@
         },
         {
           "value": 8000
-        }
+        },
+        {
+          "high": 9000,
+          "low": 7000,
+          "value": 8000
+        },
       ]
     }
   ],
@@ -65,6 +70,26 @@
             },
             {
               "symerror": 0.4,
+              "label": "sys,lumi"
+            }
+          ]
+        },
+        {
+          "value": 6.7,
+          "errors": [
+            {
+              "symerror": 0.5,
+              "label": "stat"
+            },
+            {
+              "asymerror": {
+                "plus": 0.24,
+                "minus": 0.34
+              },
+              "label": "sys"
+            },
+            {
+              "symerror": 0.3,
               "label": "sys,lumi"
             }
           ]

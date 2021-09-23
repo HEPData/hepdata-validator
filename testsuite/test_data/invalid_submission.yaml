@@ -4,8 +4,8 @@ location: Page 17 of preprint
 description: The measured fiducial cross sections.  The first systematic uncertainty is the combined systematic uncertainty excluding luminosity, the second is the luminosity
 keywords: # used for searching, possibly multiple values for each keyword
   - { name: reactions, value: [P P --> Z0 Z0 X]}
-  - { name: observables, value: [SIG]}
-  - { name: cmenergies, value: [7000]}
+  - { name: observables, values: [SIG]}
+  - { name: cmenergies, values: [7000]}
 data_file: 12321
 additional_resources:
   - location: "https://github.com/HEPData/hepdata"

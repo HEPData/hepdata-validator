@@ -1,0 +1,64 @@
+---
+independent_variables:
+  - header: {name: SQRT(S), units: GEV}
+    values:
+      - low: 6000
+      - high: 7000
+      - high: 7.0.0
+        low: 2.0.0
+      - value: '800 - 1000'
+      - value: '-5.3--2'
+      - value: '+2.3E5 -  +5E12'
+      - value: '-1e-09 - -3.5e-08'
+      - value: 'Mono-V overlap removal' # OK
+      - value: '-3.5' # OK
+dependent_variables:
+  - header: {name: SIG(total), units: FB}
+    qualifiers:
+      - {name: RE, value: P P --> Z0 Z0 X}
+    values:
+      - value: 5.7
+        errors:
+          - {symerror: 0.45, label: stat}
+          - {asymerror: {plus: 0.4, minus: -0.3}, label: sys}
+          - {symerror: 0.34, label: "sys,lumi"}
+      - value: 6.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 7.7
+        errors:
+          - {symerror: 0.45, label: stat}
+          - {asymerror: {plus: 0.4, minus: -0.3}, label: sys}
+          - {symerror: 0.34, label: "sys,lumi"}
+      - value: 8.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 9.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 10.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 11.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 12.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 13.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}

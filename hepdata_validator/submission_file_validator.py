@@ -1,6 +1,7 @@
 import json
-from jsonschema import validate, ValidationError
+from jsonschema import ValidationError, RefResolver
 import os
+from packaging import version as packaging_version
 import re
 import yaml
 from yaml.scanner import ScannerError
@@ -23,11 +24,14 @@ class SubmissionFileValidator(Validator):
     base_path = os.path.dirname(__file__)
     submission_filename = 'submission_schema.json'
     additional_info_filename = 'additional_info_schema.json'
+    additional_resources_filename = 'additional_resources_schema.json'
 
     def __init__(self, *args, **kwargs):
         super(SubmissionFileValidator, self).__init__(*args, **kwargs)
         self.default_schema_file = self._get_schema_filepath(self.submission_filename)
         self.additional_info_schema = self._get_schema_filepath(self.additional_info_filename)
+        if self.schema_version >= packaging_version.parse("1.1.0"):
+            self.additional_resources_schema = self._get_schema_filepath(self.additional_resources_filename)
 
     def validate(self, **kwargs):
         """
@@ -50,6 +54,13 @@ class SubmissionFileValidator(Validator):
             with open(self.additional_info_schema, 'r') as additional_schema:
                 additional_file_section_schema = json.load(additional_schema)
 
+            resolver = None
+            if self.schema_version >= packaging_version.parse("1.1.0"):
+                with open(self.additional_resources_schema, 'r') as additional_schema:
+                    additional_resources_schema = json.load(additional_schema)
+
+                resolver = RefResolver.from_schema(additional_resources_schema)
+
             # even though we are using the yaml package to load,
             # it supports JSON and YAML
             data = kwargs.pop("data", None)
@@ -62,19 +73,50 @@ class SubmissionFileValidator(Validator):
                 data_file_handle = open(file_path, 'r')
                 data = yaml.load_all(data_file_handle, Loader=Loader)
 
+            table_names = []
+            table_data_files = []
+            has_submission_doc = False
             for data_item_index, data_item in enumerate(data):
                 if data_item is None:
                     continue
                 try:
                     if not data_item_index and 'data_file' not in data_item:
-                        validate(data_item, additional_file_section_schema)
+                        self._validate_json_against_schema(
+                            file_path,
+                            data_item,
+                            additional_file_section_schema,
+                            resolver=resolver
+                        )
                     else:
-                        validate(data_item, submission_file_schema)
-                        if self._get_major_version() > 0:
+                        self._validate_json_against_schema(
+                            file_path,
+                            data_item,
+                            submission_file_schema,
+                            resolver=resolver
+                        )
+                        has_submission_doc = True
+                        if not self.has_errors(file_path) and self.schema_version.major > 0:
                             check_cmenergies(data_item)
+                            table_names.append(data_item['name'])
+                            table_data_files.append(data_item['data_file'])
 
                 except ValidationError as ve:
                     self.add_validation_error(file_path, ve)
+
+            if not has_submission_doc and self.schema_version >= packaging_version.parse("1.1.0"):
+                # It's possible that all data items match the additional_file_section_schema
+                # just by having properties that don't match any items in there. So we need
+                # to make sure that we have at least one valid submission doc.
+                self.add_validation_message(
+                    ValidationMessage(
+                        file=file_path,
+                        message='There should be at least one document matching the submission schema.'
+                    )
+                )
+
+
+            if self.schema_version >= packaging_version.parse("1.1.0"):
+                self.check_for_duplicates(file_path, table_names, table_data_files)
 
             if not self.has_errors(file_path):
                 return_value = True
@@ -100,6 +142,24 @@ class SubmissionFileValidator(Validator):
                 data_file_handle.close()
 
         return return_value
+
+    def check_for_duplicates(self, file_path, table_names, table_data_files):
+        for (key, items) in [('name', table_names), ('data_file', table_data_files)]:
+            seen = set()
+            duplicates = []
+
+            for x in items:
+                if x not in seen:
+                    seen.add(x)
+                elif x not in duplicates:
+                    duplicates.append(x)
+
+            if duplicates:
+                for d in duplicates:
+                    self.add_validation_message(ValidationMessage(
+                        file=file_path,
+                        message=f"Duplicate table {key}: {d}"
+                    ))
 
 
 def check_cmenergies(data_item):

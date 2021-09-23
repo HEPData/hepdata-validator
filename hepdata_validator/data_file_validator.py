@@ -24,6 +24,9 @@
 
 import json
 import os
+import re
+
+from packaging import version as packaging_version
 import yaml
 
 # We try to load using the CSafeLoader for speed improvements.
@@ -33,7 +36,8 @@ except ImportError: #pragma: no cover
     from yaml import SafeLoader as Loader #pragma: no cover
 
 from hepdata_validator import Validator, ValidationMessage
-from jsonschema import validate as json_validate, ValidationError
+from jsonschema import ValidationError
+from jsonschema.exceptions import by_relevance
 
 __author__ = 'eamonnmaguire'
 
@@ -44,11 +48,11 @@ class DataFileValidator(Validator):
     """
     base_path = os.path.dirname(__file__)
     schema_name = 'data_schema.json'
-    custom_data_schemas = {}
 
     def __init__(self, *args, **kwargs):
         super(DataFileValidator, self).__init__(*args, **kwargs)
         self.default_schema_file = self._get_schema_filepath(self.schema_name)
+        self.custom_data_schemas = {}
 
     def load_custom_schema(self, type, schema_file_path=None):
         """
@@ -66,7 +70,7 @@ class DataFileValidator(Validator):
             else:
                 _schema_file = os.path.join(self.base_path,
                                             self.schema_folder,
-                                            self.schema_version,
+                                            self.schema_version_string,
                                             "{0}_schema.json".format(type))
 
             with open(_schema_file, 'r') as f:
@@ -101,6 +105,12 @@ class DataFileValidator(Validator):
                 # The yaml package support both JSON and YAML
                 with open(file_path, 'r') as df:
                     data = yaml.load(df, Loader=Loader)
+                    if data is None:
+                        self.add_validation_message(ValidationMessage(
+                            file=file_path,
+                            message='No data found in file.'
+                        ))
+                        return False
             except Exception as e:
                 self.add_validation_message(ValidationMessage(
                     file=file_path,
@@ -109,22 +119,31 @@ class DataFileValidator(Validator):
                 return False
 
         try:
+            is_custom_schema = False
+            sort_fn = None
+
             if file_type:
-                custom_schema = self.load_custom_schema(file_type)
-                json_validate(data, custom_schema)
+                is_custom_schema = True
+                data_schema = self.load_custom_schema(file_type)
             elif 'type' in data:
-                custom_schema = self.load_custom_schema(data['type'])
-                json_validate(data, custom_schema)
+                is_custom_schema = True
+                data_schema = self.load_custom_schema(data['type'])
             else:
                 with open(self.default_schema_file, 'r') as f:
-                    default_data_schema = json.load(f)
-                    json_validate(data, default_data_schema)
-                if self._get_major_version() > 0:
-                    check_for_zero_uncertainty(data)
-                    check_length_values(data)
+                    data_schema = json.load(f)
 
-        except ValidationError as ve:
-            self.add_validation_error(file_path, ve)
+                # Make 'oneOf' errors more relevant to give better error
+                # messages about 'low' without 'high' etc
+                sort_fn = by_relevance(strong='oneOf', weak=[])
+
+            self._validate_json_against_schema(file_path, data, data_schema, sort_fn)
+
+            if not is_custom_schema and \
+               self.schema_version.major > 0:
+                self.check_for_zero_uncertainty(file_path, data)
+                self.check_length_values(file_path, data)
+                if self.schema_version >= packaging_version.parse("1.1.0"):
+                    self.check_independent_variable_values(file_path, data)
 
         except UnsupportedDataSchemaException as ex:
             self.add_validation_message(ValidationMessage(
@@ -137,6 +156,85 @@ class DataFileValidator(Validator):
         else:
             return True
 
+    def check_independent_variable_values(self, file_path, data_item):
+        """
+        Check that 'independent_variables' values are not a range like 1.7-4.7.
+
+        :param data_item: YAML document from submission.yaml
+        :return: raise ValidationError if not numeric
+        """
+        if 'independent_variables' in data_item and data_item['independent_variables'] is not None:
+            for i, var in enumerate(data_item['independent_variables']):
+                if 'values' in var:
+                    for j, v in enumerate(var['values']):
+                        if 'value' in v and isinstance(v['value'], str) and '-' in v['value']:
+                            m = re.match(r'^[+-]?\d+(\.\d*)?([eE][+-]?\d+)?\s*-\s*[+-]?\d+(\.\d*)?([eE][+-]?\d+)?$', v['value'])
+                            if m:
+                                error = ValidationError(
+                                    "independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '%s'" % v['value'],
+                                    path=['independent_variables', i, 'values', j, 'value'],
+                                    instance=data_item['independent_variables'],
+                                    schema={"type": "number or string (not a range)"}
+                                )
+                                self.add_validation_error(file_path, error)
+
+    def check_for_zero_uncertainty(self, file_path, data):
+        """
+        Check that uncertainties are not all zero.
+        Adds validation error if uncertainties are all zero.
+
+        :param data: data table in YAML format
+        """
+        if 'dependent_variables' in data and data['dependent_variables'] is not None:
+            for dependent_variable in data['dependent_variables']:
+                if 'values' in dependent_variable:
+                    for i, value in enumerate(dependent_variable['values']):
+                        if 'errors' in value:
+                            zero_uncertainties = []
+                            for error in value['errors']:
+
+                                if 'symerror' in error:
+                                    error_plus = error_minus = error['symerror']
+                                elif 'asymerror' in error:
+                                    error_plus = error['asymerror']['plus']
+                                    error_minus = error['asymerror']['minus']
+
+                                error_plus = convert_to_float(error_plus)
+                                error_minus = convert_to_float(error_minus)
+
+                                if error_plus == 0 and error_minus == 0:
+                                    zero_uncertainties.append(True)
+                                else:
+                                    zero_uncertainties.append(False)
+
+                            if len(zero_uncertainties) > 0 and all(zero_uncertainties):
+                                error = ValidationError(
+                                    "Uncertainties should not all be zero",
+                                     path=['dependent_variables', 'values', i, 'errors'],
+                                     instance=data['dependent_variables']
+                                )
+                                self.add_validation_error(file_path, error)
+
+    def check_length_values(self, file_path, data):
+        """
+        Check that the length of the 'values' list is consistent for
+        each of the independent_variables and dependent_variables.
+        Adds validation error if uncertainties are all zero.
+
+        :param data: data table in YAML format
+        """
+        if 'independent_variables' in data and 'dependent_variables' in data and \
+              data['independent_variables'] is not None and data['dependent_variables'] is not None:
+            indep_count = [len(indep['values']) for indep in data['independent_variables'] if 'values' in indep]
+            dep_count = [len(dep['values']) for dep in data['dependent_variables'] if 'values' in dep]
+            if len(set(indep_count + dep_count)) > 1:  # if more than one unique count
+                error = ValidationError(
+                    "Inconsistent length of 'values' list: " +
+                    "independent_variables %s, dependent_variables %s" % (str(indep_count), str(dep_count)),
+                    instance=data
+                )
+                self.add_validation_error(file_path, error)
+
 
 class UnsupportedDataSchemaException(Exception):
     """
@@ -147,42 +245,6 @@ class UnsupportedDataSchemaException(Exception):
 
     def __unicode__(self):
         return self.message
-
-
-def check_for_zero_uncertainty(data):
-    """
-    Check that uncertainties are not all zero.
-
-    :param data: data table in YAML format
-    :return: raise ValidationError if uncertainties are all zero
-    """
-    for dependent_variable in data['dependent_variables']:
-
-        if 'values' in dependent_variable:
-            for i, value in enumerate(dependent_variable['values']):
-
-                if 'errors' in value:
-                    zero_uncertainties = []
-                    for error in value['errors']:
-
-                        if 'symerror' in error:
-                            error_plus = error_minus = error['symerror']
-                        elif 'asymerror' in error:
-                            error_plus = error['asymerror']['plus']
-                            error_minus = error['asymerror']['minus']
-
-                        error_plus = convert_to_float(error_plus)
-                        error_minus = convert_to_float(error_minus)
-
-                        if error_plus == 0 and error_minus == 0:
-                            zero_uncertainties.append(True)
-                        else:
-                            zero_uncertainties.append(False)
-
-                    if len(zero_uncertainties) > 0 and all(zero_uncertainties):
-                        raise ValidationError("Uncertainties should not all be zero",
-                                              path=['dependent_variables', 'values', i, 'errors'],
-                                              instance=data['dependent_variables'])
 
 
 def convert_to_float(error):
@@ -200,19 +262,3 @@ def convert_to_float(error):
         pass  # for example, an empty string
 
     return error
-
-
-def check_length_values(data):
-    """
-    Check that the length of the 'values' list is consistent for
-    each of the independent_variables and dependent_variables.
-
-    :param data: data table in YAML format
-    :return: raise ValidationError if inconsistent
-    """
-    indep_count = [len(indep['values']) for indep in data['independent_variables']]
-    dep_count = [len(dep['values']) for dep in data['dependent_variables']]
-    if len(set(indep_count + dep_count)) > 1:  # if more than one unique count
-        raise ValidationError("Inconsistent length of 'values' list: " +
-                              "independent_variables %s, dependent_variables %s" % (str(indep_count), str(dep_count)),
-                              instance=data)

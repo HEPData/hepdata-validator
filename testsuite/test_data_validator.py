@@ -23,7 +23,7 @@ def validator_v0():
 
 @pytest.fixture(scope="module")
 def validator_v1():
-    return DataFileValidator(schema_version='1.0.1')
+    return DataFileValidator(schema_version='1.1.0')
 
 
 ####################################################
@@ -96,7 +96,23 @@ def test_invalid_yaml_file_v1(validator_v1, data_path, capsys):
 
     assert is_valid is False
     out, err = capsys.readouterr()
-    assert out.strip() == "error - 0.443 is not of type 'string' in 'dependent_variables[0].values[1].errors[0].label' (expected: {'type': 'string'})"
+    lines = out.splitlines()
+    assert lines[0].strip() == "error - 0.443 is not of type 'string' in 'dependent_variables[0].values[1].errors[0].label' (expected: {'type': 'string'})"
+    assert lines[1].strip() == "error - Inconsistent length of 'values' list: independent_variables [1], dependent_variables [2]"
+
+
+def test_empty_yaml_file_v1(validator_v1, data_path, capsys):
+    """
+    Tests the DataFileValidator V1 against an empty file
+    """
+
+    file = os.path.join(data_path, 'empty_file.yaml')
+    is_valid = validator_v1.validate(file_path=file)
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - No data found in file."
 
 
 def test_valid_yaml_file_with_percent_uncertainty_v1(validator_v1, data_path):
@@ -135,7 +151,11 @@ def test_invalid_json_file_v1(validator_v1, data_path, capsys):
 
     assert is_valid is False
     out, err = capsys.readouterr()
-    assert out.strip() == "error - 'independent_variables' is a required property"
+    lines = out.splitlines()
+    assert len(lines) == 3
+    assert lines[0].strip() == "error - 'independent_variables' is a required property"
+    assert lines[1].strip() == "error - 'dependent_variables' is a required property"
+    assert lines[2].strip().startswith("error - Additional properties are not allowed")
 
 
 def test_load_valid_custom_data_v1(validator_v1, data_path):
@@ -317,6 +337,40 @@ def test_file_with_inconsistent_values_v1(validator_v1, data_path, capsys):
     assert is_valid is False
     out, err = capsys.readouterr()
     assert out.strip() == "error - Inconsistent length of 'values' list: independent_variables [1], dependent_variables [2]"
+
+
+def test_file_with_invalid_independent_variables_v1(validator_v1, data_path, capsys):
+    """
+    Tests the DataFileValidator V1 against a file with invalid independent variables
+    """
+    file = os.path.join(data_path, 'invalid_independent_variables_file.yaml')
+    is_valid = validator_v1.validate(file_path=file)
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+    out, err = capsys.readouterr()
+    lines = out.splitlines()
+    assert len(lines) == 7
+    assert lines[0].strip() == "error - {'low': 6000} is not valid under any of the given schemas in 'independent_variables[0].values[0]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'type': ['string', 'number']}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
+    assert lines[1].strip() == "error - {'high': 7000} is not valid under any of the given schemas in 'independent_variables[0].values[1]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'type': ['string', 'number']}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
+    assert lines[2].strip() == "error - {'high': '7.0.0', 'low': '2.0.0'} is not valid under any of the given schemas in 'independent_variables[0].values[2]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'type': ['string', 'number']}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
+    assert lines[3].strip() == "error - independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '800 - 1000' in 'independent_variables[0].values[3].value' (expected: {'type': 'number or string (not a range)'})"
+    assert lines[4].strip() == "error - independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '-5.3--2' in 'independent_variables[0].values[4].value' (expected: {'type': 'number or string (not a range)'})"
+    assert lines[5].strip() == "error - independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '+2.3E5 -  +5E12' in 'independent_variables[0].values[5].value' (expected: {'type': 'number or string (not a range)'})"
+    assert lines[6].strip() == "error - independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '-1e-09 - -3.5e-08' in 'independent_variables[0].values[6].value' (expected: {'type': 'number or string (not a range)'})"
+
+
+def test_file_with_missing_dependent_values_v1(validator_v1, data_path, capsys):
+    """
+    Tests the DataFileValidator V1 against a file with missing dependent values
+    """
+    file = os.path.join(data_path, 'invalid_missing_values.yaml')
+    is_valid = validator_v1.validate(file_path=file)
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - 'values' is a required property in 'dependent_variables[0]' (expected: {'type': 'object', 'properties': {'header': {'type': 'object', 'properties': {'name': {'type': 'string'}, 'units': {'type': 'string'}}, 'required': ['name'], 'additionalProperties': False}, 'qualifiers': {'type': 'array', 'items': {'type': 'object', 'properties': {'name': {'type': 'string'}, 'value': {'type': ['string', 'number']}, 'units': {'type': 'string'}}, 'required': ['name', 'value'], 'additionalProperties': False}}, 'values': {'type': 'array', 'items': {'type': 'object', 'properties': {'value': {'type': ['string', 'number']}, 'errors': {'type': 'array', 'items': {'type': 'object', 'properties': {'symerror': {'type': ['number', 'string']}, 'asymerror': {'type': 'object', 'properties': {'minus': {'type': ['number', 'string']}, 'plus': {'type': ['number', 'string']}}, 'required': ['minus', 'plus'], 'additionalProperties': False}, 'label': {'type': 'string'}}, 'oneOf': [{'required': ['symerror']}, {'required': ['asymerror']}], 'additionalProperties': False}}}, 'required': ['value'], 'additionalProperties': False}}}, 'required': ['header', 'values'], 'additionalProperties': False})"
 
 
 def test_invalid_schema_version():
