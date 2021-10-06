@@ -1,6 +1,7 @@
 from enum import Enum
 import gzip
 import os.path
+from packaging import version as packaging_version
 import shutil
 import tempfile
 from urllib.parse import urlparse, urlunsplit
@@ -203,7 +204,7 @@ class FullSubmissionValidator(Validator):
                     self.valid_files[type] = [self._remove_temp_directory(self.submission_file_path)]
 
             # Check all files in directory are in included_files
-            if not self.single_yaml_file:
+            if not self.single_yaml_file and self.schema_version >= packaging_version.parse("1.1.0"):
                 for f in os.listdir(self.directory):
                     file_path = os.path.join(self.directory, f)
                     if file_path not in self.included_files:
