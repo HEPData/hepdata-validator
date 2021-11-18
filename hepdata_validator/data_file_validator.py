@@ -140,7 +140,7 @@ class DataFileValidator(Validator):
 
             if not is_custom_schema and \
                self.schema_version.major > 0:
-                self.check_for_zero_uncertainty(file_path, data)
+                self.check_error_values(file_path, data)
                 self.check_length_values(file_path, data)
                 if self.schema_version >= packaging_version.parse("1.1.0"):
                     self.check_independent_variable_values(file_path, data)
@@ -178,7 +178,7 @@ class DataFileValidator(Validator):
                                 )
                                 self.add_validation_error(file_path, error)
 
-    def check_for_zero_uncertainty(self, file_path, data):
+    def check_error_values(self, file_path, data):
         """
         Check that uncertainties are not all zero.
         Adds validation error if uncertainties are all zero.
@@ -192,15 +192,33 @@ class DataFileValidator(Validator):
                         if 'errors' in value:
                             zero_uncertainties = []
                             for error in value['errors']:
-
                                 if 'symerror' in error:
-                                    error_plus = error_minus = error['symerror']
+                                    error_plus = error_minus = self.convert_to_float(
+                                        error['symerror'],
+                                        file_path=file_path,
+                                        path=['dependent_variables', 'values', i, 'errors', 'symerror'],
+                                        instance=data['dependent_variables']
+                                    )
                                 elif 'asymerror' in error:
-                                    error_plus = error['asymerror']['plus']
-                                    error_minus = error['asymerror']['minus']
-
-                                error_plus = convert_to_float(error_plus)
-                                error_minus = convert_to_float(error_minus)
+                                    error_plus = self.convert_to_float(
+                                        error['asymerror']['plus'],
+                                        file_path=file_path,
+                                        path=['dependent_variables', 'values', i, 'errors', 'asymerror', 'plus'],
+                                        instance=data['dependent_variables']
+                                    )
+                                    error_minus = self.convert_to_float(
+                                        error['asymerror']['minus'],
+                                        file_path=file_path,
+                                        path=['dependent_variables', 'values', i, 'errors', 'asymerror', 'minus'],
+                                        instance=data['dependent_variables']
+                                    )
+                                    if error_plus == '' and error_minus == '':
+                                        error = ValidationError(
+                                            "asymerror plus and minus cannot both be empty",
+                                             path=['dependent_variables', 'values', i, 'errors', 'asymerror'],
+                                             instance=data['dependent_variables']
+                                        )
+                                        self.add_validation_error(file_path, error)
 
                                 if error_plus == 0 and error_minus == 0:
                                     zero_uncertainties.append(True)
@@ -235,6 +253,28 @@ class DataFileValidator(Validator):
                 )
                 self.add_validation_error(file_path, error)
 
+    def convert_to_float(self, error, file_path, path, instance):
+        """
+        Convert error from a string to a float if possible.
+
+        :param error: uncertainty from either 'symerror' or 'asymerror'
+        :return: error as a float if possible, otherwise the original string
+        """
+        if isinstance(error, str):
+            error = error.replace('%', '')  # strip percentage symbol
+        try:
+            error = float(error)
+        except ValueError as e:
+            if error != '':  # empty string is allowed in some circumstances
+                validation_error = ValidationError(
+                    f"Invalid error value {error}: value must be a float (with or without %) or empty string",
+                    path=path,
+                    instance=instance
+                )
+                self.add_validation_error(file_path, validation_error)
+
+        return error
+
 
 class UnsupportedDataSchemaException(Exception):
     """
@@ -245,20 +285,3 @@ class UnsupportedDataSchemaException(Exception):
 
     def __unicode__(self):
         return self.message
-
-
-def convert_to_float(error):
-    """
-    Convert error from a string to a float if possible.
-
-    :param error: uncertainty from either 'symerror' or 'asymerror'
-    :return: error as a float if possible, otherwise the original string
-    """
-    if isinstance(error, str):
-        error = error.replace('%', '')  # strip percentage symbol
-    try:
-        error = float(error)
-    except ValueError:
-        pass  # for example, an empty string
-
-    return error

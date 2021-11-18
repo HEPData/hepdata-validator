@@ -98,7 +98,9 @@ def test_invalid_yaml_file_v1(validator_v1, data_path, capsys):
     out, err = capsys.readouterr()
     lines = out.splitlines()
     assert lines[0].strip() == "error - 0.443 is not of type 'string' in 'dependent_variables[0].values[1].errors[0].label' (expected: {'type': 'string'})"
-    assert lines[1].strip() == "error - Inconsistent length of 'values' list: independent_variables [1], dependent_variables [2]"
+    assert lines[1].strip() == "error - Invalid error value 2.300e-003f: value must be a float (with or without %) or empty string in 'dependent_variables.values[1].errors.symerror'"
+    assert lines[2].strip() == "error - asymerror plus and minus cannot both be empty in 'dependent_variables.values[1].errors.asymerror'"
+    assert lines[3].strip() == "error - Inconsistent length of 'values' list: independent_variables [1], dependent_variables [2]"
 
 
 def test_empty_yaml_file_v1(validator_v1, data_path, capsys):
