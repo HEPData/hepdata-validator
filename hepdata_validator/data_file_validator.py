@@ -78,7 +78,7 @@ class DataFileValidator(Validator):
                 self.custom_data_schemas[type] = custom_data_schema
 
             return custom_data_schema
-        except Exception as e:
+        except Exception:
             raise UnsupportedDataSchemaException(
                 message="There is no schema defined for the '{0}' data type.".format(type))
 
@@ -269,7 +269,7 @@ class DataFileValidator(Validator):
             error = error.replace('%', '')  # strip percentage symbol
         try:
             error = float(error)
-        except ValueError as e:
+        except ValueError:
             if error != '':  # empty string is allowed in some circumstances
                 validation_error = ValidationError(
                     f"Invalid error value {error}: value must be a float (with or without %) or empty string",
