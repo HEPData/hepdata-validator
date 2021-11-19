@@ -140,10 +140,21 @@ class DataFileValidator(Validator):
 
             if not is_custom_schema and \
                self.schema_version.major > 0:
-                self.check_error_values(file_path, data)
-                self.check_length_values(file_path, data)
-                if self.schema_version >= packaging_version.parse("1.1.0"):
-                    self.check_independent_variable_values(file_path, data)
+                try:
+                    self.check_error_values(file_path, data)
+                    self.check_length_values(file_path, data)
+                    if self.schema_version >= packaging_version.parse("1.1.0"):
+                        self.check_independent_variable_values(file_path, data)
+                except Exception:
+                    # If the file did not validate against the schema, we
+                    # ignore any exceptions as they're likely to be due to
+                    # missing fields etc.
+                    # Otherwise we return error as unexpected.
+                    if not self.has_errors(file_path):
+                        self.add_validation_message(ValidationMessage(
+                            file=file_path,
+                            message=f"An unexpected error occurred whilst validating {file_path}. Please contact info@hepdata.net if this issue recurs.",
+                        ))  #pragma: no cover
 
         except UnsupportedDataSchemaException as ex:
             self.add_validation_message(ValidationMessage(
@@ -163,20 +174,18 @@ class DataFileValidator(Validator):
         :param data_item: YAML document from submission.yaml
         :return: raise ValidationError if not numeric
         """
-        if 'independent_variables' in data_item and data_item['independent_variables'] is not None:
-            for i, var in enumerate(data_item['independent_variables']):
-                if 'values' in var:
-                    for j, v in enumerate(var['values']):
-                        if 'value' in v and isinstance(v['value'], str) and '-' in v['value']:
-                            m = re.match(r'^[+-]?\d+(\.\d*)?([eE][+-]?\d+)?\s*-\s*[+-]?\d+(\.\d*)?([eE][+-]?\d+)?$', v['value'])
-                            if m:
-                                error = ValidationError(
-                                    "independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '%s'" % v['value'],
-                                    path=['independent_variables', i, 'values', j, 'value'],
-                                    instance=data_item['independent_variables'],
-                                    schema={"type": "number or string (not a range)"}
-                                )
-                                self.add_validation_error(file_path, error)
+        for i, var in enumerate(data_item['independent_variables']):
+            for j, v in enumerate(var['values']):
+                if 'value' in v and isinstance(v['value'], str) and '-' in v['value']:
+                    m = re.match(r'^[+-]?\d+(\.\d*)?([eE][+-]?\d+)?\s*-\s*[+-]?\d+(\.\d*)?([eE][+-]?\d+)?$', v['value'])
+                    if m:
+                        error = ValidationError(
+                            "independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '%s'" % v['value'],
+                            path=['independent_variables', i, 'values', j, 'value'],
+                            instance=data_item['independent_variables'],
+                            schema={"type": "number or string (not a range)"}
+                        )
+                        self.add_validation_error(file_path, error)
 
     def check_error_values(self, file_path, data):
         """
@@ -185,53 +194,51 @@ class DataFileValidator(Validator):
 
         :param data: data table in YAML format
         """
-        if 'dependent_variables' in data and data['dependent_variables'] is not None:
-            for dependent_variable in data['dependent_variables']:
-                if 'values' in dependent_variable:
-                    for i, value in enumerate(dependent_variable['values']):
-                        if 'errors' in value:
-                            zero_uncertainties = []
-                            for error in value['errors']:
-                                if 'symerror' in error:
-                                    error_plus = error_minus = self.convert_to_float(
-                                        error['symerror'],
-                                        file_path=file_path,
-                                        path=['dependent_variables', 'values', i, 'errors', 'symerror'],
-                                        instance=data['dependent_variables']
-                                    )
-                                elif 'asymerror' in error:
-                                    error_plus = self.convert_to_float(
-                                        error['asymerror']['plus'],
-                                        file_path=file_path,
-                                        path=['dependent_variables', 'values', i, 'errors', 'asymerror', 'plus'],
-                                        instance=data['dependent_variables']
-                                    )
-                                    error_minus = self.convert_to_float(
-                                        error['asymerror']['minus'],
-                                        file_path=file_path,
-                                        path=['dependent_variables', 'values', i, 'errors', 'asymerror', 'minus'],
-                                        instance=data['dependent_variables']
-                                    )
-                                    if error_plus == '' and error_minus == '':
-                                        error = ValidationError(
-                                            "asymerror plus and minus cannot both be empty",
-                                             path=['dependent_variables', 'values', i, 'errors', 'asymerror'],
-                                             instance=data['dependent_variables']
-                                        )
-                                        self.add_validation_error(file_path, error)
-
-                                if error_plus == 0 and error_minus == 0:
-                                    zero_uncertainties.append(True)
-                                else:
-                                    zero_uncertainties.append(False)
-
-                            if len(zero_uncertainties) > 0 and all(zero_uncertainties):
+        for dependent_variable in data['dependent_variables']:
+            for i, value in enumerate(dependent_variable['values']):
+                if 'errors' in value:
+                    zero_uncertainties = []
+                    for error in value['errors']:
+                        if 'symerror' in error:
+                            error_plus = error_minus = self.convert_to_float(
+                                error['symerror'],
+                                file_path=file_path,
+                                path=['dependent_variables', 'values', i, 'errors', 'symerror'],
+                                instance=data['dependent_variables']
+                            )
+                        elif 'asymerror' in error:
+                            error_plus = self.convert_to_float(
+                                error['asymerror']['plus'],
+                                file_path=file_path,
+                                path=['dependent_variables', 'values', i, 'errors', 'asymerror', 'plus'],
+                                instance=data['dependent_variables']
+                            )
+                            error_minus = self.convert_to_float(
+                                error['asymerror']['minus'],
+                                file_path=file_path,
+                                path=['dependent_variables', 'values', i, 'errors', 'asymerror', 'minus'],
+                                instance=data['dependent_variables']
+                            )
+                            if error_plus == '' and error_minus == '':
                                 error = ValidationError(
-                                    "Uncertainties should not all be zero",
-                                     path=['dependent_variables', 'values', i, 'errors'],
-                                     instance=data['dependent_variables']
+                                    "asymerror plus and minus cannot both be empty",
+                                    path=['dependent_variables', 'values', i, 'errors', 'asymerror'],
+                                    instance=data['dependent_variables']
                                 )
                                 self.add_validation_error(file_path, error)
+
+                        if error_plus == 0 and error_minus == 0:
+                            zero_uncertainties.append(True)
+                        else:
+                            zero_uncertainties.append(False)
+
+                    if len(zero_uncertainties) > 0 and all(zero_uncertainties):
+                        error = ValidationError(
+                            "Uncertainties should not all be zero",
+                            path=['dependent_variables', 'values', i, 'errors'],
+                            instance=data['dependent_variables']
+                        )
+                        self.add_validation_error(file_path, error)
 
     def check_length_values(self, file_path, data):
         """
@@ -241,17 +248,15 @@ class DataFileValidator(Validator):
 
         :param data: data table in YAML format
         """
-        if 'independent_variables' in data and 'dependent_variables' in data and \
-              data['independent_variables'] is not None and data['dependent_variables'] is not None:
-            indep_count = [len(indep['values']) for indep in data['independent_variables'] if 'values' in indep]
-            dep_count = [len(dep['values']) for dep in data['dependent_variables'] if 'values' in dep]
-            if len(set(indep_count + dep_count)) > 1:  # if more than one unique count
-                error = ValidationError(
-                    "Inconsistent length of 'values' list: " +
-                    "independent_variables %s, dependent_variables %s" % (str(indep_count), str(dep_count)),
-                    instance=data
-                )
-                self.add_validation_error(file_path, error)
+        indep_count = [len(indep['values']) for indep in data['independent_variables'] if 'values' in indep]
+        dep_count = [len(dep['values']) for dep in data['dependent_variables'] if 'values' in dep]
+        if len(set(indep_count + dep_count)) > 1:  # if more than one unique count
+            error = ValidationError(
+                "Inconsistent length of 'values' list: " +
+                "independent_variables %s, dependent_variables %s" % (str(indep_count), str(dep_count)),
+                instance=data
+            )
+            self.add_validation_error(file_path, error)
 
     def convert_to_float(self, error, file_path, path, instance):
         """
