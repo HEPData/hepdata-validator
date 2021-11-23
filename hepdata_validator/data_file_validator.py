@@ -198,34 +198,43 @@ class DataFileValidator(Validator):
             for i, value in enumerate(dependent_variable['values']):
                 if 'errors' in value:
                     zero_uncertainties = []
-                    for error in value['errors']:
+                    for j, error in enumerate(value['errors']):
+                        has_asymerror = False
                         if 'symerror' in error:
                             error_plus = error_minus = self.convert_to_float(
                                 error['symerror'],
                                 file_path=file_path,
-                                path=['dependent_variables', 'values', i, 'errors', 'symerror'],
+                                path=['dependent_variables', 'values', i, 'errors', j, 'symerror'],
                                 instance=data['dependent_variables']
                             )
                         elif 'asymerror' in error:
+                            has_asymerror = True
                             error_plus = self.convert_to_float(
                                 error['asymerror']['plus'],
                                 file_path=file_path,
-                                path=['dependent_variables', 'values', i, 'errors', 'asymerror', 'plus'],
+                                path=['dependent_variables', 'values', i, 'errors', j, 'asymerror', 'plus'],
                                 instance=data['dependent_variables']
                             )
                             error_minus = self.convert_to_float(
                                 error['asymerror']['minus'],
                                 file_path=file_path,
-                                path=['dependent_variables', 'values', i, 'errors', 'asymerror', 'minus'],
+                                path=['dependent_variables', 'values', i, 'errors', j, 'asymerror', 'minus'],
                                 instance=data['dependent_variables']
                             )
-                            if error_plus == '' and error_minus == '':
-                                error = ValidationError(
-                                    "asymerror plus and minus cannot both be empty",
-                                    path=['dependent_variables', 'values', i, 'errors', 'asymerror'],
-                                    instance=data['dependent_variables']
-                                )
-                                self.add_validation_error(file_path, error)
+
+                        if error_plus == '' and error_minus == '':
+                            if has_asymerror:
+                                msg = "asymerror plus and minus cannot both be empty"
+                                sub_path = 'asymerror'
+                            else:
+                                msg = "symerror cannot be empty"
+                                sub_path = 'symerror'
+                            error = ValidationError(
+                                msg,
+                                path=['dependent_variables', 'values', i, 'errors', j, sub_path],
+                                instance=data['dependent_variables']
+                            )
+                            self.add_validation_error(file_path, error)
 
                         if error_plus == 0 and error_minus == 0:
                             zero_uncertainties.append(True)
@@ -272,7 +281,7 @@ class DataFileValidator(Validator):
         except ValueError:
             if error != '':  # empty string is allowed in some circumstances
                 validation_error = ValidationError(
-                    f"Invalid error value {error}: value must be a float (with or without %) or empty string",
+                    f"Invalid error value {error}: value must be a number (possibly ending in %)",
                     path=path,
                     instance=instance
                 )
