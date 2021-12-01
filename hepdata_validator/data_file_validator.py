@@ -78,7 +78,7 @@ class DataFileValidator(Validator):
                 self.custom_data_schemas[type] = custom_data_schema
 
             return custom_data_schema
-        except Exception as e:
+        except Exception:
             raise UnsupportedDataSchemaException(
                 message="There is no schema defined for the '{0}' data type.".format(type))
 
@@ -140,10 +140,21 @@ class DataFileValidator(Validator):
 
             if not is_custom_schema and \
                self.schema_version.major > 0:
-                self.check_for_zero_uncertainty(file_path, data)
-                self.check_length_values(file_path, data)
-                if self.schema_version >= packaging_version.parse("1.1.0"):
-                    self.check_independent_variable_values(file_path, data)
+                try:
+                    self.check_error_values(file_path, data)
+                    self.check_length_values(file_path, data)
+                    if self.schema_version >= packaging_version.parse("1.1.0"):
+                        self.check_independent_variable_values(file_path, data)
+                except Exception:
+                    # If the file did not validate against the schema, we
+                    # ignore any exceptions as they're likely to be due to
+                    # missing fields etc.
+                    # Otherwise we return error as unexpected.
+                    if not self.has_errors(file_path):
+                        self.add_validation_message(ValidationMessage(
+                            file=file_path,
+                            message=f"An unexpected error occurred whilst validating {file_path}. Please contact info@hepdata.net if this issue recurs.",
+                        ))  #pragma: no cover
 
         except UnsupportedDataSchemaException as ex:
             self.add_validation_message(ValidationMessage(
@@ -163,57 +174,80 @@ class DataFileValidator(Validator):
         :param data_item: YAML document from submission.yaml
         :return: raise ValidationError if not numeric
         """
-        if 'independent_variables' in data_item and data_item['independent_variables'] is not None:
-            for i, var in enumerate(data_item['independent_variables']):
-                if 'values' in var:
-                    for j, v in enumerate(var['values']):
-                        if 'value' in v and isinstance(v['value'], str) and '-' in v['value']:
-                            m = re.match(r'^[+-]?\d+(\.\d*)?([eE][+-]?\d+)?\s*-\s*[+-]?\d+(\.\d*)?([eE][+-]?\d+)?$', v['value'])
-                            if m:
-                                error = ValidationError(
-                                    "independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '%s'" % v['value'],
-                                    path=['independent_variables', i, 'values', j, 'value'],
-                                    instance=data_item['independent_variables'],
-                                    schema={"type": "number or string (not a range)"}
-                                )
-                                self.add_validation_error(file_path, error)
+        for i, var in enumerate(data_item['independent_variables']):
+            for j, v in enumerate(var['values']):
+                if 'value' in v and isinstance(v['value'], str) and '-' in v['value']:
+                    m = re.match(r'^[+-]?\d+(\.\d*)?([eE][+-]?\d+)?\s*-\s*[+-]?\d+(\.\d*)?([eE][+-]?\d+)?$', v['value'])
+                    if m:
+                        error = ValidationError(
+                            "independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '%s'" % v['value'],
+                            path=['independent_variables', i, 'values', j, 'value'],
+                            instance=data_item['independent_variables'],
+                            schema={"type": "number or string (not a range)"}
+                        )
+                        self.add_validation_error(file_path, error)
 
-    def check_for_zero_uncertainty(self, file_path, data):
+    def check_error_values(self, file_path, data):
         """
         Check that uncertainties are not all zero.
         Adds validation error if uncertainties are all zero.
 
         :param data: data table in YAML format
         """
-        if 'dependent_variables' in data and data['dependent_variables'] is not None:
-            for dependent_variable in data['dependent_variables']:
-                if 'values' in dependent_variable:
-                    for i, value in enumerate(dependent_variable['values']):
-                        if 'errors' in value:
-                            zero_uncertainties = []
-                            for error in value['errors']:
+        for dependent_variable in data['dependent_variables']:
+            for i, value in enumerate(dependent_variable['values']):
+                if 'errors' in value:
+                    zero_uncertainties = []
+                    for j, error in enumerate(value['errors']):
+                        has_asymerror = False
+                        if 'symerror' in error:
+                            error_plus = error_minus = self.convert_to_float(
+                                error['symerror'],
+                                file_path=file_path,
+                                path=['dependent_variables', 'values', i, 'errors', j, 'symerror'],
+                                instance=data['dependent_variables']
+                            )
+                        elif 'asymerror' in error:
+                            has_asymerror = True
+                            error_plus = self.convert_to_float(
+                                error['asymerror']['plus'],
+                                file_path=file_path,
+                                path=['dependent_variables', 'values', i, 'errors', j, 'asymerror', 'plus'],
+                                instance=data['dependent_variables']
+                            )
+                            error_minus = self.convert_to_float(
+                                error['asymerror']['minus'],
+                                file_path=file_path,
+                                path=['dependent_variables', 'values', i, 'errors', j, 'asymerror', 'minus'],
+                                instance=data['dependent_variables']
+                            )
 
-                                if 'symerror' in error:
-                                    error_plus = error_minus = error['symerror']
-                                elif 'asymerror' in error:
-                                    error_plus = error['asymerror']['plus']
-                                    error_minus = error['asymerror']['minus']
+                        if error_plus == '' and error_minus == '':
+                            if has_asymerror:
+                                msg = "asymerror plus and minus cannot both be empty"
+                                sub_path = 'asymerror'
+                            else:
+                                msg = "symerror cannot be empty"
+                                sub_path = 'symerror'
+                            error = ValidationError(
+                                msg,
+                                path=['dependent_variables', 'values', i, 'errors', j, sub_path],
+                                instance=data['dependent_variables']
+                            )
+                            self.add_validation_error(file_path, error)
 
-                                error_plus = convert_to_float(error_plus)
-                                error_minus = convert_to_float(error_minus)
+                        if error_plus == 0 and error_minus == 0:
+                            zero_uncertainties.append(True)
+                        else:
+                            zero_uncertainties.append(False)
 
-                                if error_plus == 0 and error_minus == 0:
-                                    zero_uncertainties.append(True)
-                                else:
-                                    zero_uncertainties.append(False)
-
-                            if len(zero_uncertainties) > 0 and all(zero_uncertainties):
-                                error = ValidationError(
-                                    "Uncertainties should not all be zero",
-                                     path=['dependent_variables', 'values', i, 'errors'],
-                                     instance=data['dependent_variables']
-                                )
-                                self.add_validation_error(file_path, error)
+                    if len(zero_uncertainties) > 0 and all(zero_uncertainties):
+                        error = ValidationError(
+                            "Uncertainties should not all be zero",
+                            path=['dependent_variables', 'values', i, 'errors'],
+                            instance=data['dependent_variables']
+                        )
+                        self.add_validation_error(file_path, error)
 
     def check_length_values(self, file_path, data):
         """
@@ -223,17 +257,37 @@ class DataFileValidator(Validator):
 
         :param data: data table in YAML format
         """
-        if 'independent_variables' in data and 'dependent_variables' in data and \
-              data['independent_variables'] is not None and data['dependent_variables'] is not None:
-            indep_count = [len(indep['values']) for indep in data['independent_variables'] if 'values' in indep]
-            dep_count = [len(dep['values']) for dep in data['dependent_variables'] if 'values' in dep]
-            if len(set(indep_count + dep_count)) > 1:  # if more than one unique count
-                error = ValidationError(
-                    "Inconsistent length of 'values' list: " +
-                    "independent_variables %s, dependent_variables %s" % (str(indep_count), str(dep_count)),
-                    instance=data
+        indep_count = [len(indep['values']) for indep in data['independent_variables'] if 'values' in indep]
+        dep_count = [len(dep['values']) for dep in data['dependent_variables'] if 'values' in dep]
+        if len(set(indep_count + dep_count)) > 1:  # if more than one unique count
+            error = ValidationError(
+                "Inconsistent length of 'values' list: " +
+                "independent_variables %s, dependent_variables %s" % (str(indep_count), str(dep_count)),
+                instance=data
+            )
+            self.add_validation_error(file_path, error)
+
+    def convert_to_float(self, error, file_path, path, instance):
+        """
+        Convert error from a string to a float if possible.
+
+        :param error: uncertainty from either 'symerror' or 'asymerror'
+        :return: error as a float if possible, otherwise the original string
+        """
+        if isinstance(error, str):
+            error = error.replace('%', '')  # strip percentage symbol
+        try:
+            error = float(error)
+        except ValueError:
+            if error != '':  # empty string is allowed in some circumstances
+                validation_error = ValidationError(
+                    f"Invalid error value {error}: value must be a number (possibly ending in %)",
+                    path=path,
+                    instance=instance
                 )
-                self.add_validation_error(file_path, error)
+                self.add_validation_error(file_path, validation_error)
+
+        return error
 
 
 class UnsupportedDataSchemaException(Exception):
@@ -245,20 +299,3 @@ class UnsupportedDataSchemaException(Exception):
 
     def __unicode__(self):
         return self.message
-
-
-def convert_to_float(error):
-    """
-    Convert error from a string to a float if possible.
-
-    :param error: uncertainty from either 'symerror' or 'asymerror'
-    :return: error as a float if possible, otherwise the original string
-    """
-    if isinstance(error, str):
-        error = error.replace('%', '')  # strip percentage symbol
-    try:
-        error = float(error)
-    except ValueError:
-        pass  # for example, an empty string
-
-    return error

@@ -176,7 +176,7 @@ def check_cmenergies(data_item):
                 try:
                     cmenergy = float(cmenergy)
                 except ValueError:
-                    m = re.match(r'^\d+\.?\d?-\d+\.?\d?$', cmenergy)
+                    m = re.match(r'^\d+\.?\d*-\d+\.?\d*$', cmenergy)
                     if not m or len(cmenergies) > 1:
                         raise ValidationError("Invalid value (in GeV) for cmenergies: '%s'" % cmenergy,
                                               path=['keywords', i, 'name', 'cmenergies'],
