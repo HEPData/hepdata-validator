@@ -42,20 +42,23 @@ If you can, install `LibYAML <https://pyyaml.org/wiki/LibYAML>`_ (a C library fo
 This will allow for the use of ``CSafeLoader`` (instead of Python ``SafeLoader``) for faster loading of YAML files.
 Not a big deal for small files, but performs markedly better on larger documents.
 
-Via pip:
+Install from `PyPI <https://pypi.org/project/hepdata-validator/>`_ using ``pip``:
 
 .. code:: bash
 
-   pip install hepdata-validator
+   $ pip install --user hepdata-validator
+   $ hepdata-validate --help
 
-Via GitHub (for developers):
+Install from GitHub (for developers) in a `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_:
 
 .. code:: bash
 
-   git clone https://github.com/HEPData/hepdata-validator
-   cd hepdata-validator
-   pip install --upgrade -e .[tests]
-   pytest testsuite
+   $ git clone https://github.com/HEPData/hepdata-validator
+   $ cd hepdata-validator
+   $ python3 -m venv ~/venv/hepdata-validator
+   $ source ~/venv/hepdata-validator/bin/activate
+   (hepdata-validator) $ pip install --upgrade -e .[tests]
+   (hepdata-validator) $ pytest testsuite
 
 
 Usage
