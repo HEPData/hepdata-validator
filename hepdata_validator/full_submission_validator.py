@@ -229,7 +229,8 @@ class FullSubmissionValidator(Validator):
                         )
                         if is_ext_attr_file(f):
                             self._add_validation_message(
-                               file=file_path, message=f'{f} might be a file created by tar on MacOS. Set COPYFILE_DISABLE=1 before creating the archive.'
+                               file=file_path, message=f'{f} might be a file created by tar on MacOS. Set COPYFILE_DISABLE=1 before creating the archive.',
+                               level='hint'
                             )
 
             return len(self.messages) == 0
@@ -238,14 +239,14 @@ class FullSubmissionValidator(Validator):
                 # Delete temporary Directory
                 shutil.rmtree(self.temp_directory)
 
-    def _add_validation_message(self, file, message):
+    def _add_validation_message(self, file, message, **kwargs):
         if self.temp_directory:
             # Remove temp directory from filename and message
             file = self._remove_temp_directory(file)
             message = self._remove_temp_directory(message)
 
         self.add_validation_message(ValidationMessage(
-            file=file, message=message
+            file=file, message=message, **kwargs
         ))
 
     def _remove_temp_directory(self, s):
