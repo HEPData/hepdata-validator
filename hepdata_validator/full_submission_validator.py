@@ -223,10 +223,14 @@ class FullSubmissionValidator(Validator):
 
                 for f in os.listdir(self.directory):
                     file_path = os.path.join(self.directory, f)
-                    if file_path not in self.included_files and not is_ext_attr_file(f):
+                    if file_path not in self.included_files:
                         self._add_validation_message(
-                            file=file_path, message='%s is not referenced in the submission.' % f
+                            file=file_path, message=f'{f} is not referenced in the submission.'
                         )
+                        if is_ext_attr_file(f):
+                            self._add_validation_message(
+                               file=file_path, message=f'{f} might be a file created by tar on MacOS. Set COPYFILE_DISABLE=1 before creating the archive.'
+                            )
 
             return len(self.messages) == 0
         finally:
