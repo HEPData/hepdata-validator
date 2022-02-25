@@ -205,25 +205,23 @@ class FullSubmissionValidator(Validator):
 
             # Check all files in directory are in included_files
             if not self.single_yaml_file and self.schema_version >= packaging_version.parse("1.1.0"):
-                files = os.listdir(self.directory)
-
                 # helper to check if a provided file is not meant to describe HEP data, but rather
                 # represents "extended attributes" (e.g.) as a result of BSD tar (default on MacOS)
                 # which creates these extra files when archiving files with extended attributes on
                 # HSF+ volumes (denoted by "@" in permission bits)
                 def is_ext_attr_file(f):
                     # three conditions must be fulfilled
-                    # 1. the file must not be required (already checked below)
+                    # 1. the file must not be referenced in the submission (already checked below)
                     # 2. the file name must have the format "._<actual_file>"
                     prefix = "._"
                     if not f.startswith(prefix):
                         return False
                     # 3. a file named "<actual_file>" must exist in the same directory
-                    if f[len(prefix):] not in files:
+                    if not os.path.isfile(os.path.join(self.directory, f[len(prefix):])):
                         return False
                     return True
 
-                for f in files:
+                for f in os.listdir(self.directory):
                     file_path = os.path.join(self.directory, f)
                     if file_path not in self.included_files and not is_ext_attr_file(f):
                         self._add_validation_message(
