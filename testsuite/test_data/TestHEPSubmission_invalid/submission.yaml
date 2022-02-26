@@ -152,4 +152,18 @@ data_file: data8.yaml
 additional_resources:
 - {description: Image file, location: figFigure10B.png}
 - {description: Thumbnail image file, location: thumb_figFigure10B.png}
+---
+# This is Table 9.
+name: "Table 9"
+location: Data from Figure 10B
+description: Table with a weird but accepted data_file name
+keywords: []
+data_file: ._data9.yaml
+---
+# This is Table 10.
+name: "Table 10"
+location: Data from Figure 10B
+description: Table whose data_file is accompanied by a file representing extended arguments which should lead to a hint.
+keywords: []
+data_file: data10.yaml
 # End of YAML file.

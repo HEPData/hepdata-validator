@@ -247,7 +247,7 @@ def test_invalid_data_directory(validator_v1, data_path, capsys):
     is_valid = validator_v1.validate(directory=dir)
     assert not is_valid
     expected_valid_files = [os.path.join(dir, f) for f in [
-        'data1.yaml', 'data4.yaml', 'data5.yaml', 'data6.yaml', 'data7.yaml'
+        'data1.yaml', 'data4.yaml', 'data5.yaml', 'data6.yaml', 'data7.yaml', '._data9.yaml', 'data10.yaml'
     ]]
     assert validator_v1.valid_files == {SchemaType.DATA: expected_valid_files}
     assert validator_v1.has_errors
@@ -257,7 +257,9 @@ def test_invalid_data_directory(validator_v1, data_path, capsys):
         os.path.join(dir, 'submission.yaml'),
         os.path.join(dir, 'data3.yaml'),
         os.path.join(dir, 'data8.yaml'),
-        os.path.join(dir, 'figFigure8B.png')
+        os.path.join(dir, 'figFigure8B.png'),
+        os.path.join(dir, '._data10.yaml'),
+        os.path.join(dir, '._data11.yaml')
     ]
     assert set(errors.keys()) == set(expected_file_names)
     assert errors[expected_file_names[0]][0].message == "Name of data_file 'mydirectory/data2.yaml' should not contain '/'."
@@ -270,6 +272,11 @@ def test_invalid_data_directory(validator_v1, data_path, capsys):
 		did not find expected key
 		  in "{dir}/data8.yaml", line 9, column 3"""
     assert errors[expected_file_names[3]][0].message == f"figFigure8B.png is not referenced in the submission."
+    assert len(errors[expected_file_names[4]]) == 2
+    assert errors[expected_file_names[4]][0].message == f"._data10.yaml is not referenced in the submission."
+    assert errors[expected_file_names[4]][1].message == f"._data10.yaml might be a file created by tar on MacOS. Set COPYFILE_DISABLE=1 before creating the archive."
+    assert errors[expected_file_names[4]][1].level == 'hint'
+    assert errors[expected_file_names[5]][0].message == f"._data11.yaml is not referenced in the submission."
 
 
 def test_invalid_archive(validator_v1, data_path):#, capsys):
@@ -278,7 +285,7 @@ def test_invalid_archive(validator_v1, data_path):#, capsys):
     is_valid = validator_v1.validate(archive=archive)
     assert not is_valid
     expected_valid_files = [os.path.join(dir, f) for f in [
-        'data1.yaml', 'data4.yaml', 'data5.yaml', 'data6.yaml', 'data7.yaml'
+        'data1.yaml', 'data4.yaml', 'data5.yaml', 'data6.yaml', 'data7.yaml', '._data9.yaml', 'data10.yaml'
     ]]
     assert validator_v1.valid_files == {SchemaType.DATA: expected_valid_files}
     assert validator_v1.has_errors
@@ -288,7 +295,9 @@ def test_invalid_archive(validator_v1, data_path):#, capsys):
         os.path.join(dir, 'submission.yaml'),
         os.path.join(dir, 'data3.yaml'),
         os.path.join(dir, 'data8.yaml'),
-        os.path.join(dir, 'figFigure8B.png')
+        os.path.join(dir, 'figFigure8B.png'),
+        os.path.join(dir, '._data10.yaml'),
+        os.path.join(dir, '._data11.yaml')
     ]
     assert set(errors.keys()) == set(expected_file_names)
     assert errors[expected_file_names[0]][0].message == "Name of data_file 'mydirectory/data2.yaml' should not contain '/'."
@@ -301,6 +310,11 @@ def test_invalid_archive(validator_v1, data_path):#, capsys):
 		did not find expected key
 		  in "{dir}/data8.yaml", line 9, column 3"""
     assert errors[expected_file_names[3]][0].message == f"figFigure8B.png is not referenced in the submission."
+    assert len(errors[expected_file_names[4]]) == 2
+    assert errors[expected_file_names[4]][0].message == f"._data10.yaml is not referenced in the submission."
+    assert errors[expected_file_names[4]][1].message == f"._data10.yaml might be a file created by tar on MacOS. Set COPYFILE_DISABLE=1 before creating the archive."
+    assert errors[expected_file_names[4]][1].level == 'hint'
+    assert errors[expected_file_names[5]][0].message == f"._data11.yaml is not referenced in the submission."
 
 
 def test_invalid_syntax_submission(validator_v1, data_path, capsys):
