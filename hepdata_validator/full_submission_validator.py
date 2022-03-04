@@ -8,19 +8,11 @@ from urllib.parse import urlparse, urlunsplit
 
 import yaml
 
-from hepdata_validator import Validator, ValidationMessage
+from hepdata_validator import Validator, ValidationMessage, YamlLoader, YamlDumper
 from .schema_resolver import JsonSchemaResolver
 from .schema_downloader import HTTPSchemaDownloader
 from .submission_file_validator import SubmissionFileValidator
 from .data_file_validator import DataFileValidator
-
-# We try to load using the CSafeLoader for speed improvements.
-try:
-    from yaml import CSafeLoader as Loader
-    from yaml import CSafeDumper as Dumper
-except ImportError:  # pragma: no cover
-    from yaml import SafeLoader as Loader
-    from yaml import SafeDumper as Dumper
 
 
 class SchemaType(Enum):
@@ -169,7 +161,7 @@ class FullSubmissionValidator(Validator):
             # Open the submission.yaml file and load all YAML documents.
             with open(self.submission_file_path, 'r') as submission_file:
                 try:
-                    self.submission_docs = list(yaml.load_all(submission_file, Loader=Loader))
+                    self.submission_docs = list(yaml.load_all(submission_file, Loader=YamlLoader))
                 except yaml.YAMLError as e:
                     self._add_validation_message(
                         file=self.submission_file_path,
@@ -264,7 +256,7 @@ class FullSubmissionValidator(Validator):
                     file_name = os.path.join(self.directory, file_name)
                 with open(file_name, 'w') as data_file:
                     yaml.dump({'independent_variables': doc.pop('independent_variables', None),
-                               'dependent_variables': doc.pop('dependent_variables', None)}, data_file, Dumper=Dumper)
+                               'dependent_variables': doc.pop('dependent_variables', None)}, data_file, Dumper=YamlDumper)
 
     def _check_doc(self, doc):
         # Skip empty YAML documents.
@@ -345,7 +337,7 @@ class FullSubmissionValidator(Validator):
 
             # Just try to load YAML data file without validating schema.
             try:
-                contents = yaml.load(open(data_file_path, 'r'), Loader=Loader)
+                contents = yaml.load(open(data_file_path, 'r'), Loader=YamlLoader)
             except (OSError, yaml.YAMLError) as e:
                 problem_type = 'reading' if isinstance(e, OSError) else 'parsing'
                 self._add_validation_message(

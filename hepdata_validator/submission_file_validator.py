@@ -6,13 +6,7 @@ import re
 import yaml
 from yaml.scanner import ScannerError
 
-# We try to load using the CSafeLoader for speed improvements.
-try:
-    from yaml import CSafeLoader as Loader
-except ImportError: #pragma: no cover
-    from yaml import SafeLoader as Loader #pragma: no cover
-
-from hepdata_validator import Validator, ValidationMessage
+from hepdata_validator import Validator, ValidationMessage, YamlLoader
 
 __author__ = 'eamonnmaguire'
 
@@ -71,7 +65,7 @@ class SubmissionFileValidator(Validator):
 
             if data is None:
                 data_file_handle = open(file_path, 'r')
-                data = yaml.load_all(data_file_handle, Loader=Loader)
+                data = yaml.load_all(data_file_handle, Loader=YamlLoader)
 
             table_names = []
             table_data_files = []

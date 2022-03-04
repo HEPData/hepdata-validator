@@ -32,6 +32,21 @@ from packaging import version as packaging_version
 
 from .version import __version__
 
+# We try to load using the CSafeLoader for speed improvements
+YamlLoader = None
+YamlDumper = None
+use_libyaml = os.environ.get('USE_LIBYAML', True)
+if use_libyaml and use_libyaml not in ('False', 'false', 'f', 'F'):
+    try:
+        from yaml import CSafeLoader as YamlLoader
+        from yaml import CSafeDumper as YamlDumper
+    except ImportError:  # pragma: no cover
+        pass
+
+if YamlLoader is None or YamlDumper is None:
+    from yaml import SafeLoader as YamlLoader
+    from yaml import SafeDumper as YamlDumper
+
 __all__ = ('__version__', )
 
 VALID_SCHEMA_VERSIONS = ['1.1.0', '1.0.1', '1.0.0', '0.1.0']
