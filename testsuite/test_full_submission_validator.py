@@ -222,11 +222,12 @@ def test_invalid_yaml_single_file_gzip(validator_v1, data_path, capsys):
     assert validator_v1.valid_files == {}
     validator_v1.print_errors('1512299_invalid_yaml.yaml')
     out, err = capsys.readouterr()
-    assert out.strip() == """error - There was a problem parsing the file:
+    assert out.strip().startswith("""error - There was a problem parsing the file:
 		while parsing a flow mapping
-		  in "1512299_invalid_yaml.yaml", line 7, column 11
-		did not find expected ',' or '}'
-		  in "1512299_invalid_yaml.yaml", line 8, column 3"""
+		  in "1512299_invalid_yaml.yaml", line 7, column 11""")
+    # message is different in libyaml and non-libyaml versions but this is in both
+    assert "expected ',' or '}'" in out
+    assert out.strip().endswith('in "1512299_invalid_yaml.yaml", line 8, column 3')
 
 
 def test_invalid_single_file_data_file(validator_v1, data_path, capsys):
@@ -266,11 +267,13 @@ def test_invalid_data_directory(validator_v1, data_path, capsys):
     assert errors[expected_file_names[0]][1].message == "Location of 'additional_resources' file '../TestHEPSubmission/figFigure8B.png' should not contain '/'."
     assert errors[expected_file_names[0]][2].message == f"Missing 'additional_resources' file 'figFigure9A.png'."
     assert errors[expected_file_names[1]][0].message == f"Missing data_file 'data3.yaml'."
-    assert errors[expected_file_names[2]][0].message == f"""There was a problem parsing the file:
+    assert errors[expected_file_names[2]][0].message.startswith(f"""There was a problem parsing the file:
 		while parsing a block mapping
-		  in "{dir}/data8.yaml", line 1, column 1
-		did not find expected key
-		  in "{dir}/data8.yaml", line 9, column 3"""
+		  in "{dir}/data8.yaml", line 1, column 1""")
+    # message differs depending on whether libyaml is used
+    assert "did not find expected key" in errors[expected_file_names[2]][0].message or \
+           "expected <block end>, but found '<block mapping start>'" in errors[expected_file_names[2]][0].message
+    assert errors[expected_file_names[2]][0].message.endswith(f'in "{dir}/data8.yaml", line 9, column 3')
     assert errors[expected_file_names[3]][0].message == f"figFigure8B.png is not referenced in the submission."
     assert len(errors[expected_file_names[4]]) == 2
     assert errors[expected_file_names[4]][0].message == f"._data10.yaml is not referenced in the submission."
@@ -304,11 +307,13 @@ def test_invalid_archive(validator_v1, data_path):#, capsys):
     assert errors[expected_file_names[0]][1].message == "Location of 'additional_resources' file '../TestHEPSubmission/figFigure8B.png' should not contain '/'."
     assert errors[expected_file_names[0]][2].message == f"Missing 'additional_resources' file 'figFigure9A.png'."
     assert errors[expected_file_names[1]][0].message == f"Missing data_file 'data3.yaml'."
-    assert errors[expected_file_names[2]][0].message == f"""There was a problem parsing the file:
+    assert errors[expected_file_names[2]][0].message.startswith(f"""There was a problem parsing the file:
 		while parsing a block mapping
-		  in "{dir}/data8.yaml", line 1, column 1
-		did not find expected key
-		  in "{dir}/data8.yaml", line 9, column 3"""
+		  in "{dir}/data8.yaml", line 1, column 1""")
+    # message differs depending on whether libyaml is used
+    assert "did not find expected key" in errors[expected_file_names[2]][0].message or \
+           "expected <block end>, but found '<block mapping start>'" in errors[expected_file_names[2]][0].message
+    assert errors[expected_file_names[2]][0].message.endswith(f'in "{dir}/data8.yaml", line 9, column 3')
     assert errors[expected_file_names[3]][0].message == f"figFigure8B.png is not referenced in the submission."
     assert len(errors[expected_file_names[4]]) == 2
     assert errors[expected_file_names[4]][0].message == f"._data10.yaml is not referenced in the submission."
