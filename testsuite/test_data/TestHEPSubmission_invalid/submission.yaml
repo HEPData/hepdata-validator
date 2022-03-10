@@ -166,4 +166,11 @@ location: Data from Figure 10B
 description: Table whose data_file is accompanied by a file representing extended arguments which should lead to a hint.
 keywords: []
 data_file: data10.yaml
+---
+# This is Table 11.
+name: "Table 11"
+location: Data from Figure 11B
+description: Table whose data_file is too big
+keywords: []
+data_file: data11.yaml
 # End of YAML file.
