@@ -49,7 +49,17 @@ Install from `PyPI <https://pypi.org/project/hepdata-validator/>`_ using ``pip``
    $ pip install --user hepdata-validator
    $ hepdata-validate --help
 
-Install from GitHub (for developers) in a `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_:
+If you would like to use LibYAML, you may need an additional step if running on an M1 Mac, to ensure pyyaml is built
+with the LibYAML bindings. Run the following after installing LibYAML via Homebrew:
+
+.. code:: bash
+
+  $ LDFLAGS="-L$(brew --prefix)/lib" CFLAGS="-I$(brew --prefix)/include" pip install --global-option="--with-libyaml" --force pyyaml
+
+
+Developers
+==========
+Developers should install from GitHub in a `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_:
 
 .. code:: bash
 
@@ -57,9 +67,14 @@ Install from GitHub (for developers) in a `virtual environment <https://docs.pyt
    $ cd hepdata-validator
    $ python3 -m venv ~/venv/hepdata-validator
    $ source ~/venv/hepdata-validator/bin/activate
-   (hepdata-validator) $ pip install --upgrade -e .[tests]
-   (hepdata-validator) $ pytest testsuite
+   (hepdata-validator) $ pip install --upgrade -e ".[tests]"
 
+Tests should be run both with and without LibYAML, as error messages from the different YAML parsers vary:
+
+.. code:: bash
+
+   (hepdata-validator) $ USE_LIBYAML=True pytest testsuite
+   (hepdata-validator) $ USE_LIBYAML=False pytest testsuite
 
 Usage
 -----

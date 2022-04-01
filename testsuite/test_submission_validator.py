@@ -1,14 +1,8 @@
 import os
 import pytest
 import yaml
-from hepdata_validator import VALID_SCHEMA_VERSIONS
+from hepdata_validator import VALID_SCHEMA_VERSIONS, YamlLoader
 from hepdata_validator.submission_file_validator import SubmissionFileValidator
-
-# We try to load using the CSafeLoader for speed improvements.
-try:
-    from yaml import CSafeLoader as Loader
-except ImportError:
-    from yaml import SafeLoader as Loader
 
 
 ####################################################
@@ -45,7 +39,7 @@ def test_valid_submission_yaml_v0(validator_v0, data_path):
     file = os.path.join(data_path, 'valid_submission_v0.yaml')
 
     with open(file, 'r') as submission:
-        yaml_obj = yaml.load_all(submission, Loader=Loader)
+        yaml_obj = yaml.load_all(submission, Loader=YamlLoader)
         is_valid = validator_v0.validate(file_path=file, data=yaml_obj)
         validator_v0.print_errors(file)
 
@@ -65,7 +59,7 @@ def test_valid_submission_yaml_v1(validator_v1, data_path):
     file = os.path.join(data_path, 'valid_submission.yaml')
 
     with open(file, 'r') as submission:
-        yaml_obj = yaml.load_all(submission, Loader=Loader)
+        yaml_obj = yaml.load_all(submission, Loader=YamlLoader)
         is_valid = validator_v1.validate(file_path=file, data=yaml_obj)
         validator_v1.print_errors(file)
 
@@ -80,7 +74,7 @@ def test_v0_valid_submission_yaml_v1(validator_v1, data_path):
     file = os.path.join(data_path, 'valid_submission_v0.yaml')
 
     with open(file, 'r') as submission:
-        yaml_obj = yaml.load_all(submission, Loader=Loader)
+        yaml_obj = yaml.load_all(submission, Loader=YamlLoader)
         is_valid = validator_v1.validate(file_path=file, data=yaml_obj)
         validator_v1.print_errors(file)
 
@@ -235,10 +229,11 @@ def test_invalid_parser_submission_yaml_v1(validator_v1, data_path, capsys):
 
     assert is_valid is False
     out, err = capsys.readouterr()
-    assert out.strip() == """error - while parsing a flow mapping
-  in "{0}", line 6, column 5
-did not find expected ',' or '}}'
-  in "{0}", line 7, column 3""".format(file)
+    assert out.strip().startswith(f"""error - while parsing a flow mapping
+  in "{file}", line 6, column 5""")
+    # message is different in libyaml and non-libyaml versions but this is in both
+    assert "expected ',' or '}'" in out
+    assert out.strip().endswith(f'in "{file}", line 7, column 3')
 
 
 def test_io_error_submission_yaml_v1(validator_v1, data_path, capsys):
@@ -284,7 +279,7 @@ def test_data_schema_submission_yaml_v1(validator_v1, data_path):
     file = os.path.join(data_path, 'valid_submission_custom_remote.yaml')
 
     with open(file, 'r') as submission:
-        yaml_obj = yaml.load_all(submission, Loader=Loader)
+        yaml_obj = yaml.load_all(submission, Loader=YamlLoader)
         is_valid = validator_v1.validate(file_path=file, data=yaml_obj)
         assert is_valid is True
         assert not validator_v1.has_errors(file)
@@ -298,7 +293,7 @@ def test_invalid_cmenergies_submission_yaml_v1(validator_v1, data_path, capsys):
     file = os.path.join(data_path, 'invalid_cmenergies.yaml')
 
     with open(file, 'r') as submission:
-        yaml_obj = yaml.load_all(submission, Loader=Loader)
+        yaml_obj = yaml.load_all(submission, Loader=YamlLoader)
         is_valid = validator_v1.validate(file_path=file, data=yaml_obj)
         validator_v1.print_errors(file)
 
@@ -332,7 +327,7 @@ def test_check_for_duplicates(validator_v1):
 def test_submission_with_no_data_tables(validator_v0, validator_v1, data_path, capsys):
     file = os.path.join(data_path, 'valid_file.yaml')
     with open(file, 'r') as submission:
-        yaml_obj = yaml.load_all(submission, Loader=Loader)
+        yaml_obj = yaml.load_all(submission, Loader=YamlLoader)
         is_valid = validator_v1.validate(file_path=file, data=yaml_obj)
         validator_v1.print_errors(file)
 

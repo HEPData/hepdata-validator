@@ -28,15 +28,23 @@ jobs:
       run: |
         pip install --upgrade pip setuptools wheel coveralls
         pip install --ignore-installed -e .[tests]
-    - name: Run tests
+    - name: Run tests without libyaml
       run: |
-        pytest testsuite
+        USE_LIBYAML=False pytest testsuite
+      env:
+        COVERAGE_FILE: '.coverage_nolibyaml'
+    - name: Run tests with libyaml
+      run: |
+        USE_LIBYAML=True pytest testsuite
+      env:
+        COVERAGE_FILE: '.coverage_libyaml'
     - name: Run coveralls
       if: startsWith(matrix.python-version, '3.8')
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_SERVICE_NAME: github
       run: |
+        coverage combine .coverage_libyaml .coverage_nolibyaml
         coveralls
 
   deploy:
