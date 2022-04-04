@@ -260,13 +260,14 @@ def test_invalid_data_directory(validator_v1, data_path, capsys):
         os.path.join(dir, 'data8.yaml'),
         os.path.join(dir, 'figFigure8B.png'),
         os.path.join(dir, '._data10.yaml'),
-        os.path.join(dir, '._data11.yaml')
+        os.path.join(dir, '._data11.yaml'),
+        os.path.join(dir, 'data11.yaml'),
     ]
     assert set(errors.keys()) == set(expected_file_names)
     assert errors[expected_file_names[0]][0].message == "Name of data_file 'mydirectory/data2.yaml' should not contain '/'."
     assert errors[expected_file_names[0]][1].message == "Location of 'additional_resources' file '../TestHEPSubmission/figFigure8B.png' should not contain '/'."
-    assert errors[expected_file_names[0]][2].message == f"Missing 'additional_resources' file 'figFigure9A.png'."
-    assert errors[expected_file_names[1]][0].message == f"Missing data_file 'data3.yaml'."
+    assert errors[expected_file_names[0]][2].message == "Missing 'additional_resources' file 'figFigure9A.png'."
+    assert errors[expected_file_names[1]][0].message == "Missing data_file 'data3.yaml'."
     assert errors[expected_file_names[2]][0].message.startswith(f"""There was a problem parsing the file:
 		while parsing a block mapping
 		  in "{dir}/data8.yaml", line 1, column 1""")
@@ -274,12 +275,13 @@ def test_invalid_data_directory(validator_v1, data_path, capsys):
     assert "did not find expected key" in errors[expected_file_names[2]][0].message or \
            "expected <block end>, but found '<block mapping start>'" in errors[expected_file_names[2]][0].message
     assert errors[expected_file_names[2]][0].message.endswith(f'in "{dir}/data8.yaml", line 9, column 3')
-    assert errors[expected_file_names[3]][0].message == f"figFigure8B.png is not referenced in the submission."
+    assert errors[expected_file_names[3]][0].message == "figFigure8B.png is not referenced in the submission."
     assert len(errors[expected_file_names[4]]) == 2
-    assert errors[expected_file_names[4]][0].message == f"._data10.yaml is not referenced in the submission."
-    assert errors[expected_file_names[4]][1].message == f"._data10.yaml might be a file created by tar on MacOS. Set COPYFILE_DISABLE=1 before creating the archive."
+    assert errors[expected_file_names[4]][0].message == "._data10.yaml is not referenced in the submission."
+    assert errors[expected_file_names[4]][1].message == "._data10.yaml might be a file created by tar on MacOS. Set COPYFILE_DISABLE=1 before creating the archive."
     assert errors[expected_file_names[4]][1].level == 'hint'
-    assert errors[expected_file_names[5]][0].message == f"._data11.yaml is not referenced in the submission."
+    assert errors[expected_file_names[5]][0].message == "._data11.yaml is not referenced in the submission."
+    assert errors[expected_file_names[6]][0].message == "Size of data_file 'data11.yaml' (12180000 bytes) is bigger than the limit of 10485760 bytes. Try adding the file as an additional_resource instead."
 
 
 def test_invalid_archive(validator_v1, data_path):#, capsys):

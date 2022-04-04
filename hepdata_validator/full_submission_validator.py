@@ -15,6 +15,8 @@ from .submission_file_validator import SubmissionFileValidator
 from .data_file_validator import DataFileValidator
 
 
+INDIVIDUAL_FILE_SIZE_LIMIT = 10485760
+
 class SchemaType(Enum):
     SUBMISSION = 'submission'
     SINGLE_YAML = 'single file'
@@ -310,6 +312,15 @@ class FullSubmissionValidator(Validator):
             if not os.path.isfile(data_file_path):
                 self._add_validation_message(
                     file=data_file_path, message="Missing data_file '%s'." % doc['data_file']
+                )
+                return is_valid_submission_doc
+
+            file_size = os.path.getsize(data_file_path)
+            if file_size > INDIVIDUAL_FILE_SIZE_LIMIT: # 10MB limit for each file
+                self._add_validation_message(
+                    file=data_file_path,
+                    message=f"Size of data_file '{doc['data_file']}' ({file_size} bytes) is bigger than the limit of " \
+                            f"{INDIVIDUAL_FILE_SIZE_LIMIT} bytes. Try adding the file as an additional_resource instead."
                 )
                 return is_valid_submission_doc
 
