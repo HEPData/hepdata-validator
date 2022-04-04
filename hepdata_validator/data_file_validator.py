@@ -29,13 +29,7 @@ import re
 from packaging import version as packaging_version
 import yaml
 
-# We try to load using the CSafeLoader for speed improvements.
-try:
-    from yaml import CSafeLoader as Loader
-except ImportError: #pragma: no cover
-    from yaml import SafeLoader as Loader #pragma: no cover
-
-from hepdata_validator import Validator, ValidationMessage
+from hepdata_validator import Validator, ValidationMessage, YamlLoader
 from jsonschema import ValidationError
 from jsonschema.exceptions import by_relevance
 
@@ -104,7 +98,7 @@ class DataFileValidator(Validator):
             try:
                 # The yaml package support both JSON and YAML
                 with open(file_path, 'r') as df:
-                    data = yaml.load(df, Loader=Loader)
+                    data = yaml.load(df, Loader=YamlLoader)
                     if data is None:
                         self.add_validation_message(ValidationMessage(
                             file=file_path,

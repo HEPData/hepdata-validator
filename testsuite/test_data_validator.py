@@ -280,11 +280,12 @@ def test_invalid_parser_yaml_file_v1(validator_v1, data_path, capsys):
 
     assert is_valid is False
     out, err = capsys.readouterr()
-    assert out.strip() == f"""error - There was a problem parsing the file.
+    assert out.strip().startswith(f"""error - There was a problem parsing the file.
 while parsing a flow mapping
-  in "{file}", line 9, column 9
-did not find expected ',' or '}}'
-  in "{file}", line 10, column 5"""
+  in "{file}", line 9, column 9""")
+    # message is different in libyaml and non-libyaml versions but this is in both
+    assert "expected ',' or '}'" in out
+    assert out.strip().endswith(f'in "{file}", line 10, column 5')
 
 
 def test_io_error_yaml_file_v1(validator_v1, data_path, capsys):
