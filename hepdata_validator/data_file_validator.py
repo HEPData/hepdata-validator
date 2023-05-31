@@ -137,7 +137,7 @@ class DataFileValidator(Validator):
                 try:
                     self.check_error_values(file_path, data)
                     self.check_length_values(file_path, data)
-                    if self.schema_version >= packaging_version.parse("1.1.0"):
+                    if self.schema_version >= packaging_version.parse("1.1.1"):
                         self.check_independent_variable_values(file_path, data)
                 except Exception:
                     # If the file did not validate against the schema, we

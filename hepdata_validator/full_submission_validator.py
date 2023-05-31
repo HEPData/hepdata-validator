@@ -198,7 +198,7 @@ class FullSubmissionValidator(Validator):
                     self.valid_files[type] = [self._remove_temp_directory(self.submission_file_path)]
 
             # Check all files in directory are in included_files
-            if not self.single_yaml_file and self.schema_version >= packaging_version.parse("1.1.0"):
+            if not self.single_yaml_file and self.schema_version >= packaging_version.parse("1.1.1"):
                 # helper to check if a provided file is not meant to describe HEP data, but rather
                 # represents "extended attributes" (e.g.) as a result of BSD tar (default on MacOS)
                 # which creates these extra files when archiving files with extended attributes on
