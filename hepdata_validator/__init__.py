@@ -49,7 +49,7 @@ if YamlLoader is None or YamlDumper is None:
 
 __all__ = ('__version__', )
 
-VALID_SCHEMA_VERSIONS = ['1.1.0', '1.0.1', '1.0.0', '0.1.0']
+VALID_SCHEMA_VERSIONS = ['1.1.1', '1.1.0', '1.0.1', '1.0.0', '0.1.0']
 LATEST_SCHEMA_VERSION = VALID_SCHEMA_VERSIONS[0]
 
 RAW_SCHEMAS_URL = 'https://raw.githubusercontent.com/HEPData/hepdata-validator/' \
