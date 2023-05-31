@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://hepdata.net/submission/schemas/1.1.0/additional_info_schema.json",
+  "$id": "https://hepdata.net/submission/schemas/1.1.1/additional_info_schema.json",
   "title": "Additional information",
   "description": "Optional information concerning a whole submission rather than individual data tables",
   "type": "object",
