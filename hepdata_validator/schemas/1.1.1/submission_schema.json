@@ -6,8 +6,12 @@
   "type": "object",
   "properties": {
     "name": { "type": "string", "maxLength": 64 },
+    "related_to_table_dois" : {
+      "type" : "array",
+      "items" : {"type" : "string",  "maxLength" : 64 }
+    },
     "location": { "type": "string", "maxLength": 256 },
-    "description": { "type": "string" },
+    "description": { "type": "string"},
     "keywords": {
       "type": "array",
       "items": {
