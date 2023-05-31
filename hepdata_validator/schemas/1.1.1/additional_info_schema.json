@@ -17,6 +17,10 @@
         "additionalProperties": false
       }
     },
+    "related_to_hepdata_recids" : {
+      "type" : "array",
+      "items" : {"type" : "string",  "maxLength" : 64 }
+    },
     "preprintyear": {
       "type": "string",
       "title": "Preprint Year",
