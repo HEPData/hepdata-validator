@@ -22,6 +22,8 @@ extras_require = {
     'tests': test_requirements,
 }
 
+for name, reqs in extras_require.items():
+    extras_require['all'].extend(reqs)
 
 class PyTest(TestCommand):
     """PyTest Test."""
@@ -92,7 +94,7 @@ setup(
     test_suite='hepdata_validator.testsuite',
     tests_require=test_requirements,
     cmdclass={'test': PyTest},
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     entry_points={
         'console_scripts': ['hepdata-validate=hepdata_validator.cli:validate'],
     }
