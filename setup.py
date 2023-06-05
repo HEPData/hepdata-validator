@@ -18,7 +18,7 @@ test_requirements = [
 
 extras_require = {
     'all': [],
-    'docs': ['Sphinx>=1.4.2'],
+    'docs': ['Sphinx>7'],
     'tests': test_requirements,
 }
 
