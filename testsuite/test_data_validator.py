@@ -343,6 +343,20 @@ def test_file_with_inconsistent_values_v1(validator_v1, data_path, capsys):
     assert out.strip() == "error - Inconsistent length of 'values' list: independent_variables [1], dependent_variables [2]"
 
 
+def test_file_with_only_independent_variables_v1(validator_v1, data_path, capsys):
+    """
+    Tests the DataFileValidator V1 against a file with only independent variables
+    Data file from https://www.hepdata.net/record/ins2624324?version=1&table=Binning%20Average
+    """
+    file = os.path.join(data_path, 'binning_average.yaml')
+    is_valid = validator_v1.validate(file_path=file)
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+    out, err = capsys.readouterr()
+    assert out.strip() == "error - Case of only independent_variables but no dependent_variables is not supported: independent_variables [40, 40], dependent_variables []"
+
+
 def test_file_with_invalid_independent_variables_v1(validator_v1, data_path, capsys):
     """
     Tests the DataFileValidator V1 against a file with invalid independent variables
