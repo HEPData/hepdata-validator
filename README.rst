@@ -27,12 +27,12 @@
    :alt: GitHub Issues
 
 .. image:: https://readthedocs.org/projects/hepdata-validator/badge/?version=latest
-   :target: http://hepdata-validator.readthedocs.io/en/latest/?badge=latest
+   :target: https://hepdata-validator.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
 JSON schema and validation code (in Python 3) for HEPData submissions
 
-* Documentation: http://hepdata-validator.readthedocs.io
+* Documentation: https://hepdata-validator.readthedocs.io
 
 
 Installation

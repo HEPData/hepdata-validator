@@ -247,7 +247,7 @@ class DataFileValidator(Validator):
         """
         Check that the length of the 'values' list is consistent for
         each of the independent_variables and dependent_variables.
-        Adds validation error if uncertainties are all zero.
+        Invalidate only independent_variables but no dependent_variables.
 
         :param data: data table in YAML format
         """
@@ -260,6 +260,14 @@ class DataFileValidator(Validator):
                 instance=data
             )
             self.add_validation_error(file_path, error)
+        if indep_count and not dep_count:  # only independent_variables
+            error = ValidationError(
+                "Case of only independent_variables but no dependent_variables is not supported: " +
+                "independent_variables %s, dependent_variables %s" % (str(indep_count), str(dep_count)),
+                instance=data
+            )
+            self.add_validation_error(file_path, error)
+
 
     def convert_to_float(self, error, file_path, path, instance):
         """
