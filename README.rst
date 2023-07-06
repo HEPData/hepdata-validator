@@ -2,16 +2,16 @@
  HEPData Validator
 ==================
 
-.. image:: https://github.com/HEPData/hepdata-validator/workflows/Continuous%20Integration/badge.svg?branch=master
-   :target: https://github.com/HEPData/hepdata-validator/actions?query=branch%3Amaster
+.. image:: https://github.com/HEPData/hepdata-validator/workflows/Continuous%20Integration/badge.svg?branch=main
+   :target: https://github.com/HEPData/hepdata-validator/actions?query=branch%3Amain
    :alt: GitHub Actions Build Status
 
-.. image:: https://coveralls.io/repos/github/HEPData/hepdata-validator/badge.svg?branch=master
-   :target: https://coveralls.io/github/HEPData/hepdata-validator?branch=master
+.. image:: https://coveralls.io/repos/github/HEPData/hepdata-validator/badge.svg?branch=main
+   :target: https://coveralls.io/github/HEPData/hepdata-validator?branch=main
    :alt: Coveralls Status
 
 .. image:: https://img.shields.io/github/license/HEPData/hepdata-validator.svg
-   :target: https://github.com/HEPData/hepdata-validator/blob/master/LICENSE.txt
+   :target: https://github.com/HEPData/hepdata-validator/blob/main/LICENSE.txt
    :alt: License
 
 .. image:: https://img.shields.io/github/release/hepdata/hepdata-validator.svg?maxAge=2592000
@@ -27,12 +27,12 @@
    :alt: GitHub Issues
 
 .. image:: https://readthedocs.org/projects/hepdata-validator/badge/?version=latest
-   :target: http://hepdata-validator.readthedocs.io/en/latest/?badge=latest
+   :target: https://hepdata-validator.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
 JSON schema and validation code (in Python 3) for HEPData submissions
 
-* Documentation: http://hepdata-validator.readthedocs.io
+* Documentation: https://hepdata-validator.readthedocs.io
 
 
 Installation
@@ -65,16 +65,17 @@ Developers should install from GitHub in a `virtual environment <https://docs.py
 
    $ git clone https://github.com/HEPData/hepdata-validator
    $ cd hepdata-validator
-   $ python3 -m venv ~/venv/hepdata-validator
-   $ source ~/venv/hepdata-validator/bin/activate
-   (hepdata-validator) $ pip install --upgrade -e ".[tests]"
+   $ python3.9 -m venv venv
+   $ source venv/bin/activate
+   (venv)$ pip install --upgrade pip
+   (venv)$ pip install --upgrade -e ".[all]"
 
 Tests should be run both with and without LibYAML, as error messages from the different YAML parsers vary:
 
 .. code:: bash
 
-   (hepdata-validator) $ USE_LIBYAML=True pytest testsuite
-   (hepdata-validator) $ USE_LIBYAML=False pytest testsuite
+   (venv) $ USE_LIBYAML=True pytest testsuite
+   (venv) $ USE_LIBYAML=False pytest testsuite
 
 Usage
 -----
@@ -266,7 +267,7 @@ Schema Versions
 ---------------
 
 When considering **native HEPData JSON schemas**, there are multiple `versions
-<https://github.com/HEPData/hepdata-validator/tree/master/hepdata_validator/schemas>`_.
+<https://github.com/HEPData/hepdata-validator/tree/main/hepdata_validator/schemas>`_.
 In most cases you should use the **latest** version (the default). If you need to use a different version,
 you can pass a keyword argument ``schema_version`` when initialising the validator:
 

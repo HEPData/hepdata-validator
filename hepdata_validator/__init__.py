@@ -25,7 +25,6 @@
 import abc
 import os
 
-from jsonschema import validate as json_validate, ValidationError
 from jsonschema.validators import validator_for
 from jsonschema.exceptions import by_relevance
 from packaging import version as packaging_version

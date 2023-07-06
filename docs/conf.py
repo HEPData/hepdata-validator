@@ -57,8 +57,8 @@ source_suffix = '.rst'
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
 
-# The master toctree document.
-master_doc = 'index'
+# The root toctree document.
+root_doc = 'index'
 
 # General information about the project.
 project = u''
@@ -85,7 +85,7 @@ release = version
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -265,7 +265,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'HEPData-Validator.tex', u'HEPData Documentation',
+  (root_doc, 'HEPData-Validator.tex', u'HEPData Documentation',
    u'CERN', 'manual'),
 ]
 
@@ -295,7 +295,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'HEPData Validator', u'HEPData Validator Documentation',
+    (root_doc, 'HEPData Validator', u'HEPData Validator Documentation',
      [author], 1)
 ]
 
@@ -309,7 +309,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'HEPData Validator', u'HEPData Validator Documentation',
+  (root_doc, 'HEPData Validator', u'HEPData Validator Documentation',
    author, 'HEPData Validator', 'Submission schemas and validation for HEPData.',
    'Miscellaneous'),
 ]
@@ -328,4 +328,4 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/3/': None}
+intersphinx_mapping = {'python': ('https://docs.python.org/3/', None)}
