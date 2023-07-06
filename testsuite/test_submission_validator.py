@@ -337,3 +337,25 @@ def test_submission_with_no_data_tables(validator_v0, validator_v1, data_path, c
 
         is_valid_v0 = validator_v0.validate(file_path=file, data=yaml_obj)
         assert is_valid_v0
+
+def test_related_submission_invalid(validator_v1, data_path, capsys):
+    """
+        Tests all of the invalid related submission files at once
+        against their expected errors.
+    """
+    yaml_files = [
+        {"file" : "invalid_submission_recid.yaml", 
+            "error" : "error - 'aaaaaa' is not of type 'integer'"},
+        {"file" : "invalid_submission_doi.yaml", 
+            "error" : "error - '10.17182/hepdaata.1.v1/t1' does not match "}]
+
+    for yf in yaml_files:
+        file = os.path.join(data_path, yf['file'])
+        with open(file, 'r') as submission:
+            yaml_obj = yaml.load_all(submission, Loader=YamlLoader)
+            is_valid = validator_v1.validate(file_path=file, data=yaml_obj)
+            validator_v1.print_errors(file)
+            assert is_valid is False
+
+            out, err = capsys.readouterr()
+            assert yf['error'] in out.strip()
