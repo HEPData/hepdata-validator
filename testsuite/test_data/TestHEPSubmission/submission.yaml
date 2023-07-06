@@ -25,11 +25,16 @@ comment: | # preserve newlines
   - No events with a jet for which ptJet > 25 GeV and |etaJet| < 4.5
   - No events with a third lepton for which ptLepton > 10 GeV
   - min(DeltaR(l,l)) > 0.3
+  
+related_to_hepdata_recids: 
+  - 1
 
 ---
 # Start a new YAML document to indicate a new data table.
 # This is Table 1.
 name: "Table 1"
+related_to_table_dois: 
+ - "10.17182/hepdata.1.v1/t1"
 location: Data from Page 17 of preprint
 description: The measured fiducial cross sections.  The first systematic uncertainty is the combined systematic uncertainty excluding luminosity, the second is the luminosity
 keywords: # used for searching, possibly multiple values for each keyword
