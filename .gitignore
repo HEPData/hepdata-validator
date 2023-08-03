@@ -60,3 +60,6 @@ target/
 
 # Downloaded schemas
 hepdata_validator/schemas_remote/
+
+# venv
+venv/
