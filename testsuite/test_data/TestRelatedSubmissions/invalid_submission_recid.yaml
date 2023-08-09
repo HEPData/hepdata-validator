@@ -1,0 +1,9 @@
+---
+comment: "Test Text"
+related_to_hepdata_recids: ["a", a, 0]
+---
+name: "Table 1"
+description: Words
+keywords: 
+  - {name: reactions, values: []}
+data_file: data1.yaml

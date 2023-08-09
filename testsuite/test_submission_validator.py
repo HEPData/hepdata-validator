@@ -338,24 +338,49 @@ def test_submission_with_no_data_tables(validator_v0, validator_v1, data_path, c
         is_valid_v0 = validator_v0.validate(file_path=file, data=yaml_obj)
         assert is_valid_v0
 
-def test_related_submission_invalid(validator_v1, data_path, capsys):
+def test_related_submissions(validator_v1, data_path, capsys):
     """
-        Tests all of the invalid related submission files at once
+        Tests all of the related submission files at once
         against their expected errors.
     """
+    test_folder = "/TestRelatedSubmissions/"
     yaml_files = [
-        {"file" : "invalid_submission_recid.yaml", 
-            "error" : "error - 'aaaaaa' is not of type 'integer'"},
-        {"file" : "invalid_submission_doi.yaml", 
-            "error" : "error - '10.17182/hepdaata.1.v1/t1' does not match "}]
+        {
+            "file" : "valid_submission_related.yaml",
+            "errors" : None 
+        },
+        {
+            "file" : "invalid_submission_recid.yaml", 
+            "errors" : [
+                "'a' is not of type 'integer'",
+                "'a' is not of type 'integer'",
+                "0 is less than the minimum of 1"
+        ]},
+        {
+            "file": "invalid_submission_doi.yaml",
+            "errors" : [
+                "1 is not of type 'string'",
+                "'aaa' does not match"
+        ]}]
 
-    for yf in yaml_files:
-        file = os.path.join(data_path, yf['file'])
+    for yfile in yaml_files:
+        file_path = "".join((data_path, test_folder, yfile['file']))
+        file = os.path.join(file_path)
         with open(file, 'r') as submission:
             yaml_obj = yaml.load_all(submission, Loader=YamlLoader)
             is_valid = validator_v1.validate(file_path=file, data=yaml_obj)
             validator_v1.print_errors(file)
-            assert is_valid is False
-
             out, err = capsys.readouterr()
-            assert yf['error'] in out.strip()
+
+            # Split off the data before the text
+            error_list = out.strip().split("error -")[1:]
+
+            if yfile["errors"]:
+                assert is_valid is False
+                assert len(error_list) == len(yfile["errors"])
+
+                for error in error_list:
+                    assert any(yerrors in error for yerrors in yfile['errors'])
+            else:
+                # If there is no expected error, then it should be valid
+                assert is_valid
