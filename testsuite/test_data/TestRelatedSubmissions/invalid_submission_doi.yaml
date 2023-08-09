@@ -4,11 +4,11 @@ comment: "Test Text"
 name: "Table 1"
 description: Words
 keywords: 
-  - {name: reactions, values: []}
+- {name: reactions, values: []}
 data_file: data1.yaml
 related_to_table_dois:
-  - 1
-  - "10.17182/hepdata.1"
-  - "10.17182/hepdata.1.v1"
-  - "10.17182/hepdata.1.v1/"
-  - "10.17182/hepdata.1.v1/a2"
+- 1
+- "10.17182/hepdata.1"
+- "10.17182/hepdata.1.v1"
+- "10.17182/hepdata.1.v1/"
+- "10.17182/hepdata.1.v1/a2"
