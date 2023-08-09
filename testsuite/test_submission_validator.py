@@ -338,29 +338,33 @@ def test_submission_with_no_data_tables(validator_v0, validator_v1, data_path, c
         is_valid_v0 = validator_v0.validate(file_path=file, data=yaml_obj)
         assert is_valid_v0
 
+
 def test_related_submissions(validator_v1, data_path, capsys):
     """
-        Tests all of the related submission files at once
+        Tests all related submission files at once
         against their expected errors.
     """
     test_folder = "/TestRelatedSubmissions/"
     yaml_files = [
         {
-            "file" : "valid_submission_related.yaml",
-            "errors" : None 
+            "file": "valid_submission_related.yaml",
+            "errors": None
         },
         {
-            "file" : "invalid_submission_recid.yaml", 
-            "errors" : [
+            "file": "invalid_submission_recid.yaml",
+            "errors": [
                 "'a' is not of type 'integer'",
                 "'a' is not of type 'integer'",
                 "0 is less than the minimum of 1"
         ]},
         {
             "file": "invalid_submission_doi.yaml",
-            "errors" : [
+            "errors": [
                 "1 is not of type 'string'",
-                "'aaa' does not match"
+                "'10.17182/hepdata.1' does not match",
+                "'10.17182/hepdata.1.v1' does not match",
+                "'10.17182/hepdata.1.v1/' does not match",
+                "'10.17182/hepdata.1.v1/a2'"
         ]}]
 
     for yfile in yaml_files:
@@ -371,14 +375,13 @@ def test_related_submissions(validator_v1, data_path, capsys):
             is_valid = validator_v1.validate(file_path=file, data=yaml_obj)
             validator_v1.print_errors(file)
             out, err = capsys.readouterr()
-
+            
             # Split off the data before the text
             error_list = out.strip().split("error -")[1:]
 
             if yfile["errors"]:
                 assert is_valid is False
                 assert len(error_list) == len(yfile["errors"])
-
                 for error in error_list:
                     assert any(yerrors in error for yerrors in yfile['errors'])
             else:
