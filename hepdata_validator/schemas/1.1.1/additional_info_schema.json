@@ -19,6 +19,7 @@
     },
     "related_to_hepdata_recids" : {
       "type" : "array",
+      "uniqueItems": true,
       "items" : {"type" : "integer", "minimum": 1}
     },
     "preprintyear": {

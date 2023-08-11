@@ -354,8 +354,9 @@ def test_related_submissions(validator_v1, data_path, capsys):
             "file": "invalid_submission_recid.yaml",
             "errors": [
                 "'a' is not of type 'integer'",
-                "'a' is not of type 'integer'",
-                "0 is less than the minimum of 1"
+                "'b' is not of type 'integer'",
+                "0 is less than the minimum of 1",
+                "has non-unique elements in 'related_to_hepdata_recids'"
         ]},
         {
             "file": "invalid_submission_doi.yaml",
@@ -364,7 +365,8 @@ def test_related_submissions(validator_v1, data_path, capsys):
                 "'10.17182/hepdata.1' does not match",
                 "'10.17182/hepdata.1.v1' does not match",
                 "'10.17182/hepdata.1.v1/' does not match",
-                "'10.17182/hepdata.1.v1/a2'"
+                "'10.17182/hepdata.1.v1/a2' does not match",
+                "has non-unique elements in 'related_to_table_dois'"
         ]}]
 
     for yfile in yaml_files:
@@ -381,7 +383,9 @@ def test_related_submissions(validator_v1, data_path, capsys):
 
             if yfile["errors"]:
                 assert is_valid is False
+                # Should be the same amount of errors as expected
                 assert len(error_list) == len(yfile["errors"])
+                # Then check against the expected errors
                 for error in error_list:
                     assert any(yerrors in error for yerrors in yfile['errors'])
             else:
