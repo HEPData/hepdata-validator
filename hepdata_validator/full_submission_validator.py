@@ -315,8 +315,8 @@ class FullSubmissionValidator(Validator):
                 )
                 return is_valid_submission_doc
 
-            file_size = os.path.getsize(data_file_path)
-            if file_size > INDIVIDUAL_FILE_SIZE_LIMIT: # 10MB limit for each file
+            file_size = os.path.getsize(data_file_path)   # 10 MB limit for each data file
+            if file_size > INDIVIDUAL_FILE_SIZE_LIMIT and self.schema_version >= packaging_version.parse("1.1.0"):
                 self._add_validation_message(
                     file=data_file_path,
                     message=f"Size of data_file '{doc['data_file']}' ({file_size} bytes) is bigger than the limit of " \
