@@ -6,11 +6,6 @@
   "type": "object",
   "properties": {
     "name": { "type": "string", "maxLength": 64 },
-    "related_to_table_dois" : {
-      "type" : "array",
-      "uniqueItems": true,
-      "items" : {"type" : "string",  "maxLength" : 128, "pattern" : "^10\\.17182\/hepdata\\.\\d+\\.v\\d+\/t\\d+$" }
-    },
     "location": { "type": "string", "maxLength": 256 },
     "description": { "type": "string"},
     "keywords": {
@@ -49,6 +44,11 @@
     "table_doi": {
       "type": "string",
       "description": "Present if a user downloads YAML from an existing HEPData record"
+    },
+    "related_to_table_dois" : {
+      "type" : "array",
+      "uniqueItems": true,
+      "items" : {"type" : "string",  "maxLength" : 128, "pattern" : "^10\\.17182\/hepdata\\.\\d+\\.v\\d+\/t\\d+$" }
     }
   },
   "required": ["name", "description", "keywords", "data_file"],

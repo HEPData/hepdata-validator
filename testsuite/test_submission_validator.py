@@ -356,7 +356,7 @@ def test_related_submissions(validator_v1, data_path, capsys):
                 "'a' is not of type 'integer'",
                 "'b' is not of type 'integer'",
                 "0 is less than the minimum of 1",
-                "has non-unique elements in 'related_to_hepdata_recids'"
+                "has non-unique elements in 'related_to_hepdata_records'"
         ]},
         {
             "file": "invalid_submission_doi.yaml",

@@ -17,11 +17,6 @@
         "additionalProperties": false
       }
     },
-    "related_to_hepdata_recids" : {
-      "type" : "array",
-      "uniqueItems": true,
-      "items" : {"type" : "integer", "minimum": 1}
-    },
     "preprintyear": {
       "type": "string",
       "title": "Preprint Year",
@@ -57,6 +52,11 @@
     "comment": {
       "type": "string",
       "description": "Information that applies to all data tables."
+    },
+    "related_to_hepdata_records" : {
+      "type" : "array",
+      "uniqueItems": true,
+      "items" : {"type" : "integer", "minimum": 1}
     }
   },
   "additionalProperties": true

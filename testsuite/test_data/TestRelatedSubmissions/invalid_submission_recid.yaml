@@ -1,6 +1,6 @@
 ---
 comment: "Test Text"
-related_to_hepdata_recids: ["a", b, 0, 1, 1]
+related_to_hepdata_records: ["a", b, 0, 1, 1]
 ---
 name: "Table 1"
 description: Words
