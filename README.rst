@@ -323,7 +323,7 @@ download them. However, in principle, for testing purposes, note that the same m
 
 .. code:: python
 
-    schema_path = 'https://hepdata.net/submission/schemas/1.1.0/'
+    schema_path = 'https://hepdata.net/submission/schemas/1.1.1/'
     schema_name = 'data_schema.json'
 
 and passing a HEPData YAML data file as the ``file_path`` argument of the ``validate`` method.

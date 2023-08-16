@@ -18,7 +18,7 @@ def validator_v0():
 
 @pytest.fixture()
 def validator_v1():
-    return FullSubmissionValidator(schema_version='1.1.0')
+    return FullSubmissionValidator()
 
 
 def test_valid_submission_dir(validator_v1, data_path, capsys):
@@ -87,7 +87,7 @@ def test_valid_submission_dir_remote_schema(validator_v1, data_path, capsys):
 
 
 def test_valid_submission_dir_remote_schema_no_autoloading(data_path):
-    validator = FullSubmissionValidator(schema_version='1.1.0', autoload_remote_schemas=False)
+    validator = FullSubmissionValidator(autoload_remote_schemas=False)
     submission_dir = os.path.join(data_path, 'TestRemoteSubmission')
 
     # Validate without pre-loading schemas - should get an error
@@ -106,7 +106,7 @@ def test_valid_submission_dir_remote_schema_no_autoloading(data_path):
 
 
 def test_valid_submission_dir_remote_schema_multiple_loads():
-    validator = FullSubmissionValidator(schema_version='1.1.0', autoload_remote_schemas=False)
+    validator = FullSubmissionValidator(autoload_remote_schemas=False)
 
     # Load schema once - should be fine
     validator.load_remote_schema(base_url="https://scikit-hep.org/pyhf/schemas/1.0.0", schema_name="workspace.json")
