@@ -94,7 +94,7 @@ setup(
     test_suite='hepdata_validator.testsuite',
     tests_require=test_requirements,
     cmdclass={'test': PyTest},
-    python_requires='>=3.7',
+    python_requires='>=3.6',
     entry_points={
         'console_scripts': ['hepdata-validate=hepdata_validator.cli:validate'],
     }
