@@ -2,7 +2,7 @@
  HEPData Validator
 ==================
 
-.. image:: https://github.com/HEPData/hepdata-validator/workflows/Continuous%20Integration/badge.svg?branch=main
+.. image:: https://github.com/HEPData/hepdata-validator/actions/workflows/ci.yml/badge.svg?branch=main
    :target: https://github.com/HEPData/hepdata-validator/actions?query=branch%3Amain
    :alt: GitHub Actions Build Status
 

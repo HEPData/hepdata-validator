@@ -55,6 +55,11 @@ jobs:
     needs: test
     if: github.event_name == 'release'
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/hepdata-validator
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.9
@@ -67,6 +72,3 @@ jobs:
         python setup.py sdist bdist_wheel
     - name: Publish distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_PASSWORD }}
