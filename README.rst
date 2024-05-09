@@ -22,6 +22,10 @@
    :target: https://pypi.org/project/hepdata-validator/
    :alt: PyPI Version
 
+.. image:: https://img.shields.io/conda/vn/conda-forge/hepdata-validator.svg
+   :target: https://prefix.dev/channels/conda-forge/packages/hepdata-validator
+   :alt: conda-forge Version
+
 .. image:: https://img.shields.io/github/issues/hepdata/hepdata-validator.svg?maxAge=2592000
    :target: https://github.com/HEPData/hepdata-validator/issues
    :alt: GitHub Issues
