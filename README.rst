@@ -60,6 +60,13 @@ with the LibYAML bindings. Run the following after installing LibYAML via Homebr
 
   $ LDFLAGS="-L$(brew --prefix)/lib" CFLAGS="-I$(brew --prefix)/include" pip install --global-option="--with-libyaml" --force pyyaml
 
+Alternatively, install from `conda-forge <https://anaconda.org/conda-forge/hepdata-validator>`_ using a ``conda`` ecosystem package manager:
+
+.. code:: bash
+
+   $ conda install --channel conda-forge hepdata-validator
+   $ hepdata-validate --help
+
 
 Developers
 ==========
