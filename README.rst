@@ -2,35 +2,38 @@
  HEPData Validator
 ==================
 
-.. image:: https://github.com/HEPData/hepdata-validator/actions/workflows/ci.yml/badge.svg?branch=main
+|GitHub Actions Build Status| |Coveralls Status| |License| |GitHub Releases| |PyPI Version| |conda-forge Version|
+|GitHub Issues| |Documentation Status|
+
+.. |GitHub Actions Build Status| image:: https://github.com/HEPData/hepdata-validator/actions/workflows/ci.yml/badge.svg?branch=main
    :target: https://github.com/HEPData/hepdata-validator/actions?query=branch%3Amain
    :alt: GitHub Actions Build Status
 
-.. image:: https://coveralls.io/repos/github/HEPData/hepdata-validator/badge.svg?branch=main
+.. |Coveralls Status| image:: https://coveralls.io/repos/github/HEPData/hepdata-validator/badge.svg?branch=main
    :target: https://coveralls.io/github/HEPData/hepdata-validator?branch=main
    :alt: Coveralls Status
 
-.. image:: https://img.shields.io/github/license/HEPData/hepdata-validator.svg
+.. |License| image:: https://img.shields.io/github/license/HEPData/hepdata-validator.svg
    :target: https://github.com/HEPData/hepdata-validator/blob/main/LICENSE.txt
    :alt: License
 
-.. image:: https://img.shields.io/github/release/hepdata/hepdata-validator.svg?maxAge=2592000
+.. |GitHub Releases| image:: https://img.shields.io/github/release/hepdata/hepdata-validator.svg?maxAge=2592000
    :target: https://github.com/HEPData/hepdata-validator/releases
    :alt: GitHub Releases
 
-.. image:: https://img.shields.io/pypi/v/hepdata-validator
+.. |PyPI Version| image:: https://img.shields.io/pypi/v/hepdata-validator
    :target: https://pypi.org/project/hepdata-validator/
    :alt: PyPI Version
 
-.. image:: https://img.shields.io/conda/vn/conda-forge/hepdata-validator.svg
+.. |conda-forge Version| image:: https://img.shields.io/conda/vn/conda-forge/hepdata-validator.svg
    :target: https://prefix.dev/channels/conda-forge/packages/hepdata-validator
    :alt: conda-forge Version
 
-.. image:: https://img.shields.io/github/issues/hepdata/hepdata-validator.svg?maxAge=2592000
+.. |GitHub Issues| image:: https://img.shields.io/github/issues/hepdata/hepdata-validator.svg?maxAge=2592000
    :target: https://github.com/HEPData/hepdata-validator/issues
    :alt: GitHub Issues
 
-.. image:: https://readthedocs.org/projects/hepdata-validator/badge/?version=latest
+.. |Documentation Status| image:: https://readthedocs.org/projects/hepdata-validator/badge/?version=latest
    :target: https://hepdata-validator.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
