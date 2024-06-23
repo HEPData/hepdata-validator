@@ -12,7 +12,7 @@ test_requirements = [
     "pytest-cache>=1.0",
     'pytest-cov>=1.8.0',
     'pytest-pep8>=1.0.6',
-    'coverage>=3.7.1,<6.0',
+    'coverage>=3.7.1',
     'mock>=2.0.0',
 ]
 
