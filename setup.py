@@ -4,7 +4,6 @@ import sys
 
 import os
 from setuptools import setup
-from setuptools.command.test import test as TestCommand
 
 
 test_requirements = [
@@ -24,40 +23,6 @@ extras_require = {
 
 for name, reqs in extras_require.items():
     extras_require['all'].extend(reqs)
-
-class PyTest(TestCommand):
-    """PyTest Test."""
-
-    user_options = [('pytest-args=', 'a', "Arguments to pass to pytest")]
-
-    def initialize_options(self):
-        """Init pytest."""
-        TestCommand.initialize_options(self)
-        self.pytest_args = []
-
-        from ConfigParser import ConfigParser
-
-        config = ConfigParser()
-        config.read('pytest.ini')
-        self.pytest_args = config.get('pytest', 'addopts').split(' ')
-
-    def finalize_options(self):
-        """Finalize pytest."""
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        """Run tests."""
-        # import here, cause outside the eggs aren't loaded
-        import pytest
-        import _pytest.config
-
-        pm = _pytest.config.get_plugin_manager()
-        pm.consider_setuptools_entrypoints()
-        errno = pytest.main(self.pytest_args)
-        sys.exit(errno)
-
 
 g = {}
 with open(os.path.join('hepdata_validator', 'version.py'), 'rt') as fp:
@@ -91,9 +56,6 @@ setup(
         "pyyaml>=5.4.1",
         "requests",
     ],
-    test_suite='hepdata_validator.testsuite',
-    tests_require=test_requirements,
-    cmdclass={'test': PyTest},
     python_requires='>=3.6',
     entry_points={
         'console_scripts': ['hepdata-validate=hepdata_validator.cli:validate'],
