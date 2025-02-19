@@ -16,7 +16,7 @@ independent_variables:
         high: .inf
       - low: -.inf
         high: 0.0
-      - low: .inf
+      - low: -.inf
         high: 1.0
       - low: 0.0
         high: .inf
