@@ -184,33 +184,40 @@ class DataFileValidator(Validator):
                         )
                         self.add_validation_error(file_path, error)
                 if 'low' in v and 'high' in v:
-                    if math.isinf(v['low']) and math.isinf(v['high']):
+                    lo = None
+                    hi = None
+                    try:
+                        lo = float(v['low'])
+                        hi = float(v['high'])
+                    except:
+                        continue
+                    if math.isinf(lo) and math.isinf(hi):
                         error = ValidationError(
                             "independent_variable 'low' and 'high' must not both have infinite values: '%s' and '%s'" % (v['low'], v['high']),
                             path=['independent_variables', i, 'values', j],
-                            instance=data_item['independent_variables'],
+                            instance=data_item['independent_variables']
                         )
                         self.add_validation_error(file_path, error)
-                    elif math.isinf(v['low']):
-                        of_id = "(%s, %.4e)" % (str(v['low']), float(v['high']))
+                    elif math.isinf(lo):
+                        of_id = "(%s, %.4e)" % (str(v['low']), hi)
                         if of_id not in underflows:
                             underflows.append(of_id)
-                    elif math.isinf(v['high']):
-                        of_id = "(%.4e, %s)" % (float(v['low']), str(v['high']))
+                    elif math.isinf(hi):
+                        of_id = "(%.4e, %s)" % (lo, str(v['high']))
                         if of_id not in overflows:
                             overflows.append(of_id)
             if len(underflows) > 1:
                 error = ValidationError(
                     "independent_variable must not have more than one underflow bin: %s" % ", ".join(underflows),
                     path=['independent_variables', i, 'values', j],
-                    instance=data_item['independent_variables'],
+                    instance=data_item['independent_variables']
                 )
                 self.add_validation_error(file_path, error)
             if len(overflows) > 1:
                 error = ValidationError(
                     "independent_variable must not have more than one overflow bin: %s" % ", ".join(overflows),
                     path=['independent_variables', i, 'values', j],
-                    instance=data_item['independent_variables'],
+                    instance=data_item['independent_variables']
                 )
                 self.add_validation_error(file_path, error)
 
