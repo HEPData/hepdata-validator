@@ -23,6 +23,7 @@
 # as an Intergovernmental Organization or submit itself to any jurisdiction.
 
 import json
+import math
 import os
 import re
 
@@ -169,6 +170,8 @@ class DataFileValidator(Validator):
         :return: raise ValidationError if not numeric
         """
         for i, var in enumerate(data_item['independent_variables']):
+            overflows = []
+            underflows = []
             for j, v in enumerate(var['values']):
                 if 'value' in v and isinstance(v['value'], str) and '-' in v['value']:
                     m = re.match(r'^[+-]?\d+(\.\d*)?([eE][+-]?\d+)?\s*-\s*[+-]?\d+(\.\d*)?([eE][+-]?\d+)?$', v['value'])
@@ -180,6 +183,36 @@ class DataFileValidator(Validator):
                             schema={"type": "number or string (not a range)"}
                         )
                         self.add_validation_error(file_path, error)
+                if 'low' in v and 'high' in v:
+                    if math.isinf(v['low']) and math.isinf(v['high']):
+                        error = ValidationError(
+                            "independent_variable 'low' and 'high' must not both have infinite values: '%s' and '%s'" % (v['low'], v['high']),
+                            path=['independent_variables', i, 'values', j],
+                            instance=data_item['independent_variables'],
+                        )
+                        self.add_validation_error(file_path, error)
+                    elif math.isinf(v['low']):
+                        of_id = "(%s, %.4e)" % (str(v['low']), float(v['high']))
+                        if of_id not in underflows:
+                            underflows.append(of_id)
+                    elif math.isinf(v['high']):
+                        of_id = "(%.4e, %s)" % (float(v['low']), str(v['high']))
+                        if of_id not in overflows:
+                            overflows.append(of_id)
+            if len(underflows) > 1:
+                error = ValidationError(
+                    "independent_variable must not have more than one underflow bin: %s" % ", ".join(underflows),
+                    path=['independent_variables', i, 'values', j],
+                    instance=data_item['independent_variables'],
+                )
+                self.add_validation_error(file_path, error)
+            if len(overflows) > 1:
+                error = ValidationError(
+                    "independent_variable must not have more than one overflow bin: %s" % ", ".join(overflows),
+                    path=['independent_variables', i, 'values', j],
+                    instance=data_item['independent_variables'],
+                )
+                self.add_validation_error(file_path, error)
 
     def check_error_values(self, file_path, data):
         """
