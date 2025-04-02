@@ -368,7 +368,7 @@ def test_file_with_invalid_independent_variables_v1(validator_v1, data_path, cap
     assert is_valid is False
     out, err = capsys.readouterr()
     lines = out.splitlines()
-    assert len(lines) == 7
+    assert len(lines) == 10
     assert lines[0].strip() == "error - {'low': 6000} is not valid under any of the given schemas in 'independent_variables[0].values[0]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'type': ['string', 'number']}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
     assert lines[1].strip() == "error - {'high': 7000} is not valid under any of the given schemas in 'independent_variables[0].values[1]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'type': ['string', 'number']}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
     assert lines[2].strip() == "error - {'high': '7.0.0', 'low': '2.0.0'} is not valid under any of the given schemas in 'independent_variables[0].values[2]' (expected: {'oneOf': [{'type': 'object', 'properties': {'value': {'type': ['string', 'number']}}, 'required': ['value'], 'additionalProperties': False}, {'type': 'object', 'properties': {'value': {'type': 'number'}, 'low': {'type': 'number'}, 'high': {'type': 'number'}}, 'required': ['low', 'high'], 'additionalProperties': False}]})"
@@ -376,6 +376,9 @@ def test_file_with_invalid_independent_variables_v1(validator_v1, data_path, cap
     assert lines[4].strip() == "error - independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '-5.3--2' in 'independent_variables[0].values[4].value' (expected: {'type': 'number or string (not a range)'})"
     assert lines[5].strip() == "error - independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '+2.3E5 -  +5E12' in 'independent_variables[0].values[5].value' (expected: {'type': 'number or string (not a range)'})"
     assert lines[6].strip() == "error - independent_variable 'value' must not be a string range (use 'low' and 'high' to represent a range): '-1e-09 - -3.5e-08' in 'independent_variables[0].values[6].value' (expected: {'type': 'number or string (not a range)'})"
+    assert lines[7].strip() == "error - independent_variable 'low' and 'high' must not both have infinite values: '-inf' and 'inf' in 'independent_variables[0].values[9]'"
+    assert lines[8].strip() == "error - independent_variable must not have more than one underflow bin: (-inf, 0.0000e+00), (-inf, 1.0000e+00) in 'independent_variables[0].values[13]'"
+    assert lines[9].strip() == "error - independent_variable must not have more than one overflow bin: (0.0000e+00, inf), (1.0000e+00, inf) in 'independent_variables[0].values[13]'"
 
 
 def test_file_with_missing_dependent_values_v1(validator_v1, data_path, capsys):

@@ -12,6 +12,16 @@ independent_variables:
       - value: '-1e-09 - -3.5e-08'
       - value: 'Mono-V overlap removal' # OK
       - value: '-3.5' # OK
+      - low: -.inf
+        high: .inf
+      - low: -.inf
+        high: 0.0
+      - low: -.inf
+        high: 1.0
+      - low: 0.0
+        high: .inf
+      - low: 1.0
+        high: .inf
 dependent_variables:
   - header: {name: SIG(total), units: FB}
     qualifiers:
@@ -58,6 +68,31 @@ dependent_variables:
           - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
           - {symerror: 0.4, label: "sys,lumi"}
       - value: 13.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 14.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 15.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 16.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 17.7
+        errors:
+          - {symerror: 0.4, label: stat}
+          - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
+          - {symerror: 0.4, label: "sys,lumi"}
+      - value: 18.7
         errors:
           - {symerror: 0.4, label: stat}
           - {asymerror: {plus: 0.42, minus: 0.31}, label: sys}
