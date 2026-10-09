@@ -167,7 +167,7 @@ def test_invalid_submission_yaml_v1(validator_v1, data_path, capsys):
     assert len(lines) == 3
     assert lines[0].strip() == "error - 'values' is a required property in 'keywords[0]' (expected: {'type': 'object', 'properties': {'name': {'type': 'string', 'maxLength': 128, 'enum': ['cmenergies', 'observables', 'reactions', 'phrases']}, 'values': {'type': 'array', 'items': {'type': ['string', 'number'], 'maxLength': 128}}}, 'required': ['name', 'values'], 'additionalProperties': False})"
     assert lines[1].strip() == "error - Additional properties are not allowed ('value' was unexpected) in 'keywords[0]' (expected: {'type': 'object', 'properties': {'name': {'type': 'string', 'maxLength': 128, 'enum': ['cmenergies', 'observables', 'reactions', 'phrases']}, 'values': {'type': 'array', 'items': {'type': ['string', 'number'], 'maxLength': 128}}}, 'required': ['name', 'values'], 'additionalProperties': False})"
-    assert lines[2].strip() == "error - 12321 is not of type 'string' in 'data_file' (expected: {'type': 'string'})"
+    assert lines[2].strip() == r"error - 12321 is not of type 'string' in 'data_file' (expected: {'type': 'string', 'pattern': '^.+\\.(yaml|json)$'})"
 
 
 def test_invalid_license_submission_yaml_v1(validator_v1, data_path, capsys):
@@ -391,3 +391,36 @@ def test_related_submissions(validator_v1, data_path, capsys):
             else:
                 # If there is no expected error, then it should be valid
                 assert is_valid
+
+
+def _table_doc(data_file):
+    return {"name": "Table 1", "description": "A table", "keywords": [], "data_file": data_file}
+
+
+@pytest.mark.parametrize("data_file", ["data1.yaml", "data1.json", "._data9.yaml", "table.1.yaml"])
+def test_data_file_extension_valid_v1(validator_v1, data_file):
+    """
+    Tests that the extensions .yaml and .json are accepted for the data_file
+    """
+
+    file = 'submission_{}.yaml'.format(data_file)
+    docs = [{"comment": "General information"}, _table_doc(data_file)]
+
+    assert validator_v1.validate(file_path=file, data=docs) is True
+
+
+@pytest.mark.parametrize("data_file", ["data1.yalm", "data1.yml", "data1", "data1.yaml.gz", "data1.txt", ".yaml"])
+def test_data_file_extension_invalid_v1(validator_v1, data_file):
+    """
+    Tests that other extensions than .yaml and .json are not accepted for the data_file, as the
+    file would be left out when preparing the files for the conversion
+    """
+
+    file = 'submission_{}.yaml'.format(data_file)
+    docs = [{"comment": "General information"}, _table_doc(data_file)]
+
+    assert validator_v1.validate(file_path=file, data=docs) is False
+    messages = validator_v1.get_messages(file)
+    assert len(messages) == 1
+    assert "does not match" in messages[0].message
+    assert "'data_file'" in messages[0].message

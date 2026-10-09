@@ -23,7 +23,7 @@
         "additionalProperties": false
       }
     },
-    "data_file": { "type": "string" },
+    "data_file": { "type": "string", "pattern": "^.+\\.(yaml|json)$" },
     "data_schema": {
       "type": "string",
       "description": "Remote location of the JSON schema for the data_file"
