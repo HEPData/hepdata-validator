@@ -417,3 +417,78 @@ def test_invalid_schema_file():
         assert "Invalid schema file" in str(excinfo.value)
     finally:
         VALID_SCHEMA_VERSIONS.pop()
+
+
+def _data_with_independent_values(values):
+    return {
+        "independent_variables": [{"header": {"name": "x"}, "values": values}],
+        "dependent_variables": [
+            {"header": {"name": "y"}, "values": [{"value": 1.0} for _ in values]}
+        ],
+    }
+
+
+def test_independent_variable_low_not_greater_than_high_v1(validator_v1, capsys):
+    """
+    Tests the DataFileValidator V1 against bins with 'low' greater than 'high'
+    """
+    file = 'low_greater_than_high.yaml'
+    values = [
+        {"low": 0, "high": 1},
+        {"low": 1, "high": 2, "value": 1.5},
+        {"low": 3, "high": 2},
+        {"low": 2, "high": 2},  # equal is fine
+        {"low": 5, "high": 4, "value": 4.5},  # reported once, not also for the value
+        {"low": 0, "high": float("inf")},
+        {"low": float("inf"), "high": 6},
+    ]
+    is_valid = validator_v1.validate(file_path=file, data=_data_with_independent_values(values))
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+    out, err = capsys.readouterr()
+    lines = out.splitlines()
+    assert len(lines) == 3
+    assert lines[0].strip() == "error - independent_variable 'low' must not be greater than 'high': '3' and '2' in 'independent_variables[0].values[2]'"
+    assert lines[1].strip() == "error - independent_variable 'low' must not be greater than 'high': '5' and '4' in 'independent_variables[0].values[4]'"
+    assert lines[2].strip() == "error - independent_variable 'low' must not be greater than 'high': 'inf' and '6' in 'independent_variables[0].values[6]'"
+
+
+def test_independent_variable_value_within_low_and_high_v1(validator_v1, capsys):
+    """
+    Tests the DataFileValidator V1 against bins with a 'value' outside of 'low' and 'high'
+    """
+    file = 'value_outside_bin.yaml'
+    values = [
+        {"low": 0, "high": 1, "value": 0.5},
+        {"low": 0, "high": 1, "value": 0},  # edges are inside
+        {"low": 0, "high": 1, "value": 1},
+        {"low": 0, "high": 1, "value": 1.5},
+        {"low": 0, "high": 1, "value": -0.1},
+        {"low": float("-inf"), "high": 1, "value": -1000.0},  # inside of an underflow bin
+        {"low": 1, "high": float("inf"), "value": 0.5},
+    ]
+    is_valid = validator_v1.validate(file_path=file, data=_data_with_independent_values(values))
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+    out, err = capsys.readouterr()
+    lines = out.splitlines()
+    assert len(lines) == 3
+    assert lines[0].strip() == "error - independent_variable 'value' must be between 'low' and 'high': '1.5' not in ['0', '1'] in 'independent_variables[0].values[3].value'"
+    assert lines[1].strip() == "error - independent_variable 'value' must be between 'low' and 'high': '-0.1' not in ['0', '1'] in 'independent_variables[0].values[4].value'"
+    assert lines[2].strip() == "error - independent_variable 'value' must be between 'low' and 'high': '0.5' not in ['1', 'inf'] in 'independent_variables[0].values[6].value'"
+
+
+def test_independent_variable_valid_bins_v1(validator_v1):
+    """
+    Tests that the checks of 'low', 'high' and 'value' accept sensible bins
+    """
+    values = [
+        {"low": 0, "high": 1, "value": 0.5},
+        {"low": 1, "high": 2},
+        {"value": 5},
+        {"low": float("-inf"), "high": 0},
+        {"low": 10, "high": float("inf"), "value": 12},
+    ]
+    assert validator_v1.validate(file_path='valid_bins.yaml', data=_data_with_independent_values(values)) is True
