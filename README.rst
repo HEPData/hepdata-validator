@@ -79,7 +79,7 @@ Developers should install from GitHub in a `virtual environment <https://docs.py
 
    $ git clone https://github.com/HEPData/hepdata-validator
    $ cd hepdata-validator
-   $ python3.9 -m venv venv
+   $ python3.14 -m venv venv
    $ source venv/bin/activate
    (venv)$ pip install --upgrade pip
    (venv)$ pip install --upgrade -e ".[all]"
