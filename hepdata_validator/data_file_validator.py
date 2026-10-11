@@ -184,6 +184,25 @@ class DataFileValidator(Validator):
                         )
                         self.add_validation_error(file_path, error)
                 if 'low' in v and 'high' in v:
+                    low = v['low']
+                    high = v['high']
+                    value = v.get('value')
+                    if isinstance(low, (int, float)) and isinstance(high, (int, float)):
+                        if low > high:
+                            error = ValidationError(
+                                "independent_variable 'low' must not be greater than 'high': '%s' and '%s'" % (v['low'], v['high']),
+                                path=['independent_variables', i, 'values', j],
+                                instance=data_item['independent_variables']
+                            )
+                            self.add_validation_error(file_path, error)
+                            continue
+                        if isinstance(value, (int, float)) and not low <= value <= high:
+                            error = ValidationError(
+                                "independent_variable 'value' must be between 'low' and 'high': '%s' not in ['%s', '%s']" % (v['value'], v['low'], v['high']),
+                                path=['independent_variables', i, 'values', j, 'value'],
+                                instance=data_item['independent_variables']
+                            )
+                            self.add_validation_error(file_path, error)
                     lo = None
                     hi = None
                     try:
@@ -191,26 +210,6 @@ class DataFileValidator(Validator):
                         hi = float(v['high'])
                     except:
                         continue
-                    if lo > hi:
-                        error = ValidationError(
-                            "independent_variable 'low' must not be greater than 'high': '%s' and '%s'" % (v['low'], v['high']),
-                            path=['independent_variables', i, 'values', j],
-                            instance=data_item['independent_variables']
-                        )
-                        self.add_validation_error(file_path, error)
-                        continue
-                    if 'value' in v:
-                        try:
-                            value = float(v['value'])
-                        except (TypeError, ValueError):
-                            value = None  # not a number, for example a label
-                        if value is not None and not lo <= value <= hi:
-                            error = ValidationError(
-                                "independent_variable 'value' must be between 'low' and 'high': '%s' not in ['%s', '%s']" % (v['value'], v['low'], v['high']),
-                                path=['independent_variables', i, 'values', j, 'value'],
-                                instance=data_item['independent_variables']
-                            )
-                            self.add_validation_error(file_path, error)
                     if math.isinf(lo) and math.isinf(hi):
                         error = ValidationError(
                             "independent_variable 'low' and 'high' must not both have infinite values: '%s' and '%s'" % (v['low'], v['high']),

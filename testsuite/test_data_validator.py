@@ -492,3 +492,32 @@ def test_independent_variable_valid_bins_v1(validator_v1):
         {"low": 10, "high": float("inf"), "value": 12},
     ]
     assert validator_v1.validate(file_path='valid_bins.yaml', data=_data_with_independent_values(values)) is True
+
+
+def test_independent_variable_large_integers_v1(validator_v1, capsys):
+    """
+    Tests that the edges and the value of a bin are compared exactly, also if an integer is not exactly
+    represented by a float (2**53 + 1) or too large for one (10**400)
+    """
+    file = 'large_integers.yaml'
+    values = [
+        {"low": 9007199254740992, "high": 9007199254740993, "value": 9007199254740993},
+        {"low": 9007199254740993, "high": 9007199254740992},
+        {"low": 0, "high": 9007199254740992, "value": 9007199254740993},
+        {"low": 0, "high": 10 ** 400, "value": 10 ** 399},
+        {"low": 10 ** 400, "high": 10 ** 399},
+        {"low": 0, "high": 10 ** 400, "value": 10 ** 401},
+    ]
+    is_valid = validator_v1.validate(file_path=file, data=_data_with_independent_values(values))
+    validator_v1.print_errors(file)
+
+    assert is_valid is False
+    out, err = capsys.readouterr()
+    lines = out.splitlines()
+    assert len(lines) == 4
+    assert lines[0].strip() == "error - independent_variable 'low' must not be greater than 'high': '9007199254740993' and '9007199254740992' in 'independent_variables[0].values[1]'"
+    assert lines[1].strip() == "error - independent_variable 'value' must be between 'low' and 'high': '9007199254740993' not in ['0', '9007199254740992'] in 'independent_variables[0].values[2].value'"
+    assert "'low' must not be greater than 'high'" in lines[2]
+    assert lines[2].strip().endswith("in 'independent_variables[0].values[4]'")
+    assert "'value' must be between 'low' and 'high'" in lines[3]
+    assert lines[3].strip().endswith("in 'independent_variables[0].values[5].value'")
