@@ -167,7 +167,7 @@ def test_invalid_submission_yaml_v1(validator_v1, data_path, capsys):
     assert len(lines) == 3
     assert lines[0].strip() == "error - 'values' is a required property in 'keywords[0]' (expected: {'type': 'object', 'properties': {'name': {'type': 'string', 'maxLength': 128, 'enum': ['cmenergies', 'observables', 'reactions', 'phrases']}, 'values': {'type': 'array', 'items': {'type': ['string', 'number'], 'maxLength': 128}}}, 'required': ['name', 'values'], 'additionalProperties': False})"
     assert lines[1].strip() == "error - Additional properties are not allowed ('value' was unexpected) in 'keywords[0]' (expected: {'type': 'object', 'properties': {'name': {'type': 'string', 'maxLength': 128, 'enum': ['cmenergies', 'observables', 'reactions', 'phrases']}, 'values': {'type': 'array', 'items': {'type': ['string', 'number'], 'maxLength': 128}}}, 'required': ['name', 'values'], 'additionalProperties': False})"
-    assert lines[2].strip() == r"error - 12321 is not of type 'string' in 'data_file' (expected: {'type': 'string', 'pattern': '^.+\\.(yaml|json)(?![\\s\\S])'})"
+    assert lines[2].strip() == r"error - 12321 is not of type 'string' in 'data_file' (expected: {'type': 'string', 'pattern': '^.+\\.(yaml|json)(?![\\s\\S])', 'errorMessage': 'the file extension should be .yaml or .json'})"
 
 
 def test_invalid_license_submission_yaml_v1(validator_v1, data_path, capsys):
@@ -424,5 +424,4 @@ def test_data_file_extension_invalid_v1(validator_v1, data_file):
     assert validator_v1.validate(file_path=file, data=docs) is False
     messages = validator_v1.get_messages(file)
     assert len(messages) == 1
-    assert "does not match" in messages[0].message
-    assert "'data_file'" in messages[0].message
+    assert messages[0].message == "{!r}: the file extension should be .yaml or .json in 'data_file'".format(data_file)
