@@ -172,10 +172,15 @@ class Validator(object):
                     location += '.' + part
 
         message = ve.message
+        # A schema can give a message for a failed pattern, as a regular expression is hard to read
+        custom_message = ve.schema.get('errorMessage') if isinstance(ve.schema, dict) else None
+        use_custom_message = ve.validator == 'pattern' and isinstance(custom_message, str)
+        if use_custom_message:
+            message = f"{ve.instance!r}: {custom_message}"
         if location:
             message += f" in '{location}'"
         # Add expected schema section if it it's present and isn't the full schema
-        if isinstance(ve.schema, dict) and '$schema' not in ve.schema.keys():
+        if isinstance(ve.schema, dict) and '$schema' not in ve.schema.keys() and not use_custom_message:
             message += f" (expected: {ve.schema})"
 
         self.add_validation_message(ValidationMessage(file=file_path,
